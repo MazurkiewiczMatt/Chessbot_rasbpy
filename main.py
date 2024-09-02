@@ -1,9 +1,12 @@
 from settings import *
 from lattice import scan_matrix, GridApp
 
+import copy
 import time
 
 running = True
+
+last_lattice = None
 
 if DEBUG:
     # Variables for debugging
@@ -28,7 +31,8 @@ while running:
 
     # Process lattice
     lattice_reading = scan_matrix()
-    if lattice_reading is not None:
+    if lattice_reading != last_lattice:
+        last_lattice = copy.deepcopy(lattice_reading)
         if DEBUG:
             app.update_grid(lattice_reading)
 
