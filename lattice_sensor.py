@@ -13,6 +13,6 @@ def scan_matrix():
         for j,column in enumerate(columns):
             matrix[i][j] = column.is_pressed
         row.off()
-        time.sleep(1)
+        time.sleep(0.01)
     return matrix
 
