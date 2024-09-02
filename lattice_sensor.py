@@ -1,16 +1,3 @@
-"""
-import serial
-import time
-from signal import pause
-from gpiozero import Button, OutputDevice
-
-rows=[26,19,13,6,5,0,11,9]
-cols=[10,22,27,17,12,16,20,21]
-rows=[OutputDevice(pin, active_high=True, initial_value=False) for pin in rows]
-columns=[Button(pin, pull_up=True) for pin in cols]
-
-matrix=[[False for _ in range(3)] for _ in range(3)]
-"""
 import time
 from gpiozero import Button, OutputDevice
 
@@ -18,7 +5,7 @@ rows_pins = [26, 19, 13, 6, 5, 0, 11, 9]
 cols_pins = [10, 22, 27, 17, 12, 16, 20, 21]
 rows = [OutputDevice(pin, active_high=True, initial_value=False) for pin in rows_pins]
 columns = [Button(pin, pull_up=True) for pin in cols_pins]
-matrix=[[False for _ in range(3)] for _ in range(3)]
+matrix=[[False for _ in range(len(columns)] for _ in range(len(rows))]
 
 def scan_matrix():
     for i,row in enumerate(rows):
