@@ -7,6 +7,17 @@ class GridApp:
         self.root.title("8x8 Grid Visualization")
         self.root.geometry("200x200")
 
+        self.bg_grid = initial_grid = [
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0]
+        ]
+
         # Create a canvas widget
         self.canvas = tk.Canvas(self.root, width=200, height=200)
         self.canvas.pack()
@@ -24,7 +35,12 @@ class GridApp:
         self.canvas.delete("all")  # Clear the canvas before redrawing
         for i in range(8):
             for j in range(8):
-                color = "black" if self.grid[i][j] == 1 else "white"
+                if self.grid[i][j] == 1:
+                    color = "black"  
+                elif self.bg_grid[i][j] == 1:
+                    color = "gray" 
+                else:
+                    color = "white"
                 self.canvas.create_rectangle(j * self.cell_size, i * self.cell_size,
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)

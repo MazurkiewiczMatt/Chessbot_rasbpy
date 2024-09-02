@@ -1,7 +1,7 @@
 import time
 from gpiozero import Button, OutputDevice
 
-rows_pins = [26, 19, 13, 6, 5, 0, 11, 9]
+rows_pins = [9, 11, 0, 5, 6, 13, 19, 26]
 cols_pins = [10, 22, 27, 17, 12, 16, 20, 21]
 rows = [OutputDevice(pin, active_high=True, initial_value=False) for pin in rows_pins]
 columns = [Button(pin, pull_up=False) for pin in cols_pins]
