@@ -11,8 +11,9 @@ def scan_matrix():
     for i,row in enumerate(rows):
         row.on()
         for j,column in enumerate(columns):
+            time.sleep(0.0005)
             matrix[i][j] = int(column.is_pressed)
         row.off()
-        time.sleep(0.001)
+        time.sleep(0.0015)
     return matrix
 
