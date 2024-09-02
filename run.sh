@@ -19,4 +19,4 @@ else
 fi
 
 # Launch the Python script
-python3 main.py
+python3 /home/artur/Chessbot/main.py
