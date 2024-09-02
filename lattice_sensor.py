@@ -4,32 +4,28 @@ import time
 from signal import pause
 from gpiozero import Button, OutputDevice
 
-rows=[2,3,4]
-cols=[22,27,17,]
+rows=[26,19,13,6,5,0,11,9]
+cols=[10,22,27,17,12,16,20,21]
 rows=[OutputDevice(pin, active_high=True, initial_value=False) for pin in rows]
 columns=[Button(pin, pull_up=True) for pin in cols]
 
 matrix=[[False for _ in range(3)] for _ in range(3)]
 """
+import time
+from gpiozero import Button, OutputDevice
 
+rows_pins = [26, 19, 13, 6, 5, 0, 11, 9]
+cols_pins = [10, 22, 27, 17, 12, 16, 20, 21]
+rows = [OutputDevice(pin, active_high=True, initial_value=False) for pin in rows_pins]
+columns = [Button(pin, pull_up=True) for pin in cols_pins]
+matrix=[[False for _ in range(3)] for _ in range(3)]
 
 def scan_matrix():
-    """
     for i,row in enumerate(rows):
         row.on()
         for j,column in enumerate(columns):
-            if column.is_pressed:
-                matrix[i][j]=True
-            else:
-                matrix[i][j]=False
-            print(matrix[i][j])
+            matrix[i][j] = column.is_pressed
         row.off()
         time.sleep(1)
     return matrix
-
-    scan_matrix()
-    for row in matrix:
-        print(row)
-    """
-    return None
 
