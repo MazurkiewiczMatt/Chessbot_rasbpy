@@ -1,9 +1,7 @@
+from settings import *
 from lattice_sensor import scan_matrix
+
 import time
-
-print("The ChessBot's raspberry Pi software has been launched!")
-
-debug = True
 
 # Variables for debugging
 frame_count = 0
@@ -11,6 +9,7 @@ start_time = time.time()
 
 running = True
 
+print("The ChessBot's raspberry Pi software has been launched!")
 while running:
 
     # Process lattice
@@ -21,11 +20,11 @@ while running:
 
     # Update timers and do all other stuff
 
-    if debug:
+    if DEBUG:
         # Framerate monitoring
         frame_count += 1
         elapsed_time = time.time() - start_time
-        if elapsed_time >= 10.0:
+        if elapsed_time >= DEBUG_INTERVAL:
             average_fps = frame_count / elapsed_time
             average_frame_time_ms = (elapsed_time / frame_count) * 1000
             print(f"Average framerate over the last {elapsed_time:.2f} seconds: {average_fps:.2f} FPS")
