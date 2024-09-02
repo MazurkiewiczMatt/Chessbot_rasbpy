@@ -15,7 +15,7 @@ fi
 # Install the required Python libraries
 if [[ -f "requirements.txt" ]]; then
     echo "Installing dependencies from requirements.txt..."
-    pip install -r requirements.txt
+    pip install -r requirements.txt --break-system-packages
 else
     echo "requirements.txt not found. Skipping dependency installation."
 fi
