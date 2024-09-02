@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd /home/artur/Chessbot
+
 # Pull the latest changes from the git repository
 git_output=$(git pull)
 
