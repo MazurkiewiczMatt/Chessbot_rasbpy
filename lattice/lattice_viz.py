@@ -5,7 +5,7 @@ class GridApp:
     def __init__(self, grid=None):
         self.root = tk.Tk()
         self.root.title("8x8 Grid Visualization")
-        self.root.geometry("200x200")
+        self.root.geometry("400x400")
 
         self.bg_grid = initial_grid = [
         [0, 1, 0, 1, 0, 1, 0, 1],
