@@ -10,5 +10,13 @@ else
     echo "The directory was updated with the latest changes."
 fi
 
+# Install the required Python libraries
+if [[ -f "requirements.txt" ]]; then
+    echo "Installing dependencies from requirements.txt..."
+    pip install -r requirements.txt
+else
+    echo "requirements.txt not found. Skipping dependency installation."
+fi
+
 # Launch the Python script
 python3 main.py
