@@ -29,8 +29,6 @@ while running:
     # Process lattice
     lattice_reading = scan_matrix()
     if lattice_reading is not None:
-        print("The state of the board has been updated!")
-        print(lattice_reading)
         if DEBUG:
             app.update_grid(lattice_reading)
 
