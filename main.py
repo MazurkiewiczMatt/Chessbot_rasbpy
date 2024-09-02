@@ -1,13 +1,27 @@
 from settings import *
-from lattice_sensor import scan_matrix
+from lattice import scan_matrix, GridApp
 
 import time
 
-# Variables for debugging
-frame_count = 0
-start_time = time.time()
-
 running = True
+
+if DEBUG:
+    # Variables for debugging
+
+    frame_count = 0
+    start_time = time.time()
+
+    initial_grid = [
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0],
+        [0, 1, 0, 1, 0, 1, 0, 1],
+        [1, 0, 1, 0, 1, 0, 1, 0]
+    ]
+    app = GridApp(initial_grid)
 
 print("The ChessBot's raspberry Pi software has been launched!")
 while running:
@@ -17,6 +31,8 @@ while running:
     if lattice_reading is not None:
         print("The state of the board has been updated!")
         print(lattice_reading)
+        if DEBUG:
+            app.update_grid(lattice_reading)
 
     # Update timers and do all other stuff
 
