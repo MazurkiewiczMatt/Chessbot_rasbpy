@@ -2,6 +2,7 @@ from settings import *
 from lattice import scan_matrix, GridApp
 
 import time
+import tkinter as tk
 
 running = True
 
@@ -21,7 +22,8 @@ if DEBUG:
         [0, 1, 0, 1, 0, 1, 0, 1],
         [1, 0, 1, 0, 1, 0, 1, 0]
     ]
-    app = GridApp(initial_grid)
+    root = tk.Tk()
+    app = GridApp(root, initial_grid)
 
 print("The ChessBot's raspberry Pi software has been launched!")
 while running:
@@ -33,6 +35,7 @@ while running:
         print(lattice_reading)
         if DEBUG:
             app.update_grid(lattice_reading)
+            root.update()
 
     # Update timers and do all other stuff
 

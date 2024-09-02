@@ -20,8 +20,6 @@ class GridApp:
         # Draw the initial grid
         self.draw_grid()
 
-        self.root.mainloop()
-
     def draw_grid(self):
         self.canvas.delete("all")  # Clear the canvas before redrawing
         for i in range(8):
@@ -34,6 +32,7 @@ class GridApp:
     def update_grid(self, new_grid):
         self.grid = new_grid
         self.draw_grid()
+        self.root.update()
 
 
 # Example of how to use the class in another function or module
