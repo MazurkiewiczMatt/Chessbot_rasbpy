@@ -19,11 +19,11 @@ class GridApp:
         ]
 
         # Create a canvas widget
-        self.canvas = tk.Canvas(self.root, width=200, height=200)
+        self.canvas = tk.Canvas(self.root, width=400, height=400)
         self.canvas.pack()
 
         # Define the size of each cell in the grid
-        self.cell_size = 25
+        self.cell_size = 50
 
         # Initialize the grid if not provided
         self.grid = grid if grid else [[0 for _ in range(8)] for _ in range(8)]
