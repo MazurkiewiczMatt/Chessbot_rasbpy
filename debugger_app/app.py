@@ -98,9 +98,9 @@ class DebuggerApp:
         self.canvas.delete("all")  # Clear the canvas before redrawing
         for i in range(8):
             for j in range(8):
-                if self.grid[i][j] == 1:
+                if self.grid[j][7-i] == 1:
                     color = "green"
-                elif self.bg_grid[i][j] == 1:
+                elif self.bg_grid[j][7-i] == 1:
                     color = "gray"
                 else:
                     color = "white"
