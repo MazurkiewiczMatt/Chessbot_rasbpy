@@ -3,11 +3,12 @@ class ButtonSensors:
         self.dummy = dummy
         self.pins = [14, 15, 18, 23, 24, 25, 8, 7]
         pull_down_pins = [15]
-        if not dummy:
-            from gpiozero import Button
-            self.buttons = [Button(pin, pull_up=not(pin in pull_down_pins)) for pin in self.pins]
-        else:
+        if dummy:
             self.buttons = [False for pin in self.pins]
+        else:
+            from gpiozero import Button
+            self.buttons = [Button(pin, pull_up=not (pin in pull_down_pins)) for pin in self.pins]
+
 
     def sense(self):
         if self.dummy:
