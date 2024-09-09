@@ -24,6 +24,5 @@ class LatticeSensor:
                 for j, column in enumerate(self.columns):
                     self.matrix[i][j] = int(column.is_pressed)
                 row.off()
-                time.sleep(0.0025)
 
         return self.matrix
