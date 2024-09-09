@@ -40,17 +40,19 @@ while running:
         # Check for pressed buttons and send messages
         for i, button_reading in enumerate(buttons_reading, start=1):
             if button_reading:
-                app.set_button_active(i)
                 serial_handler.send_message(f"B{i}")
-            else:
-                app.set_button_not_active(i)
 
     # GUI
     if DEBUG:
         app.set_task("GUI")
-    if DEBUG:
         if lattice_updated:
             app.update_grid(lattice_reading)
+        if buttons_updated:
+            for i, button_reading in enumerate(buttons_reading, start=1):
+                if button_reading:
+                    app.set_button_active(i)
+                else:
+                    app.set_button_not_active(i)
         app.update()
 
     # Update last reading

@@ -4,7 +4,7 @@ class ButtonSensors:
         self.pins = pins
         if not dummy:
             from gpiozero import Button
-            self.buttons = [Button(pin) for pin in pins]
+            self.buttons = [Button(pin, pull_up=True) for pin in pins]
 
     def sense(self):
         if self.dummy:
