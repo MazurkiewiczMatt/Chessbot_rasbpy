@@ -21,4 +21,4 @@ else
 fi
 
 # Launch the Python script
-python3 /home/artur/Chessbot/main.py
+python3 /home/artur/Chessbot_rasbpy/main.py
