@@ -6,7 +6,7 @@ class DebuggerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("400x600")
+        self.root.geometry("400x520")
 
         # Top Frame for FPS info
         self.top_frame = tk.Frame(self.root)
