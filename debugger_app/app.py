@@ -4,17 +4,24 @@ import time
 
 class DebuggerApp:
     def __init__(self):
-
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("400x400")
+        self.root.geometry("400x500")  # Adjust the height for better layout
 
-        # Create a Text widget to display FPS
-        self.fps_text = tk.Text(self.root, height=1, width=40, bd=0)
-        self.fps_text.pack()
+        # Top Frame for FPS info
+        self.top_frame = tk.Frame(self.root)
+        self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=10)
 
-        # Create a canvas widget
-        self.canvas = tk.Canvas(self.root, width=400, height=400)
+        # Create a Label to display FPS info
+        self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms")
+        self.fps_label.pack()
+
+        # Middle Frame for the canvas grid
+        self.middle_frame = tk.Frame(self.root)
+        self.middle_frame.pack(side=tk.TOP)
+
+        # Create a canvas widget for the grid
+        self.canvas = tk.Canvas(self.middle_frame, width=400, height=400)
         self.canvas.pack()
 
         # Define the size of each cell in the grid
@@ -33,15 +40,39 @@ class DebuggerApp:
             [1, 0, 1, 0, 1, 0, 1, 0]
         ]
 
+        # Bottom Frame for buttons (on/off states)
+        self.bottom_frame = tk.Frame(self.root)
+        self.bottom_frame.pack(side=tk.BOTTOM, pady=10)
+
+        self.button_names = {
+            0: "Start", 1: "Stop", 2: "Pause", 3: "Resume",
+            4: "Reset", 5: "Save", 6: "Load", 7: "Exit"
+        }
+
+        # Array of buttons representing grid cells (single row)
+        self.button_grid = []
+        for i in range(8):
+            button = tk.Button(self.bottom_frame, text=self.button_names[i],
+                               width=5, height=2, bg='gray', fg='black')
+            button.grid(row=0, column=i)
+            self.button_grid.append(button)
+
         # Initialize frame counting and timing
         self.frame_count = 0
         self.start_time = time.time()
         self.average_fps = 0
         self.average_frame_time_ms = 0
-
         self.updated = False
 
         self.draw()
+
+    def set_button_active(self, index):
+        if 0 <= index < len(self.button_grid):
+            self.button_grid[index].config(bg='green')
+
+    def set_button_not_active(self, index):
+        if 0 <= index < len(self.button_grid):
+            self.button_grid[index].config(bg='gray')
 
     def draw(self):
         self.canvas.delete("all")  # Clear the canvas before redrawing
@@ -57,9 +88,7 @@ class DebuggerApp:
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)
 
-        # Update the FPS display
-        self.fps_text.delete(1.0, tk.END)  # Clear previous text
-        self.fps_text.insert(tk.END, f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms")
+        self.fps_label.config(text=f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms")
 
     def update_grid(self, new_grid):
         self.grid = new_grid
