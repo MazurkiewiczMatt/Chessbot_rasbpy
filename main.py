@@ -47,4 +47,4 @@ while running:
 
     # Update last reading
     last_lattice_reading = lattice_reading
-    last_buttons_reading = buttons_updated
+    last_buttons_reading = buttons_reading
