@@ -101,7 +101,7 @@ class DebuggerApp:
         self.frame_count += 1
         elapsed_time = time.time() - self.start_time
 
-        if elapsed_time >= 0.1:  # Refresh every 0.1 seconds
+        if elapsed_time >= 0.5:
             self.average_fps = self.frame_count / elapsed_time
             self.average_frame_time_ms = (elapsed_time / self.frame_count) * 1000
             # Reset the counters
