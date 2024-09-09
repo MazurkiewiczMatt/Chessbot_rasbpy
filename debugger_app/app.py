@@ -44,7 +44,6 @@ class DebuggerApp:
         self.draw()
 
     def draw(self):
-        print("drawing")
         self.canvas.delete("all")  # Clear the canvas before redrawing
         for i in range(8):
             for j in range(8):

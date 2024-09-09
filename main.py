@@ -1,5 +1,5 @@
 from settings import *
-from lattice import scan_matrix
+from lattice import LatticeSensor
 from debugger_app import DebuggerApp
 
 running = True
@@ -9,12 +9,13 @@ print("The ChessBot's Raspberry Pi software has been launched!")
 if DEBUG:
     app = DebuggerApp()
 
+lattice_sensor = LatticeSensor(dummy=DUMMY)
 last_reading = None
 
 while running:
 
     # Process lattice
-    lattice_reading = scan_matrix()
+    lattice_reading = lattice_sensor.sense()
     lattice_updated = lattice_reading != last_reading
 
     if lattice_updated:

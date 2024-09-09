@@ -1,1 +1,1 @@
-from .lattice_sensor import scan_matrix
+from .lattice_sensor import LatticeSensor
