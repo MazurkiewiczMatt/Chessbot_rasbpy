@@ -47,7 +47,7 @@ while running:
         if lattice_updated:
             app.update_grid(lattice_reading)
         if buttons_updated:
-            for i, button_reading in enumerate(buttons_reading, start=1):
+            for i, button_reading in enumerate(buttons_reading):
                 if button_reading:
                     app.set_button_active(i)
                 else:
