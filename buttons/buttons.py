@@ -6,9 +6,11 @@ class ButtonSensors:
         if not dummy:
             from gpiozero import Button
             self.buttons = [Button(pin, pull_up=not(pin in pull_down_pins)) for pin in self.pins]
+        else:
+            self.buttons = [False for pin in self.pins]
 
     def sense(self):
         if self.dummy:
-            return [False] * len(self.pins)
+            return self.buttons
         else:
             return [button.is_pressed for button in self.buttons]
