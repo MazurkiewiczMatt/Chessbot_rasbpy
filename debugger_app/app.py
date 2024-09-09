@@ -33,15 +33,18 @@ class DebuggerApp:
             [1, 0, 1, 0, 1, 0, 1, 0]
         ]
 
-        # Draw the initial grid
-        self.draw_grid()
-
         # Initialize frame counting and timing
         self.frame_count = 0
         self.start_time = time.time()
+        self.average_fps = 0
+        self.average_frame_time_ms = 0
+            
         self.updated = False
 
-    def draw_grid(self):
+        self.draw()
+
+    def draw(self):
+        print("drawing")
         self.canvas.delete("all")  # Clear the canvas before redrawing
         for i in range(8):
             for j in range(8):
@@ -54,6 +57,10 @@ class DebuggerApp:
                 self.canvas.create_rectangle(j * self.cell_size, i * self.cell_size,
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)
+        self.fps_label.config(text=f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms")
+
+        self.root.update_idletasks()
+        self.root.update()
 
     def update_grid(self, new_grid):
         self.grid = new_grid
@@ -65,10 +72,8 @@ class DebuggerApp:
         elapsed_time = time.time() - self.start_time
 
         if elapsed_time >= 0.1:  # Refresh every 0.1 seconds
-            average_fps = self.frame_count / elapsed_time
-            average_frame_time_ms = (elapsed_time / self.frame_count) * 1000
-            self.fps_label.config(text=f"FPS: {average_fps:.2f}, Frame Time: {average_frame_time_ms:.2f} ms")
-
+            self.average_fps = self.frame_count / elapsed_time
+            self.average_frame_time_ms = (elapsed_time / self.frame_count) * 1000
             # Reset the counters
             self.frame_count = 0
             self.start_time = time.time()
@@ -78,7 +83,3 @@ class DebuggerApp:
             self.draw()
             self.updated = False
 
-    def draw(self):
-        self.draw_grid()
-        self.root.update_idletasks()
-        self.root.update()
