@@ -21,17 +21,21 @@ last_lattice_reading = None
 while running:
 
     # Process lattice
+    if DEBUG:
+        app.set_task("lattice")
     lattice_reading = lattice_sensor.sense()
     lattice_updated = lattice_reading != last_lattice_reading
 
     # Get button states
+    if DEBUG:
+        app.set_task("buttons")
     buttons_reading = button_sensors.sense()
     buttons_updated = buttons_reading != last_buttons_reading
 
-    if lattice_updated:
-        if DEBUG:
-            app.update_grid(lattice_reading)
 
+    # Serial communication with Arduino
+    if DEBUG:
+        app.set_task("serial")
     if buttons_updated:
         # Check for pressed buttons and send messages
         for i, button_reading in enumerate(buttons_reading, start=1):
@@ -41,8 +45,12 @@ while running:
             else:
                 app.set_button_not_active(i)
 
-    # Update timers and do all other stuff
+    # GUI
     if DEBUG:
+        app.set_task("GUI")
+    if DEBUG:
+        if lattice_updated:
+            app.update_grid(lattice_reading)
         app.update()
 
     # Update last reading

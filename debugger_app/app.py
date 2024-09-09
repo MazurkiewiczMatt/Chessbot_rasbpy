@@ -6,13 +6,13 @@ class DebuggerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("400x500")  # Adjust the height for better layout
+        self.root.geometry("400x600")
 
         # Top Frame for FPS info
         self.top_frame = tk.Frame(self.root)
-        self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=10)
+        self.top_frame.pack(side=tk.TOP, fill=tk.X)
 
-        # Create a Label to display FPS info
+        # display FPS info
         self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms")
         self.fps_label.pack()
 
@@ -63,6 +63,11 @@ class DebuggerApp:
         self.average_fps = 0
         self.average_frame_time_ms = 0
         self.updated = False
+        # Task timing tracking
+        self.tasks_times_average = {}
+        self.task_times = {}
+        self.task_start_time = None
+        self.current_task_name = None
 
         self.draw()
 
@@ -75,6 +80,19 @@ class DebuggerApp:
         if 0 <= index < len(self.button_grid):
             self.button_grid[index].config(bg='gray')
         self.updated = True
+
+    def set_task(self, task_name):
+        if self.current_task_name is not None:
+            # End the previous task
+            task_end_time = time.time()
+            task_duration = (task_end_time - self.task_start_time) * 1000  # Convert to milliseconds
+            if self.current_task_name not in self.task_times:
+                self.task_times[self.current_task_name] = []
+            self.task_times[self.current_task_name].append(task_duration)
+
+        # Start timing for the new task
+        self.current_task_name = task_name
+        self.task_start_time = time.time()
 
     def draw(self):
         self.canvas.delete("all")  # Clear the canvas before redrawing
@@ -89,12 +107,32 @@ class DebuggerApp:
                 self.canvas.create_rectangle(j * self.cell_size, i * self.cell_size,
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)
+        display_str = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms"
+        display_str += "\n Task breakdown: \n"
+        for task_name, avg_time in self.tasks_times_average.items():
+            display_str += f"{task_name}: {avg_time:.2f} ms\t"
+        self.fps_label.config(text=display_str)
 
-        self.fps_label.config(text=f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms")
 
     def update_grid(self, new_grid):
         self.grid = new_grid
         self.updated = True
+
+    def calculate_metrics(self):
+        # Calculate FPS
+        elapsed_time = time.time() - self.start_time
+        self.average_fps = self.frame_count / elapsed_time
+        self.average_frame_time_ms = (elapsed_time / self.frame_count) * 1000
+
+        # Calculate and store average durations for each task
+        self.tasks_times_average = {task_name: sum(times) / len(times) for task_name, times in self.task_times.items()}
+
+
+
+        # Reset the counters
+        self.task_times = {}
+        self.frame_count = 0
+        self.start_time = time.time()
 
     def update(self):
 
@@ -102,11 +140,7 @@ class DebuggerApp:
         elapsed_time = time.time() - self.start_time
 
         if elapsed_time >= 0.5:
-            self.average_fps = self.frame_count / elapsed_time
-            self.average_frame_time_ms = (elapsed_time / self.frame_count) * 1000
-            # Reset the counters
-            self.frame_count = 0
-            self.start_time = time.time()
+            self.calculate_metrics()
             self.updated = True
 
         if self.updated:
