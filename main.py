@@ -12,8 +12,7 @@ if DEBUG:
     app = DebuggerApp()
 
 serial_handler = SerialHandler('/dev/ttyACM0', 115200, dummy=(DUMMY or ARDUINO_DUMMY))
-button_pins = [14, 15, 18, 23, 24, 25, 8, 7]
-button_sensors = ButtonSensors(button_pins, dummy=DUMMY)
+button_sensors = ButtonSensors(dummy=DUMMY)
 last_buttons_reading = None
 lattice_sensor = LatticeSensor(dummy=DUMMY)
 last_lattice_reading = None

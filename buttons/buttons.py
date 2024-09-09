@@ -1,7 +1,7 @@
 class ButtonSensors:
-    def __init__(self, pins, dummy=False):
+    def __init__(self, dummy=False):
         self.dummy = dummy
-        self.pins = pins
+        pins = [14, 15, 18, 23, 24, 25, 8, 7]
         if not dummy:
             from gpiozero import Button
             self.buttons = [Button(pin, pull_up=True) for pin in pins]
