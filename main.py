@@ -1,49 +1,29 @@
 from settings import *
-from lattice import scan_matrix, GridApp
-
-import time
+from lattice import scan_matrix
+from debugger_app import DebuggerApp
 
 running = True
 
+print("The ChessBot's Raspberry Pi software has been launched!")
+
 if DEBUG:
-    # Variables for debugging
+    app = DebuggerApp()
 
-    frame_count = 0
-    start_time = time.time()
+last_reading = None
 
-    initial_grid = [
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0],
-        [0, 1, 0, 1, 0, 1, 0, 1],
-        [1, 0, 1, 0, 1, 0, 1, 0]
-    ]
-    app = GridApp(initial_grid)
-
-print("The ChessBot's raspberry Pi software has been launched!")
 while running:
 
     # Process lattice
     lattice_reading = scan_matrix()
-    if lattice_reading is not None:
-        print("The state of the board has been updated!")
-        print(lattice_reading)
+    lattice_updated = lattice_reading != last_reading
+
+    if lattice_updated:
         if DEBUG:
             app.update_grid(lattice_reading)
 
     # Update timers and do all other stuff
-
     if DEBUG:
-        # Framerate monitoring
-        frame_count += 1
-        elapsed_time = time.time() - start_time
-        if elapsed_time >= DEBUG_INTERVAL:
-            average_fps = frame_count / elapsed_time
-            average_frame_time_ms = (elapsed_time / frame_count) * 1000
-            print(f"Average framerate over the last {elapsed_time:.2f} seconds: {average_fps:.2f} FPS")
-            print(f"Average time per frame: {average_frame_time_ms:.2f} ms")
-            frame_count = 0
-            start_time = time.time()
+        app.update()
+
+    # Update last reading
+    last_reading = lattice_reading
