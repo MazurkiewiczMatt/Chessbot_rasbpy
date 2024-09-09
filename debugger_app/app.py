@@ -69,10 +69,12 @@ class DebuggerApp:
     def set_button_active(self, index):
         if 0 <= index < len(self.button_grid):
             self.button_grid[index].config(bg='green')
+        self.updated = True
 
     def set_button_not_active(self, index):
         if 0 <= index < len(self.button_grid):
             self.button_grid[index].config(bg='gray')
+        self.updated = True
 
     def draw(self):
         self.canvas.delete("all")  # Clear the canvas before redrawing
