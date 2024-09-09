@@ -45,8 +45,8 @@ class DebuggerApp:
         self.bottom_frame.pack(side=tk.BOTTOM, pady=10)
 
         self.button_names = {
-            0: "Start", 1: "Stop", 2: "Pause", 3: "Resume",
-            4: "Reset", 5: "Save", 6: "Load", 7: "Exit"
+            0: "UI 1", 1: "UI 2", 2: "UI 3", 3: "UI 4",
+            4: "P1 1", 5: "P1 2", 6: "P2 1", 7: "P2 2"
         }
 
         # Array of buttons representing grid cells (single row)
