@@ -9,13 +9,13 @@ class DebuggerApp:
         self.root.title("Debugger")
         self.root.geometry("400x400")
 
+        # Create a Text widget to display FPS
+        self.fps_text = tk.Text(self.root, height=1, width=40, bd=0)
+        self.fps_text.pack()
+
         # Create a canvas widget
         self.canvas = tk.Canvas(self.root, width=400, height=400)
         self.canvas.pack()
-
-        # Create a label to display FPS
-        self.fps_label = tk.Label(self.root, text="FPS: 0.00")
-        self.fps_label.pack()
 
         # Define the size of each cell in the grid
         self.cell_size = 50
@@ -38,7 +38,7 @@ class DebuggerApp:
         self.start_time = time.time()
         self.average_fps = 0
         self.average_frame_time_ms = 0
-            
+
         self.updated = False
 
         self.draw()
@@ -48,7 +48,7 @@ class DebuggerApp:
         for i in range(8):
             for j in range(8):
                 if self.grid[i][j] == 1:
-                    color = "black"
+                    color = "green"
                 elif self.bg_grid[i][j] == 1:
                     color = "gray"
                 else:
@@ -56,10 +56,10 @@ class DebuggerApp:
                 self.canvas.create_rectangle(j * self.cell_size, i * self.cell_size,
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)
-        self.fps_label.config(text=f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms")
 
-        self.root.update_idletasks()
-        self.root.update()
+        # Update the FPS display
+        self.fps_text.delete(1.0, tk.END)  # Clear previous text
+        self.fps_text.insert(tk.END, f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms")
 
     def update_grid(self, new_grid):
         self.grid = new_grid
@@ -81,4 +81,7 @@ class DebuggerApp:
         if self.updated:
             self.draw()
             self.updated = False
+
+        self.root.update_idletasks()
+        self.root.update()
 
