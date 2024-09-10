@@ -6,27 +6,44 @@ class DebuggerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("550x550")
+        self.root.geometry("600x600")
         self.root.configure(background='dark slate gray')
+
+        padding_y = 15
+        frame_color = "snow2"
+        bg_color = 'dark slate gray'
+        font_style = ("Helvetica", 10, "bold")
 
         # Top Frame for FPS info
         self.top_frame = tk.Frame(self.root)
-        self.top_frame.config(bg="snow2")
-        self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=10)
+        self.top_frame.config(bg=frame_color)
+        self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=padding_y)
 
         # display FPS info
         self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms \n Arduino not connected \n Task logging not active")
-        font_style = ("Helvetica", 10, "bold")
         self.fps_label.config(font=font_style, fg="black")
         self.fps_label.pack()
 
-        # Middle Frame for the canvas grid
-        self.middle_frame = tk.Frame(self.root)
-        self.middle_frame.pack(side=tk.TOP)
+        # Main frame to hold the canvas and the side frames
+        self.main_frame = tk.Frame(self.root)
+        self.main_frame.pack(side=tk.TOP, expand=True, fill=tk.BOTH)
 
-        # Create a canvas widget for the grid
-        self.canvas = tk.Canvas(self.middle_frame, width=400, height=400)
-        self.canvas.pack()
+        # Left frame
+        self.left_frame = tk.Frame(self.main_frame, width=100, bg=bg_color)
+        self.left_frame.pack(side=tk.LEFT, fill=tk.Y)
+
+        # Right frame
+        self.right_frame = tk.Frame(self.main_frame, width=100, bg=bg_color)
+        self.right_frame.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Middle frame for the canvas
+        self.middle_frame = tk.Frame(self.main_frame)
+        self.middle_frame.config(bg=bg_color)
+        self.middle_frame.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+        # Create a canvas widget for the grid, centered in the middle frame
+        self.canvas = tk.Canvas(self.middle_frame, width=400, height=400, bg=frame_color)
+        self.canvas.pack(expand=True)
 
         # Define the size of each cell in the grid
         self.cell_size = 50
@@ -46,7 +63,8 @@ class DebuggerApp:
 
         # Bottom Frame for buttons (on/off states)
         self.bottom_frame = tk.Frame(self.root)
-        self.bottom_frame.pack(side=tk.BOTTOM, pady=10)
+        self.bottom_frame.config(bg=frame_color)
+        self.bottom_frame.pack(side=tk.BOTTOM, pady=padding_y)
 
         self.button_names = {
             0: "P1 1", 1: "P1 2", 2: "P2 1", 3: "P2 2",
