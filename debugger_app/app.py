@@ -150,6 +150,14 @@ class DebuggerApp:
         title = f"Chessbot Raspberry Pi software\n"
         self.info_widget.insert("end", title)
 
+        # Add Arduino connection status with color
+        arduino_status = "connected" if self.connected_to_Arduino else "not connected"
+        arduino_tag = "green" if self.connected_to_Arduino else "red"
+        self.info_widget.insert("end", "Arduino ", arduino_tag)
+        self.info_widget.insert("end", f"{arduino_status}", arduino_tag)
+
+        self.info_widget.insert("end", "\n")
+
         # Insert FPS and Frame Time text
         fps_text = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms\n"
         self.info_widget.insert("end", fps_text)
@@ -159,13 +167,7 @@ class DebuggerApp:
         for task_name, avg_time in self.tasks_times_average.items():
             task_info_strings.append(f"{task_name}: {avg_time:.2f} ms")
         all_task_info = " | ".join(task_info_strings)
-        self.info_widget.insert("end", all_task_info + "\n")
-
-        # Add Arduino connection status with color
-        arduino_status = "connected" if self.connected_to_Arduino else "not connected"
-        arduino_tag = "green" if self.connected_to_Arduino else "red"
-        self.info_widget.insert("end", "Arduino ", arduino_tag)
-        self.info_widget.insert("end", f"{arduino_status}", arduino_tag)
+        self.info_widget.insert("end", all_task_info)
 
         # Apply center alignment to the entire content
         self.info_widget.tag_add("center", "1.0", "end")
