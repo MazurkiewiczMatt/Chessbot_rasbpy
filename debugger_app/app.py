@@ -13,7 +13,9 @@ class DebuggerApp:
         self.top_frame.pack(side=tk.TOP, fill=tk.X)
 
         # display FPS info
-        self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms")
+        self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms \n Arduino not connected \n Task logging not active")
+        font_style = ("Helvetica", 10, "bold")
+        self.fps_label.config(font=font_style, fg="black")
         self.fps_label.pack()
 
         # Middle Frame for the canvas grid
@@ -48,6 +50,7 @@ class DebuggerApp:
             0: "P1 1", 1: "P1 2", 2: "P2 1", 3: "P2 2",
             4: "UI 1", 5: "UI 2", 6: "UI 3", 7: "UI 4",
         }
+
 
         # Array of buttons representing grid cells (single row)
         self.button_grid = []
