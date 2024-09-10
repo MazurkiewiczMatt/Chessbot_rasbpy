@@ -20,7 +20,4 @@ class SerialHandler:
     def ping(self):
         self.send_message("PING")
         response = self.receive_message()
-        if response == "PONG":
-            print("Ping successful")
-        else:
-            print("Ping failed or no response")
+        return response == "PONG"

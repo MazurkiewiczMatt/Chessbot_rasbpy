@@ -69,7 +69,13 @@ class DebuggerApp:
         self.task_start_time = None
         self.current_task_name = None
 
+        self.connected_to_Arduino = False
+
         self.draw()
+
+    def set_connection(self, connected):
+        self.connected_to_Arduino = connected
+        self.updated = True
 
     def set_button_active(self, index):
         if 0 <= index < len(self.button_grid):
@@ -108,7 +114,11 @@ class DebuggerApp:
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)
         display_str = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms"
-        display_str += "\n Task breakdown: \n"
+        if self.connected_to_Arduino:
+            display_str += "\n Arduino connected | "
+        else:
+            display_str += "\n Arduino not connected | "
+        display_str += "Task breakdown: \n"
         for task_name, avg_time in self.tasks_times_average.items():
             display_str += f"{task_name}: {avg_time:.2f} ms\t"
         self.fps_label.config(text=display_str)
