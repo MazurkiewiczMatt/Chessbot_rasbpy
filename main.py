@@ -35,6 +35,7 @@ while running:
     # Serial communication with Arduino
     if DEBUG:
         app.set_task("serial")
+        app.set_connection(serial_handler.ping())
     if buttons_updated:
         # Check for pressed buttons and send messages
         for i, button_reading in enumerate(buttons_reading, start=1):
