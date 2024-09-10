@@ -6,7 +6,7 @@ class DebuggerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("600x600")
+        self.root.geometry("720x576")
         self.root.configure(background='dark slate gray')
 
         padding_y = 15
@@ -21,7 +21,7 @@ class DebuggerApp:
 
         # display FPS info
         self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms \n Arduino not connected \n Task logging not active")
-        self.fps_label.config(font=font_style, fg="black")
+        self.fps_label.config(font=font_style, bg=frame_color)
         self.fps_label.pack()
 
         # Main frame to hold the canvas and the side frames
