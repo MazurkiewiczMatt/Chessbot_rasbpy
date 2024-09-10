@@ -11,7 +11,7 @@ print("The ChessBot's Raspberry Pi software has been launched!")
 if DEBUG:
     app = DebuggerApp()
 
-serial_handler = SerialHandler('/dev/ttyACM0', 115200, dummy=(DUMMY or ARDUINO_DUMMY))
+serial_handler = SerialHandler('/dev/ttyACM0', 9600, dummy=ARDUINO_DUMMY)
 button_sensors = ButtonSensors(dummy=DUMMY)
 last_buttons_reading = None
 lattice_sensor = LatticeSensor(dummy=DUMMY)
