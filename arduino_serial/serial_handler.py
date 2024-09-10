@@ -18,6 +18,9 @@ class SerialHandler:
         return None
 
     def ping(self):
-        self.send_message("PING")
-        response = self.receive_message()
-        return response == "PONG"
+        if self.ser is not None:
+            self.send_message("PING")
+            response = self.receive_message()
+            return response == "PONG"
+        else:
+            return False
