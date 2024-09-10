@@ -1,0 +1,1 @@
+Install arduino-cli in this directory for the run.sh script to work on Raspberry Pi
