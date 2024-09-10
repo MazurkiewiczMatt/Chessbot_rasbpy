@@ -7,10 +7,12 @@ class DebuggerApp:
         self.root = tk.Tk()
         self.root.title("Debugger")
         self.root.geometry("550x550")
+        self.root.configure(background='dark slate gray')
 
         # Top Frame for FPS info
         self.top_frame = tk.Frame(self.root)
-        self.top_frame.pack(side=tk.TOP, fill=tk.X)
+        self.top_frame.config(bg="snow2")
+        self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=10)
 
         # display FPS info
         self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms \n Arduino not connected \n Task logging not active")
@@ -56,7 +58,7 @@ class DebuggerApp:
         self.button_grid = []
         for i in range(8):
             button = tk.Button(self.bottom_frame, text=self.button_names[i],
-                               width=5, height=2, bg='gray', fg='black')
+                               width=5, height=2, bg='snow2', fg='black', font=font_style)
             button.grid(row=0, column=i)
             self.button_grid.append(button)
 
@@ -87,7 +89,7 @@ class DebuggerApp:
 
     def set_button_not_active(self, index):
         if 0 <= index < len(self.button_grid):
-            self.button_grid[index].config(bg='gray')
+            self.button_grid[index].config(bg='snow2')
         self.updated = True
 
     def set_task(self, task_name):
