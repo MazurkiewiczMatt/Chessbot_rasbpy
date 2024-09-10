@@ -19,10 +19,10 @@ class DebuggerApp:
         self.top_frame.config(bg=frame_color)
         self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=padding_y)
 
-        # display FPS info
-        self.fps_label = tk.Label(self.top_frame, text="# INITIALIZING #")
-        self.fps_label.config(font=font_style, bg=frame_color)
-        self.fps_label.pack()
+        self.info_widget = tk.Text(self.top_frame, height=4, width=80, bg=frame_color, bd=0, highlightthickness=0)
+        self.info_widget.pack()
+        self.info_widget.tag_configure("green", foreground="green")
+        self.info_widget.tag_configure("red", foreground="red")
 
         # Main frame to hold the canvas and the side frames
         self.main_frame = tk.Frame(self.root)
@@ -139,20 +139,40 @@ class DebuggerApp:
         self.draw_info_label()
 
     def draw_info_label(self):
-        # Create the initial display string for FPS and Frame Time
-        display_str = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms\n"
 
-        # Add Arduino connection status
-        arduino_status = "connected" if self.connected_to_Arduino else "not connected"
-        display_str += f"Arduino {arduino_status} | "
+        # Set the Text widget to be read-only
+        self.info_widget.config(state="normal")
+
+        # Clear the current content of the Text widget
+        self.info_widget.delete('1.0', tk.END)
+
+        # Insert FPS and Frame Time text
+        title = f"Chessbot Raspberry Pi software\n"
+        self.info_widget.insert("end", title)
+
+        # Insert FPS and Frame Time text
+        fps_text = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms\n"
+        self.info_widget.insert("end", fps_text)
 
         # Add task breakdown
-        task_breakdown = "\nTask breakdown:\n" + "\t".join(
-            f"{task_name}: {avg_time:.2f} ms" for task_name, avg_time in self.tasks_times_average.items()
-        )
+        task_info_strings = []
+        for task_name, avg_time in self.tasks_times_average.items():
+            task_info_strings.append(f"{task_name}: {avg_time:.2f} ms")
+        all_task_info = " | ".join(task_info_strings)
+        self.info_widget.insert("end", all_task_info + "\n")
 
-        # Update the label text
-        self.fps_label.config(text=display_str + task_breakdown)
+        # Add Arduino connection status with color
+        arduino_status = "connected" if self.connected_to_Arduino else "not connected"
+        arduino_tag = "green" if self.connected_to_Arduino else "red"
+        self.info_widget.insert("end", "Arduino ", arduino_tag)
+        self.info_widget.insert("end", f"{arduino_status}", arduino_tag)
+
+        # Apply center alignment to the entire content
+        self.info_widget.tag_add("center", "1.0", "end")
+        self.info_widget.tag_configure("center", justify="center")
+
+        # Set the Text widget to be read-only
+        self.info_widget.config(state="disabled")
 
     def update_grid(self, new_grid):
         self.grid = new_grid
