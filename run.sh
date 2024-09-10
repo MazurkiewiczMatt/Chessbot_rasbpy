@@ -32,7 +32,7 @@ sudo ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR install
 # Compile and upload the sketch
 
 sudo ./arduino-cli compile --fqbn arduino:avr:nano . || { echo "Compilation failed"; exit 1; }
-sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4 . || { echo "Upload failed"; exit 1; }
+sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || { echo "Upload failed"; exit 1; }
 
 echo "Arduino setup complete."
 
