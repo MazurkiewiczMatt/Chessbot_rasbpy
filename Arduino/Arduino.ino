@@ -1,7 +1,7 @@
 void setup() {
   Serial.begin(9600);
   Serial.println("Chessbot software initiated");
-  Serial.setTimeout(50);
+  Serial.setTimeout(20);
 }
 
 void loop() {
