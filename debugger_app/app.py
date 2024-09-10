@@ -9,7 +9,7 @@ class DebuggerApp:
         self.root.geometry("720x576")
         self.root.configure(background='dark slate gray')
 
-        padding_y = 15
+        padding_y = 12
         frame_color = "snow2"
         bg_color = 'dark slate gray'
         font_style = ("Helvetica", 10, "bold")
@@ -20,7 +20,7 @@ class DebuggerApp:
         self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=padding_y)
 
         # display FPS info
-        self.fps_label = tk.Label(self.top_frame, text="FPS: 0.00, Frame Time: 0.00 ms \n Arduino not connected \n Task logging not active")
+        self.fps_label = tk.Label(self.top_frame, text="# INITIALIZING #")
         self.fps_label.config(font=font_style, bg=frame_color)
         self.fps_label.pack()
 
@@ -136,16 +136,23 @@ class DebuggerApp:
                 self.canvas.create_rectangle(j * self.cell_size, i * self.cell_size,
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)
-        display_str = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms"
-        if self.connected_to_Arduino:
-            display_str += "\n Arduino connected | "
-        else:
-            display_str += "\n Arduino not connected | "
-        display_str += "Task breakdown: \n"
-        for task_name, avg_time in self.tasks_times_average.items():
-            display_str += f"{task_name}: {avg_time:.2f} ms\t"
-        self.fps_label.config(text=display_str)
+        self.draw_info_label()
 
+    def draw_info_label(self):
+        # Create the initial display string for FPS and Frame Time
+        display_str = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms\n"
+
+        # Add Arduino connection status
+        arduino_status = "connected" if self.connected_to_Arduino else "not connected"
+        display_str += f"Arduino {arduino_status} | "
+
+        # Add task breakdown
+        task_breakdown = "\nTask breakdown:\n" + "\t".join(
+            f"{task_name}: {avg_time:.2f} ms" for task_name, avg_time in self.tasks_times_average.items()
+        )
+
+        # Update the label text
+        self.fps_label.config(text=display_str + task_breakdown)
 
     def update_grid(self, new_grid):
         self.grid = new_grid
