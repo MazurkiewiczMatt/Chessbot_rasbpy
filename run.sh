@@ -27,7 +27,6 @@ cd /home/artur/Chessbot_rasbpy/Arduino || { echo "Arduino directory not found"; 
 sudo ./arduino-cli config init --overwrite || { echo "Config initialization failed"; exit 1; }
 sudo ./arduino-cli core update-index || { echo "Core index update failed"; exit 1; }
 sudo ./arduino-cli core install arduino:avr || { echo "Core AVR installation failed"; exit 1; }
-o ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR installation failed"; exit 1; }
 
 # Compile and upload the sketch
 
