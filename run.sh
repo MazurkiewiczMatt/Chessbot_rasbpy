@@ -15,7 +15,7 @@ fi
 # Install the required Python libraries
 if [[ -f "requirements.txt" ]]; then
     echo "Installing dependencies from requirements.txt..."
-    pip uninstall serial
+    pip uninstall serial --break-system-packages
     pip install -r requirements.txt --break-system-packages
 else
     echo "requirements.txt not found. Skipping dependency installation."
@@ -26,12 +26,13 @@ cd /home/artur/Chessbot_rasbpy/Arduino || { echo "Arduino directory not found"; 
 # Configure Arduino CLI
 sudo ./arduino-cli config init --overwrite || { echo "Config initialization failed"; exit 1; }
 sudo ./arduino-cli core update-index || { echo "Core index update failed"; exit 1; }
-sudo ./arduino-cli core install arduino:avr || { echo "Core installation failed"; exit 1; }
+sudo ./arduino-cli core install arduino:avr || { echo "Core AVR installation failed"; exit 1; }
+o ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR installation failed"; exit 1; }
 
 # Compile and upload the sketch
 
 sudo ./arduino-cli compile --fqbn arduino:avr:nano . || { echo "Compilation failed"; exit 1; }
-sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:nano . || { echo "Upload failed"; exit 1; }
+sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4 . || { echo "Upload failed"; exit 1; }
 
 echo "Arduino setup complete."
 
