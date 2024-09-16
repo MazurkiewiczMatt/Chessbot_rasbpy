@@ -26,17 +26,12 @@ while running:
         app.set_task("lattice")
     lattice_reading = lattice_sensor.sense()
     lattice_updated = (lattice_reading != last_lattice_reading)
-    if lattice_updated:
-        serial_handler.display_text("LATTICE UPDATED")
-        print("tasd")
 
     # Get button states
     if DEBUG:
         app.set_task("buttons")
     buttons_reading = button_sensors.sense()
     buttons_updated = buttons_reading != last_buttons_reading
-    if buttons_updated:
-        serial_handler.display_text("BUTTONS UPDATED")
 
 
     # Serial communication with Arduino
