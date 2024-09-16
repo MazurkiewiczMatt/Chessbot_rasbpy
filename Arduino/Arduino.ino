@@ -9,8 +9,8 @@ String lcdMessage = "";  // Variable to store the text after LCD
 void setup() {
   Wire.begin();
   Serial.begin(9600); // Begin serial communication
+  Serial.setTimeout(20);
   Serial.println("Chessbot software initiated");
-  Serial.println("Scanning for I2C devices...");
 
 
   Serial.print("Initializing LCD");
