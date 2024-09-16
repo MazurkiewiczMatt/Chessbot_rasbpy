@@ -27,7 +27,7 @@ class SerialHandler:
 
     def display_text(self, txt):
         if self.ser is not None:
-            self.send_message(f"LCT {txt}")
+            self.send_message(f"LCD {txt}")
             response = self.receive_message()
             return response == "LCD SUCCESS"
         else:
