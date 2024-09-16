@@ -24,3 +24,11 @@ class SerialHandler:
             return response == "PONG"
         else:
             return False
+
+    def display_text(self, txt):
+        if self.ser is not None:
+            self.send_message(f"LCT {txt}")
+            response = self.receive_message()
+            return response == "LCD SUCCESS"
+        else:
+            return False
