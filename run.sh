@@ -29,6 +29,8 @@ sudo ./arduino-cli core update-index || { echo "Core index update failed"; exit 
 sudo ./arduino-cli core install arduino:avr || { echo "Core AVR installation failed"; exit 1; }
 sudo ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR installation failed"; exit 1; }
 
+sudo ./arduino-cli lib install "LiquidCrystal I2C" || { echo "LCD library installation failed"; exit 1; }
+
 # Compile and upload the sketch
 
 sudo ./arduino-cli compile --fqbn arduino:megaavr:nona4809 . || { echo "Compilation failed"; exit 1; }
