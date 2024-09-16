@@ -25,9 +25,10 @@ while running:
     if DEBUG:
         app.set_task("lattice")
     lattice_reading = lattice_sensor.sense()
-    lattice_updated = lattice_reading != last_lattice_reading
+    lattice_updated = (lattice_reading != last_lattice_reading)
     if lattice_updated:
         serial_handler.display_text("LATTICE UPDATED")
+        print("tasd")
 
     # Get button states
     if DEBUG:
@@ -62,5 +63,5 @@ while running:
         app.update()
 
     # Update last reading
-    last_lattice_reading = lattice_reading
-    last_buttons_reading = buttons_reading
+    last_lattice_reading = list(list(column) for column in lattice_reading)
+    last_buttons_reading = list(buttons_reading)

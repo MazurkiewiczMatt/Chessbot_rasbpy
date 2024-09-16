@@ -105,3 +105,4 @@ class InfoWidget:
 
         if self.updated:
             self.draw()
+        self.updated = False
