@@ -2,9 +2,9 @@ from .canvas import Canvas
 from .ui_settings import *
 
 class Grid(Canvas):
-    def __init__(self, middle_frame):
+    def __init__(self, middle_frame, prev_canvas=None):
 
-        super().__init__(GRID_CID, middle_frame)
+        super().__init__(GRID_CID, middle_frame, prev_canvas=prev_canvas)
 
         # Define the size of each cell in the grid
         self.cell_size = 50

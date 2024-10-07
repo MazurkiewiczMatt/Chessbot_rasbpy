@@ -5,7 +5,7 @@ from .ui_settings import *
 
 class InfoWidget:
     def __init__(self, top_frame):
-        self.info_widget = tk.Text(top_frame, height=4, width=80, bg=frame_color, bd=0, highlightthickness=0)
+        self.info_widget = tk.Text(top_frame, height=3, width=80, bg=frame_color, bd=0, highlightthickness=0)
         self.info_widget.pack()
         self.info_widget.tag_configure("green", foreground="green")
         self.info_widget.tag_configure("red", foreground="red")
@@ -22,6 +22,8 @@ class InfoWidget:
         self.current_task_name = None
 
         self.connected_to_Arduino = False
+
+        self.all_task_info = ""
 
     def set_connection(self, connected):
         self.connected_to_Arduino = connected
@@ -64,12 +66,13 @@ class InfoWidget:
         fps_text = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms\n"
         self.info_widget.insert("end", fps_text)
 
-        # Add task breakdown
+        # Subsequent information can be displayed on canvas by Performance widget
         task_info_strings = []
         for task_name, avg_time in self.tasks_times_average.items():
             task_info_strings.append(f"{task_name}: {avg_time:.2f} ms")
-        all_task_info = " | ".join(task_info_strings)
-        self.info_widget.insert("end", all_task_info)
+        self.all_task_info = f"FPS: {self.average_fps:.2f} \n \nFrame Time: {self.average_frame_time_ms:.2f} ms\nBreakdown: \n  "
+        self.all_task_info += " \n  ".join(task_info_strings)
+        # self.info_widget.insert("end", self.all_task_info)
 
         # Apply center alignment to the entire content
         self.info_widget.tag_add("center", "1.0", "end")

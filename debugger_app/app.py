@@ -2,7 +2,9 @@ import tkinter as tk
 
 from .buttons import Buttons
 from .grid import Grid
+from .performance import Performance
 from .info_widget import InfoWidget
+from .menu_widget import MenuWidget
 from .ui_settings import *
 
 
@@ -10,12 +12,13 @@ class DebuggerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("720x576")
+        self.root.geometry("720x620")
         self.root.configure(background='dark slate gray')
 
         self.set_up_frames()
 
         self.info_widget = InfoWidget(self.top_frame)
+        self.menu_frame = MenuWidget(self.menu_frame)
         self.canvas = Grid(self.middle_frame)
         self.buttons = Buttons(self.bottom_frame)
 
@@ -27,6 +30,11 @@ class DebuggerApp:
         self.top_frame = tk.Frame(self.root)
         self.top_frame.config(bg=frame_color)
         self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=padding_y)
+
+        # Menu frame
+        self.menu_frame = tk.Frame(self.root)
+        self.menu_frame.config(bg=bg_color)
+        self.menu_frame.pack(side=tk.TOP, pady=menu_padding_y)
 
         # Main frame to hold the canvas and the side frames
         self.main_frame = tk.Frame(self.root)
@@ -75,6 +83,20 @@ class DebuggerApp:
         self.info_widget.calculate_metrics()
 
     def update(self):
+
+        if self.menu_frame.selected_canvas != self.canvas.canvas_type:
+            if self.menu_frame.selected_canvas == GRID_CID:
+                self.canvas = Grid(self.middle_frame, prev_canvas=self.canvas.canvas)
+            elif self.menu_frame.selected_canvas == PERFORMANCE_CID:
+                self.canvas = Performance(self.middle_frame, prev_canvas=self.canvas.canvas)
+            self.canvas.updated = True
+            self.menu_frame.selected_canvas = self.canvas.canvas_type
+
+        if self.canvas.canvas_type == PERFORMANCE_CID:
+            if self.canvas.all_task_info != self.info_widget.all_task_info:
+                self.canvas.all_task_info = self.info_widget.all_task_info
+                self.canvas.updated = True
+
         self.info_widget.update()
         self.canvas.update()
         self.buttons.update()
