@@ -12,7 +12,7 @@ class DebuggerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("720x620")
+        self.root.geometry("720x600")
         self.root.configure(background='dark slate gray')
 
         self.set_up_frames()
