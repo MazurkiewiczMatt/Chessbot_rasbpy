@@ -1,13 +1,10 @@
-import tkinter as tk
-
+from .canvas import Canvas
 from .ui_settings import *
 
-class Grid:
+class Grid(Canvas):
     def __init__(self, middle_frame):
 
-        # Create a canvas widget for the grid, centered in the middle frame
-        self.canvas = tk.Canvas(middle_frame, width=400, height=400, bg=frame_color)
-        self.canvas.pack(expand=True)
+        super().__init__(GRID_CID, middle_frame)
 
         # Define the size of each cell in the grid
         self.cell_size = 50
@@ -24,8 +21,6 @@ class Grid:
             [0, 1, 0, 1, 0, 1, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0]
         ]
-
-        self.updated = False
 
     def draw(self):
         self.canvas.delete("all")  # Clear the canvas before redrawing
@@ -46,8 +41,3 @@ class Grid:
         self.grid = new_grid
         self.updated = True
 
-    def update(self):
-
-        if self.updated:
-            self.draw()
-        self.updated = False

@@ -16,10 +16,11 @@ class DebuggerApp:
         self.set_up_frames()
 
         self.info_widget = InfoWidget(self.top_frame)
-        self.grid = Grid(self.middle_frame)
+        self.canvas = Grid(self.middle_frame)
         self.buttons = Buttons(self.bottom_frame)
 
         self.draw()
+
 
     def set_up_frames(self):
         # Top Frame for FPS info
@@ -62,19 +63,20 @@ class DebuggerApp:
         self.info_widget.set_task(task_name)
 
     def draw(self):
-        self.grid.draw()
+        self.canvas.draw()
         self.info_widget.draw()
         self.buttons.draw()
 
     def update_grid(self, new_grid):
-        self.grid.update_grid(new_grid)
+        if self.canvas.canvas_type == GRID_CID:
+            self.canvas.update_grid(new_grid)
 
     def calculate_metrics(self):
         self.info_widget.calculate_metrics()
 
     def update(self):
         self.info_widget.update()
-        self.grid.update()
+        self.canvas.update()
         self.buttons.update()
 
         self.root.update_idletasks()
