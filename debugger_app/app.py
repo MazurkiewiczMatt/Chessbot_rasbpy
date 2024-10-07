@@ -1,5 +1,6 @@
 import tkinter as tk
 
+from .arduino_canvas import ArduinoCanvas
 from .buttons import Buttons
 from .grid import Grid
 from .performance import Performance
@@ -79,6 +80,12 @@ class DebuggerApp:
         if self.canvas.canvas_type == GRID_CID:
             self.canvas.update_grid(new_grid)
 
+    def update_ardunio_logs(self, logs):
+        if self.canvas.canvas_type == ARDUINO_CID:
+            if self.canvas.logs != logs:
+                self.canvas.logs = logs
+                self.canvas.updated = True
+
     def calculate_metrics(self):
         self.info_widget.calculate_metrics()
 
@@ -89,6 +96,8 @@ class DebuggerApp:
                 self.canvas = Grid(self.middle_frame, prev_canvas=self.canvas.canvas)
             elif self.menu_frame.selected_canvas == PERFORMANCE_CID:
                 self.canvas = Performance(self.middle_frame, prev_canvas=self.canvas.canvas)
+            elif self.menu_frame.selected_canvas == ARDUINO_CID:
+                self.canvas = ArduinoCanvas(self.middle_frame, prev_canvas=self.canvas.canvas)
             self.canvas.updated = True
             self.menu_frame.selected_canvas = self.canvas.canvas_type
 
