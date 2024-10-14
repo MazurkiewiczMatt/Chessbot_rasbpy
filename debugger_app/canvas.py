@@ -12,6 +12,8 @@ class Canvas:
         else:
             self.canvas = prev_canvas
 
+        self.show_canvas = True
+
     def update(self):
         if self.updated:
             self.draw()
@@ -19,3 +21,10 @@ class Canvas:
 
     def draw(self):
         raise NotImplementedError
+
+    def toggle_view(self):
+        if self.show_canvas:
+            self.canvas.pack_forget()
+        else:
+            self.canvas.pack(expand=True)
+        self.show_canvas = not self.show_canvas

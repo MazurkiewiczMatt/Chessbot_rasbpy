@@ -1,6 +1,7 @@
 from settings import *
 from lattice import LatticeSensor
 from debugger_app import DebuggerApp
+from debugger_app.arduino_canvas import ArduinoCanvas
 from arduino_serial import SerialHandler
 from buttons import ButtonSensors
 
@@ -39,6 +40,11 @@ while running:
         app.set_task("serial")
         app.set_connection(serial_handler.ping())
         app.update_ardunio_logs(serial_handler.logs)
+        if isinstance(app.canvas, ArduinoCanvas):
+            if app.canvas.message_to_be_sent is not None:
+                serial_handler.send_message(app.canvas.message_to_be_sent)
+                app.canvas.message_to_be_sent = None
+                serial_handler.receive_message()
     if buttons_updated:
         # Check for pressed buttons and send messages
         for i, button_reading in enumerate(buttons_reading, start=1):

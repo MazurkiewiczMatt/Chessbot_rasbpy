@@ -92,6 +92,8 @@ class DebuggerApp:
     def update(self):
 
         if self.menu_frame.selected_canvas != self.canvas.canvas_type:
+            if not(self.canvas.show_canvas):
+                self.canvas.toggle_view()
             if self.menu_frame.selected_canvas == GRID_CID:
                 self.canvas = Grid(self.middle_frame, prev_canvas=self.canvas.canvas)
             elif self.menu_frame.selected_canvas == PERFORMANCE_CID:
