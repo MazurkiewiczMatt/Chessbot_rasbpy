@@ -22,16 +22,22 @@ class Grid(Canvas):
             [1, 0, 1, 0, 1, 0, 1, 0]
         ]
 
+        self.grid_colors = {
+            "detected": "green",
+            "black": "gray",
+            "white": "white"
+        }
+
     def draw(self):
         self.canvas.delete("all")  # Clear the canvas before redrawing
         for i in range(8):
             for j in range(8):
-                if self.grid[j][7 - i] == 1:
-                    color = "green"
+                if self.grid[j][7 - i] == 1 and self.grid_colors["detected"] is not None:
+                    color = self.grid_colors["detected"]
                 elif self.bg_grid[j][7 - i] == 1:
-                    color = "gray"
+                    color = self.grid_colors["black"]
                 else:
-                    color = "white"
+                    color = self.grid_colors["white"]
                 self.canvas.create_rectangle(j * self.cell_size, i * self.cell_size,
                                              (j + 1) * self.cell_size, (i + 1) * self.cell_size,
                                              fill=color)
