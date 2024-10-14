@@ -38,6 +38,7 @@ while running:
     if DEBUG:
         app.set_task("serial")
         app.set_connection(serial_handler.ping())
+        app.update_ardunio_logs(serial_handler.logs)
     if buttons_updated:
         # Check for pressed buttons and send messages
         for i, button_reading in enumerate(buttons_reading, start=1):

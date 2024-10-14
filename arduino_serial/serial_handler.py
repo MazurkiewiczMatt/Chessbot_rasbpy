@@ -1,5 +1,9 @@
 import serial
 from datetime import datetime
+import time
+
+from settings import ARDUINO_PING_PERIOD
+
 
 class SerialHandler:
     def __init__(self, port, baudrate, timeout=1.0, dummy=False):
@@ -10,26 +14,29 @@ class SerialHandler:
             self.ser = None
 
         self.logs = ""
+        self.last_ping = time.time()
+        self.last_ping_response = None
 
-    def send_message(self, message, log=True):
+    def send_message(self, message):
         if self.ser is not None:
             self.ser.write(message.encode('utf-8'))
-            if log:
-                self.logs += datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ">>> " + message + "\n"
+            self.logs += datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ">>> " + message + "\n"
 
-    def receive_message(self, log=True):
+    def receive_message(self):
         if self.ser is not None:
             message = self.ser.readline().decode('utf-8').strip()
-            if log:
-                self.logs += "[" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " + message + "\n"
+            self.logs += "[" + datetime.now().strftime("%Y-%m-%d %H:%M:%S") + "] " + message + "\n"
             return message
         return None
 
     def ping(self):
         if self.ser is not None:
-            self.send_message("PING", log=False)
-            response = self.receive_message(log=False)
-            return response == "PONG"
+            current_time = time.time()
+            if (current_time - self.last_ping >= ARDUINO_PING_PERIOD) or self.last_ping_response is None:
+                self.send_message("PING")
+                self.last_ping_response = self.receive_message()
+                self.last_ping = current_time
+            return self.last_ping_response == "PONG"
         else:
             return False
 
