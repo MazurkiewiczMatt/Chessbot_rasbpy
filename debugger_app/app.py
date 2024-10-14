@@ -1,8 +1,12 @@
 import tkinter as tk
 
+from .arduino_canvas import ArduinoCanvas
 from .buttons import Buttons
 from .grid import Grid
+from .performance import Performance
+from .trajectory import Trajectory
 from .info_widget import InfoWidget
+from .menu_widget import MenuWidget
 from .ui_settings import *
 
 
@@ -10,22 +14,29 @@ class DebuggerApp:
     def __init__(self):
         self.root = tk.Tk()
         self.root.title("Debugger")
-        self.root.geometry("720x576")
+        self.root.geometry("720x600")
         self.root.configure(background='dark slate gray')
 
         self.set_up_frames()
 
         self.info_widget = InfoWidget(self.top_frame)
-        self.grid = Grid(self.middle_frame)
+        self.menu_frame = MenuWidget(self.menu_frame)
+        self.canvas = Grid(self.middle_frame)
         self.buttons = Buttons(self.bottom_frame)
 
         self.draw()
+
 
     def set_up_frames(self):
         # Top Frame for FPS info
         self.top_frame = tk.Frame(self.root)
         self.top_frame.config(bg=frame_color)
         self.top_frame.pack(side=tk.TOP, fill=tk.X, pady=padding_y)
+
+        # Menu frame
+        self.menu_frame = tk.Frame(self.root)
+        self.menu_frame.config(bg=bg_color)
+        self.menu_frame.pack(side=tk.TOP, pady=menu_padding_y)
 
         # Main frame to hold the canvas and the side frames
         self.main_frame = tk.Frame(self.root)
@@ -62,19 +73,46 @@ class DebuggerApp:
         self.info_widget.set_task(task_name)
 
     def draw(self):
-        self.grid.draw()
+        self.canvas.draw()
         self.info_widget.draw()
         self.buttons.draw()
 
     def update_grid(self, new_grid):
-        self.grid.update_grid(new_grid)
+        if self.canvas.canvas_type == GRID_CID:
+            self.canvas.update_grid(new_grid)
+
+    def update_ardunio_logs(self, logs):
+        if self.canvas.canvas_type == ARDUINO_CID:
+            if self.canvas.logs != logs:
+                self.canvas.logs = logs
+                self.canvas.updated = True
 
     def calculate_metrics(self):
         self.info_widget.calculate_metrics()
 
     def update(self):
+
+        if self.menu_frame.selected_canvas != self.canvas.canvas_type:
+            if not(self.canvas.show_canvas):
+                self.canvas.toggle_view()
+            if self.menu_frame.selected_canvas == GRID_CID:
+                self.canvas = Grid(self.middle_frame, prev_canvas=self.canvas.canvas)
+            elif self.menu_frame.selected_canvas == PERFORMANCE_CID:
+                self.canvas = Performance(self.middle_frame, prev_canvas=self.canvas.canvas)
+            elif self.menu_frame.selected_canvas == ARDUINO_CID:
+                self.canvas = ArduinoCanvas(self.middle_frame, prev_canvas=self.canvas.canvas)
+            elif self.menu_frame.selected_canvas == TRAJECTORY_CID:
+                self.canvas = Trajectory(self.middle_frame, prev_canvas=self.canvas.canvas)
+            self.canvas.updated = True
+            self.menu_frame.selected_canvas = self.canvas.canvas_type
+
+        if self.canvas.canvas_type == PERFORMANCE_CID:
+            if self.canvas.new_info != self.info_widget.all_task_info:
+                self.canvas.new_info = self.info_widget.all_task_info
+                self.canvas.updated = True
+
         self.info_widget.update()
-        self.grid.update()
+        self.canvas.update()
         self.buttons.update()
 
         self.root.update_idletasks()
