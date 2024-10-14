@@ -107,8 +107,8 @@ class DebuggerApp:
             self.menu_frame.selected_canvas = self.canvas.canvas_type
 
         if self.canvas.canvas_type == PERFORMANCE_CID:
-            if self.canvas.all_task_info != self.info_widget.all_task_info:
-                self.canvas.all_task_info = self.info_widget.all_task_info
+            if self.canvas.new_info != self.info_widget.all_task_info:
+                self.canvas.new_info = self.info_widget.all_task_info
                 self.canvas.updated = True
 
         self.info_widget.update()

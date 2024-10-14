@@ -23,7 +23,11 @@ class InfoWidget:
 
         self.connected_to_Arduino = False
 
-        self.all_task_info = ""
+        self.all_task_info = self.all_task_info = {
+            "task_times_average": {},
+            "average_fps": 0.0,
+            "average_frame_time_ms": 0.0,
+        }
 
     def set_connection(self, connected):
         self.connected_to_Arduino = connected
@@ -66,14 +70,6 @@ class InfoWidget:
         fps_text = f"FPS: {self.average_fps:.2f}, Frame Time: {self.average_frame_time_ms:.2f} ms\n"
         self.info_widget.insert("end", fps_text)
 
-        # Subsequent information can be displayed on canvas by Performance widget
-        task_info_strings = []
-        for task_name, avg_time in self.tasks_times_average.items():
-            task_info_strings.append(f"{task_name}: {avg_time:.2f} ms")
-        self.all_task_info = f"FPS: {self.average_fps:.2f} \n \nFrame Time: {self.average_frame_time_ms:.2f} ms\nBreakdown: \n  "
-        self.all_task_info += " \n  ".join(task_info_strings)
-        # self.info_widget.insert("end", self.all_task_info)
-
         # Apply center alignment to the entire content
         self.info_widget.tag_add("center", "1.0", "end")
         self.info_widget.tag_configure("center", justify="center")
@@ -91,6 +87,12 @@ class InfoWidget:
 
         # Calculate and store average durations for each task
         self.tasks_times_average = {task_name: sum(times) / len(times) for task_name, times in self.task_times.items()}
+
+        self.all_task_info = {
+            "task_times_average": self.tasks_times_average,
+            "average_fps": self.average_fps,
+            "average_frame_time_ms": self.average_frame_time_ms,
+        }
 
         # Reset the counters
         self.task_times = {}
