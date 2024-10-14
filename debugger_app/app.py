@@ -4,6 +4,7 @@ from .arduino_canvas import ArduinoCanvas
 from .buttons import Buttons
 from .grid import Grid
 from .performance import Performance
+from .trajectory import Trajectory
 from .info_widget import InfoWidget
 from .menu_widget import MenuWidget
 from .ui_settings import *
@@ -100,6 +101,8 @@ class DebuggerApp:
                 self.canvas = Performance(self.middle_frame, prev_canvas=self.canvas.canvas)
             elif self.menu_frame.selected_canvas == ARDUINO_CID:
                 self.canvas = ArduinoCanvas(self.middle_frame, prev_canvas=self.canvas.canvas)
+            elif self.menu_frame.selected_canvas == TRAJECTORY_CID:
+                self.canvas = Trajectory(self.middle_frame, prev_canvas=self.canvas.canvas)
             self.canvas.updated = True
             self.menu_frame.selected_canvas = self.canvas.canvas_type
 

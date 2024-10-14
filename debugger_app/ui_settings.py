@@ -8,4 +8,4 @@ large_font_style = ("Helvetica", 16)
 GRID_CID = "Grid"
 PERFORMANCE_CID = "Performance"
 ARDUINO_CID = "Arduino serial"
-LOGS_CID = "Logs"
+TRAJECTORY_CID = "Trajectory"

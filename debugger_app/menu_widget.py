@@ -6,7 +6,7 @@ from .ui_settings import *
 class MenuWidget:
     def __init__(self, bottom_frame):
         self.button_names = {
-            0: GRID_CID, 1: PERFORMANCE_CID, 2: ARDUINO_CID, 3: LOGS_CID,
+            0: GRID_CID, 1: PERFORMANCE_CID, 2: ARDUINO_CID, 3: TRAJECTORY_CID,
         }
 
         self.selected_canvas = GRID_CID
