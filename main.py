@@ -2,6 +2,7 @@ from settings import *
 from lattice import LatticeSensor
 from debugger_app import DebuggerApp
 from debugger_app.arduino_canvas import ArduinoCanvas
+from debugger_app.trajectory import Trajectory
 from arduino_serial import SerialHandler
 from buttons import ButtonSensors
 
@@ -18,7 +19,7 @@ last_buttons_reading = None
 lattice_sensor = LatticeSensor(dummy=DUMMY)
 last_lattice_reading = None
 
-serial_handler.display_text("INITIATED v2")
+serial_handler.display_text("INITIATED v2", "")
 
 while running:
 
@@ -45,6 +46,17 @@ while running:
                 serial_handler.send_message(app.canvas.message_to_be_sent)
                 app.canvas.message_to_be_sent = None
                 serial_handler.receive_message()
+        elif isinstance(app.canvas, Trajectory):
+            if not(app.canvas.square_sent) and app.canvas.selected_square is not None:
+
+                column=app.canvas.selected_square[0]
+                row=app.canvas.selected_square[1]
+                row_cm=row*4.5+2.25
+                column_cm=15.75-column*(4.5)
+                serial_handler.display_text(f"{column},{row}",f"{row_cm},{column_cm}")
+                #serial_handler.send_motor_command(XXX)
+                app.canvas.square_sent = True
+
     if buttons_updated:
         # Check for pressed buttons and send messages
         for i, button_reading in enumerate(buttons_reading, start=1):

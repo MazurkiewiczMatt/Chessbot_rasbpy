@@ -11,6 +11,7 @@ class Trajectory(Grid):
             "white": "DarkOrange1"
         }
         self.selected_square = None  # To store the selected square coordinates
+        self.square_sent = False
 
         # Bind the click event to the canvas
         self.canvas.bind("<Button-1>", self.on_click)
@@ -27,6 +28,7 @@ class Trajectory(Grid):
             self.selected_square = (col, row)
             self.updated = True
             self.draw()  # Redraw the grid with the selected square
+            self.square_sent = False
 
     def draw(self):
         # Call the super class draw method to draw the grid

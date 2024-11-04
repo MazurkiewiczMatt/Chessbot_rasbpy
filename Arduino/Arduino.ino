@@ -55,7 +55,7 @@ void loop() {
       Serial.println("PONG");
 
     // Handle LCD message
-    } else if (message.startsWith("LCD ")) {
+    } else if (message.startsWith("LCD")) {
       lcdMessage = message.substring(4);  // Save the text after "LCD " into lcdMessage
       Serial.print("LCD SUCCESS");
       lcd.clear(); // Clear the LCD
@@ -63,7 +63,7 @@ void loop() {
       lcd.print(lcdMessage); // Print the received data on the LCD
 
     // Handle stepper motor command
-    } else if (message.startsWith("MOVE ")) {
+    } else if (message.startsWith("MOVE")) {
       // Extract the step values from the message
       int steps1[] = { /* populate with appropriate values based on your needs */ };
       int steps2[] = { /* populate with appropriate values based on your needs */ };

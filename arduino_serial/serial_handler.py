@@ -40,10 +40,19 @@ class SerialHandler:
         else:
             return False
 
-    def display_text(self, txt):
+    def display_text(self, txt1,txt2):
         if self.ser is not None:
-            self.send_message(f"LCD {txt}")
+            self.send_message(f"LCD {txt1}, {txt2}")
             response = self.receive_message()
             return response == "LCD SUCCESS"
         else:
             return False
+
+    def send_motor_command(self, steps1, steps2):
+        if self.ser is not None:
+            self.ser.write(f"MOVE, {steps1}, {steps2}")
+            response = self.receive_message()
+            return "MOVE SUCCESS" in response
+        else:
+            return False
+

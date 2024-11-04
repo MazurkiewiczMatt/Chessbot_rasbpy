@@ -70,6 +70,7 @@ def angles_to_steps(positions):
         steps1 = degrees1 / degrees_per_step
         steps2 = degrees2 / degrees_per_step
         degrees_list.append((degrees1, degrees2))
+        steps
         steps_list.append((steps1, steps2))
     return degrees_list, steps_list
 
@@ -86,12 +87,13 @@ if __name__ == "__main__":
             positions = traj(x_start, y_start, x_end, y_end)
             degrees, steps = angles_to_steps(positions)
             steps_shortened = shorten_steps(steps)
+            print("double steps1[] = {", ", ".join(str(round(s[0])) for s in steps_shortened), "};")
+            print("double steps2[] = {", ", ".join(str(round(s[1])) for s in steps_shortened), "};")
+
             print("Degrees for each position:", degrees)
             print("Steps for each position:", steps_shortened)
 
             # Print the shortened steps for Arduino
             print("Send the following into your Arduino code:")
-            print("double steps1[] = {", ", ".join(str(round(s[0])) for s in steps_shortened), "};")
-            print("double steps2[] = {", ", ".join(str(round(s[1])) for s in steps_shortened), "};")
         except ValueError:
             print("Please enter valid float coordinates.")
