@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir /home/spiesznikrysiek/Desktop/SUCCSESS
+
 cd /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy
 
 # Pull the latest changes from the git repository

@@ -19,7 +19,7 @@ last_buttons_reading = None
 lattice_sensor = LatticeSensor(dummy=DUMMY)
 last_lattice_reading = None
 
-serial_handler.display_text("INITIATED v2", "")
+serial_handler.display_text("INITIATED v4", "")
 
 while running:
 

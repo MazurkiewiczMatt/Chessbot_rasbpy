@@ -253,5 +253,5 @@ void loop() {
     }
 
     // Run steppers if not homing
-    displayLCD("AWARIA COS KU-", " RWA NIE DZIALA")
+    displayLCD("AWARIA COS KU-", " RWA NIE DZIALA");
 }
