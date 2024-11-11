@@ -1,6 +1,6 @@
 #!/bin/bash
 
-cd /home/artur/Chessbot_rasbpy
+cd /home/spiesznikrysiek/Chessbot_rasbpy
 
 # Pull the latest changes from the git repository
 git_output=$(git pull)
@@ -21,7 +21,7 @@ else
     echo "requirements.txt not found. Skipping dependency installation."
 fi
 
-cd /home/artur/Chessbot_rasbpy/Arduino || { echo "Arduino directory not found"; exit 1; }
+cd /home/spiesznikrysiek/Chessbot_rasbpy/Arduino || { echo "Arduino directory not found"; exit 1; }
 
 # Configure Arduino CLI
 sudo ./arduino-cli config init --overwrite || { echo "Config initialization failed"; exit 1; }
@@ -42,4 +42,4 @@ sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || {
 echo "Arduino setup complete."
 
 # Launch the Python script
-python3 /home/artur/Chessbot_rasbpy/main.py
+python3 /home/spiesznikrysiek/Chessbot_rasbpy/main.py
