@@ -227,8 +227,8 @@ void loop() {
         String message = Serial.readStringUntil('\n');
         message.trim(); // Remove any leading/trailing whitespace or newline characters
 
-        Serial.print("Received message: ");
-        Serial.println(message);
+        // Serial.print("Received message: ");
+        // Serial.println(message);
 
         // Respond to PING
         if (message.equalsIgnoreCase("PING")) {
@@ -251,7 +251,4 @@ void loop() {
             Serial.println("Unknown command");
         }
     }
-
-    // Run steppers if not homing
-    displayLCD("AWARIA COS KU-", " RWA NIE DZIALA");
 }
