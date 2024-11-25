@@ -211,8 +211,8 @@ void setup() {
     Serial.print("Initializing LCD...");
     lcd.init();
     lcd.backlight(); // Turn on the backlight
-    displayLCD("NOT ", "INITIALIZED");
-    Serial.println(" Initialized LCD successfully");
+    displayLCD("NOT", "INITIALIZED");
+    Serial.println("Initialized LCD successfully");
 
     // Initialize stepper motors
     stepper1.setMaxSpeed(1000); // Set max speed for Stepper1
