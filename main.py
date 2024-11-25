@@ -59,6 +59,7 @@ while running:
         for i, button_reading in enumerate(buttons_reading, start=1):
             if button_reading:
                 serial_handler.send_message(f"B{i}")
+                serial_handler.display_text(f"Button B{i} is ON", "")
 
     # GUI
     if DEBUG:
