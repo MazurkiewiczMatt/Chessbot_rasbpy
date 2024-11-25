@@ -70,7 +70,6 @@ def angles_to_steps(positions):
         steps1 = degrees1 / degrees_per_step
         steps2 = degrees2 / degrees_per_step
         degrees_list.append((degrees1, degrees2))
-        steps
         steps_list.append((steps1, steps2))
     return degrees_list, steps_list
 
