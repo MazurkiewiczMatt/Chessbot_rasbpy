@@ -211,7 +211,7 @@ void setup() {
     Serial.print("Initializing LCD...");
     lcd.init();
     lcd.backlight(); // Turn on the backlight
-    displayLCD("INITIALIZED", "v2");
+    displayLCD("NOT ", "INITIALIZED");
     Serial.println(" Initialized LCD successfully");
 
     // Initialize stepper motors
