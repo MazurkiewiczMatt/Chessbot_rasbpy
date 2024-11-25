@@ -1,0 +1,43 @@
+
+
+
+    lat_deb=1
+    if lat_deb==1:
+        lattice_reading = [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        ]
+    pos1=0
+    x1_index=0
+    x2_index=0
+    y1_index=0
+    y2_index=0
+
+    second_move=0
+    for x in range(8):
+        for y in range(8):
+            if lattice_reading[x][y] == 1:
+                if second_move==0:
+                    x1_index = x
+                    y1_index = y
+                    y1_cm = y * 4.5 + 6.75
+                    x1_cm = 15.75 - x * 4.5
+                    lattice_reading[x][y]=0
+                    second_move=1
+                else:
+                    x2_index = x
+                    y2_index = y
+                    y2_cm = y * 4.5 + 6.75
+                    x2_cm = 15.75 - x * 4.5
+                    lattice_reading[x][y]=0
+
+                    serial_handler.display_text(f"{x1_index},{y1_index}",f"{x2_index},{y2_index}")
+                if second_move==1:
+                    serial_handler.display_text("this is error, this", " shouldnt be here")
+

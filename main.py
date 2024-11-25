@@ -51,9 +51,10 @@ while running:
 
                 column=app.canvas.selected_square[0]
                 row=app.canvas.selected_square[1]
-                row_cm=row*4.5+2.25
-                column_cm=15.75-column*(4.5)
-                serial_handler.display_text(f"{column},{row}",f"{row_cm},{column_cm}")
+
+                y1_cm = column * 4.5 + 6.75
+                x1_cm = 15.75 - row * 4.5
+                serial_handler.display_text(f"Col: {column},{row}",f"Row: {y1_cm},{x1_cm}")
                 #serial_handler.send_motor_command(XXX)
                 app.canvas.square_sent = True
 
