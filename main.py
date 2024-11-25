@@ -52,9 +52,6 @@ while running:
                 column=app.canvas.selected_square[0]
                 row=app.canvas.selected_square[1]
 
-                y1_cm = column * 4.5 + 6.75
-                x1_cm = 15.75 - row * 4.5
-                serial_handler.display_text(f"Col: {column},{row}",f"Row: {y1_cm},{x1_cm}")
                 #serial_handler.send_motor_command(XXX)
                 app.canvas.square_sent = True
 
@@ -80,3 +77,34 @@ while running:
     # Update last reading
     last_lattice_reading = list(list(column) for column in lattice_reading)
     last_buttons_reading = list(buttons_reading)
+    lattice_reading=last_lattice_reading
+
+    error = 0
+    x1_index=0
+    x2_index=0
+    y1_index=0
+    y2_index=0
+
+    second_move=0
+    for x in range(8):
+        for y in range(8):
+            if lattice_reading[x][y] == 1:
+                if second_move==0:
+                    x1_index = x
+                    y1_index = y
+                    y1_cm = y * 4.5 + 6.75
+                    x1_cm = 15.75 - x * 4.5
+                    lattice_reading[x][y]=0
+                    second_move=1
+                if second_move==1:
+                    x2_index = x
+                    y2_index = y
+                    y2_cm = y * 4.5 + 6.75
+                    x2_cm = 15.75 - x * 4.5
+                    lattice_reading[x][y]=0
+                    serial_handler.display_text(f"{x1_index},{y1_index}", f"{x2_index},{y2_index}")
+                    error=1
+                if error==1:
+                    serial_handler.display_text("this is error, this", " shouldnt be here")
+                    #possibly 3 or more are detected at the same time
+
