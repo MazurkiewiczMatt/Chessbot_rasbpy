@@ -55,4 +55,3 @@ class SerialHandler:
             return "MOVE SUCCESS" in response
         else:
             return False
-

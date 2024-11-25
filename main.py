@@ -19,7 +19,7 @@ last_buttons_reading = None
 lattice_sensor = LatticeSensor(dummy=DUMMY)
 last_lattice_reading = None
 
-serial_handler.display_text("INITIATED v2", "")
+serial_handler.display_text("INITIATED?", "huh?")
 
 while running:
 
@@ -59,7 +59,7 @@ while running:
         for i, button_reading in enumerate(buttons_reading, start=1):
             if button_reading:
                 serial_handler.send_message(f"B{i}")
-                serial_handler.display_text(f"Button B{i} is ON", "")
+                serial_handler.display_text(f"Button B{i} ", "is ON")
 
     # GUI
     if DEBUG:
