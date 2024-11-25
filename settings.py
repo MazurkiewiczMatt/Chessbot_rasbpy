@@ -1,4 +1,4 @@
-DEBUG = False
+DEBUG = True
 #Wronng comment text, should be DEBUG=False in comment
 # For testing on another PC
 DUMMY = False  # sets Lattice, and Buttons to dummy
