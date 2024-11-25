@@ -1,4 +1,4 @@
-DEBUG = True
+DEBUG = False
 
 # For testing on another PC
 DUMMY = False  # sets Lattice, and Buttons to dummy
