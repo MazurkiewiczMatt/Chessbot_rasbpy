@@ -1,3 +1,4 @@
+from Trajectory.trajectory import calc_angles, calculate_step_difference
 from settings import *
 from lattice import LatticeSensor
 from debugger_app import DebuggerApp
@@ -97,6 +98,12 @@ while running:
 
         # Display the detected move
         serial_handler.display_text(f"{x1_index},{y1_index}", f"{x2_index},{y2_index}")
+        shoulder1_start, shoulder2_start = calc_angles(x1_cm, y1_cm)
+        shoulder1_end, shoulder2_end = calc_angles(x2_cm, y2_cm)
+
+        steps1, steps2 = calculate_step_difference((shoulder1_start, shoulder2_start), (shoulder1_end, shoulder2_end))
+
+        serial_handler.send_motor_command(steps1=steps1,steps2=steps2)
         error = 0
     elif len(active_squares) > 2:
         # Error: more than two squares detected

@@ -60,39 +60,11 @@ def traj(x_start, y_start, x_end, y_end, steps=100):
         plot_plot(x, y)
     return positions
 
-def angles_to_steps(positions):
-    steps_list = []
-    degrees_list = []
-    for pos in positions:
-        s1, s2 = pos[2], pos[3]
-        degrees1 = math.degrees(s1)
-        degrees2 = math.degrees(s2)
-        steps1 = degrees1 / degrees_per_step
-        steps2 = degrees2 / degrees_per_step
-        degrees_list.append((degrees1, degrees2))
-        steps_list.append((steps1, steps2))
-    return degrees_list, steps_list
+def calculate_step_difference(start_angles, end_angles):
+    shoulder1_start, shoulder2_start = start_angles
+    shoulder1_end, shoulder2_end = end_angles
 
-def shorten_steps(steps_list, factor=2):
-    return steps_list[::factor]
+    steps1 = round((math.degrees(shoulder1_end) - math.degrees(shoulder1_start)) / degrees_per_step)
+    steps2 = round((math.degrees(shoulder2_end) - math.degrees(shoulder2_start)) / degrees_per_step)
 
-if __name__ == "__main__":
-    while True:
-        try:
-            x_start = float(input("Enter x_start: "))
-            y_start = float(input("Enter y_start: "))
-            x_end = float(input("Enter x_end: "))
-            y_end = float(input("Enter y_end: "))
-            positions = traj(x_start, y_start, x_end, y_end)
-            degrees, steps = angles_to_steps(positions)
-            steps_shortened = shorten_steps(steps)
-            print("double steps1[] = {", ", ".join(str(round(s[0])) for s in steps_shortened), "};")
-            print("double steps2[] = {", ", ".join(str(round(s[1])) for s in steps_shortened), "};")
-
-            print("Degrees for each position:", degrees)
-            print("Steps for each position:", steps_shortened)
-
-            # Print the shortened steps for Arduino
-            print("Send the following into your Arduino code:")
-        except ValueError:
-            print("Please enter valid float coordinates.")
+    return steps1, steps2
