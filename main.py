@@ -107,7 +107,7 @@ while running:
         error = 0
     elif len(active_squares) > 2:
         # Error: more than two squares detected
-        serial_handler.display_text("this is error, this", " shouldnt be here")
+        # serial_handler.display_text("this is error, this", " shouldnt be here")
         error = 1
 
     # Reset lattice reading after processing

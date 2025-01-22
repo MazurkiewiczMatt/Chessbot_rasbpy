@@ -211,7 +211,7 @@ void setup() {
     Serial.print("Initializing LCD...");
     lcd.init();
     lcd.backlight(); // Turn on the backlight
-    displayLCD("TEST", "SUCCESSFUL");
+    displayLCD("LETSGO", "SMOKE420");
     Serial.println("Initialized LCD successfully");
 
     // Initialize stepper motors
