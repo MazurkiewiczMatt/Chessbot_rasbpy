@@ -39,7 +39,7 @@ sudo ./arduino-cli lib install "AccelStepperWithDistances" || { echo "AccelStepp
 
 # Compile and upload the sketch
 
-sudo ./arduino-cli compile --fqbn arduino:megaavr:nona4809 . || { echo "Compilation failed"; exit 1; }
+sudo ./arduino-cli compile --fqbn arduino:megaavr:nona4809 Arduino.ino || { echo "Compilation failed"; exit 1; }
 echo "Waiting 20 seconds before attempting to upload the compiled sketch."
 sleep 20
 sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || { echo "Upload failed"; exit 1; }
