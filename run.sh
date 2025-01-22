@@ -5,7 +5,6 @@ cd /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy
 # Pull the latest changes from the git repository
 find .git/objects/ -size 0 -exec rm -f {} \;
 git fetch origin
-git reset --hard origin/main
 git_output=$(git pull)
 git reset --hard origin/main
 
