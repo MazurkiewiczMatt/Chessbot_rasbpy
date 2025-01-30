@@ -127,7 +127,7 @@ void handleMoveCommand(String moveData) {
 }
 
 // Function to perform homing for a stepper
-void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin, String stepperName) {
+void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin,int buttonPin2, String stepperName) {
     // Start moving in initial direction
     displayLCD("Homing " + stepperName, initialDirectionPositive ? "Moving Positive" : "Moving Negative");
     Serial.println("Homing " + stepperName + ": Moving " + (initialDirectionPositive ? "Positive" : "Negative") + " direction.");
@@ -139,7 +139,7 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
     while (stepper.distanceToGo() != 0) {
         stepper.run();
 
-        if (digitalRead(buttonPin) == LOW) { // Button pressed
+        if ((digitalRead(buttonPin) == LOW)|| (digitalRead(buttonPin2) == LOW)) { // Button pressed
             // Debounce
             unsigned long currentTime = millis();
             if (stepperName == "Stepper1") {
@@ -187,10 +187,10 @@ void homeAllSteppers() {
     displayLCD("Homing Initiated", "");
 
     // Homing Stepper1: initial direction positive, button pin7
-    performHoming(stepper1, true, homeButton1Pin, "Stepper1");
+    performHoming(stepper1, true, homeButton2Pin,homeButton1Pin, "Stepper1");
 
     // Homing Stepper2: initial direction negative, button pin8
-    performHoming(stepper2, false, homeButton2Pin, "Stepper2");
+    performHoming(stepper2, false, homeButton2Pin,homeButton1Pin, "Stepper2");
 
     // Homing complete
     displayLCD("Homing Complete", "");
