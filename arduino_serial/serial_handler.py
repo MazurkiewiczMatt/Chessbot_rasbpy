@@ -50,7 +50,7 @@ class SerialHandler:
 
     def send_motor_command(self, steps1, steps2):
         if self.ser is not None:
-            self.ser.write(f"MOVE, {steps1}, {steps2}")
+            self.ser.write((f"MOVE, {steps1}, {steps2}").encode())
             response = self.receive_message()
             return "MOVE SUCCESS" in response
         else:
