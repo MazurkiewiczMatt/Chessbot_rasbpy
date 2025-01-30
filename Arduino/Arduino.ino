@@ -23,6 +23,19 @@ const unsigned long debounceDelay = 50;
 
 // Homing step size
 const int homingSteps = 5000;
+const char* messages[][2] = {
+  {"1234567890123456", "1234567890123456"},
+  {"revving chess", "engine"},
+  {"inferring piece", "locations"},
+  {"plotting", "check mate"},
+  {"rubbing one off", "to clear head"},
+  {"innovating", "strategy"},
+  {"predicting your", "every possible move"},
+  {"praying to", "deepBlue"},
+  {"Effecting", "Oberth"},
+  {"Cleaning", "transfer windows"}
+};
+const int numMessages = sizeof(messages) / sizeof(messages[0]); // Number of messages
 
 // Function to display messages on LCD
 void displayLCD(String line1, String line2) {
@@ -196,6 +209,34 @@ void homeAllSteppers() {
     displayLCD("Homing Complete", "");
     Serial.println("Homing sequence completed.");
 }
+void waitingDisplay() {
+  unsigned long startTime = millis(); // Record the start time
+  unsigned long elapsedTime = 0;
+  int countdown = 90; // Start countdown from 90 seconds
+  int messageIndex = 0; // Index for the current message
+
+  while (countdown > 0) {
+    elapsedTime = (millis() - startTime) / 1000; // Calculate elapsed time in seconds
+
+    // Display the current message for 5 seconds
+    if (elapsedTime % 6 < 5) { // 5 seconds for the message
+      displayLCD(messages[messageIndex][0], messages[messageIndex][1]);
+    } else { // 1 second for the countdown timer
+      displayLCD("Time Left:", String(countdown).c_str());
+      countdown--; // Update the countdown
+    }
+
+    // Switch to the next message after 5 seconds
+    if (elapsedTime % 6 == 5) {
+      messageIndex = (messageIndex + 1) % numMessages; // Cycle through messages
+    }
+
+    delay(1000); // Wait for 1 second before updating the display
+  }
+
+  // After 90 seconds, display the error message
+  displayLCD("Error:", "Raspberry Not Connected");
+}
 
 void setup() {
     // Initialize button pins with internal pull-up resistors
@@ -221,7 +262,9 @@ void setup() {
     stepper2.setAcceleration(500); // Set max acceleration for Stepper2
 }
 
+
 void loop() {
+    waitingDisplay()
     // Handle serial commands
     if (Serial.available() > 0) {
         String message = Serial.readStringUntil('\n');
