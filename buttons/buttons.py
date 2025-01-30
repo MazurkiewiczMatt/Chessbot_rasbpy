@@ -1,7 +1,7 @@
 class ButtonSensors:
     def __init__(self, dummy=False):
         self.dummy = dummy
-        self.pins = [14, 15, 18, 23, 24, 25]
+        self.pins = [14, 15, 18, 23, 24, 25, 7, 8]
         pull_down_pins = []
         if dummy:
             self.buttons = [False for pin in self.pins]
