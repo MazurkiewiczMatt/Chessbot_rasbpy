@@ -52,10 +52,12 @@ while running:
     if lattice_updated:
         chessboard.update_from_sensor(lattice_reading)
         chessboard_state_correct = chessboard.is_state_correct()
-        if chessboard_state_correct:
+        if not(chessboard.game_started):
+            serial_handler.display_text("GAME NOT", "STARTED")
+        elif chessboard_state_correct:
             serial_handler.display_text("GOOD TO GO", ":)")
         else:
-            serial_handler.display_text("THATS", "ILLEGAL")
+            serial_handler.display_text("MAKE A", "MOVE")
     if buttons_updated:
         # Check for pressed buttons and send messages
         if buttons_reading[0]:
