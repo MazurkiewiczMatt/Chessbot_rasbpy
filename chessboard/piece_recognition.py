@@ -5,24 +5,34 @@ class Chessboard:
     def __init__(self):
         self.board = chess.Board()
         self.lattice_reading = None
-        self.correct_state = False
+        self.game_started = False
         self.expected_matrix = self._board_to_matrix(self.board)
 
     def update_from_sensor(self, lattice_reading):
         """Update the internal state with sensor reading and validate position"""
         self.lattice_reading = lattice_reading
 
-        if not self.correct_state:
+        if not self.game_started:
             # Check if initial setup matches
-            self.correct_state = (self.lattice_reading == self.expected_matrix)
+            self.game_started = (self.lattice_reading == self.expected_matrix)
 
     def is_state_correct(self):
         """Return the validation state of the board"""
-        return self.correct_state
+        # Generate all possible next positions
+        legal_moves = list(self.board.legal_moves)
+        for move in legal_moves:
+            temp_board = self.board.copy()
+            temp_board.push(move)
+
+            if self._board_to_matrix(temp_board) == self.lattice_reading:
+                return True
+
+        return False
+
 
     def push_move(self):
         """Attempt to update board state based on sensor reading and legal moves"""
-        if not self.correct_state or self.lattice_reading is None:
+        if not self.game_started or self.lattice_reading is None:
             return False
 
         # Generate all possible next positions
