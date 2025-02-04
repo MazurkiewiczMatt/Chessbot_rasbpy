@@ -1,4 +1,3 @@
-from Trajectory.trajectory import calc_angles, calculate_step_difference
 from settings import *
 from lattice import LatticeSensor
 from debugger_app import DebuggerApp
@@ -6,6 +5,9 @@ from debugger_app.arduino_canvas import ArduinoCanvas
 from debugger_app.trajectory import Trajectory
 from arduino_serial import SerialHandler
 from buttons import ButtonSensors
+from chessboard import Chessboard
+from gameplay import Gameplay
+from robot_arms import RobotArmHandler
 
 running = True
 
@@ -14,11 +16,19 @@ print("The ChessBot's Raspberry Pi software has been launched!")
 if DEBUG:
     app = DebuggerApp()
 
+# Hardware modules
 serial_handler = SerialHandler('/dev/ttyACM0', 9600, dummy=ARDUINO_DUMMY)
 button_sensors = ButtonSensors(dummy=DUMMY)
 last_buttons_reading = None
 lattice_sensor = LatticeSensor(dummy=DUMMY)
 last_lattice_reading = None
+
+# Software modules
+chessboard = Chessboard()
+chessboard_state_correct = None
+gameplay = Gameplay()
+robot_arm = RobotArmHandler()
+
 
 #serial_handler.display_text("INITIATED", "NOTHING")
 
@@ -35,6 +45,36 @@ while running:
         app.set_task("buttons")
     buttons_reading = button_sensors.sense()
     buttons_updated = buttons_reading != last_buttons_reading
+
+    # Gameplay
+    if DEBUG:
+        app.set_task("chessboard")
+    if lattice_updated:
+        chessboard.update_from_sensor(lattice_reading)
+        chessboard_state_correct = chessboard.is_state_correct()
+        if chessboard_state_correct:
+            serial_handler.display_text("GOOD TO GO", ":)")
+        else:
+            serial_handler.display_text("THATS", "ILLEGAL")
+    if buttons_updated:
+        # Check for pressed buttons and send messages
+        if buttons_reading[0]:
+            chessboard.push_move()
+
+    # Gameplay
+    if DEBUG:
+        app.set_task("gameplay")
+    # here call gameplay, with any if statement, any method any parameters
+    gameplay.update(None)
+    action = gameplay.get_action()
+    if action is not None:
+        robot_arm.scheduled_movements(action)
+
+    if DEBUG:
+        app.set_task("robot_arm")
+    # here call robot_arm, with any if statement, any method any parameters
+    arduino_robot_arm_instruction = robot_arm.update()
+
 
     # Serial communication with Arduino
     if DEBUG:
@@ -54,6 +94,9 @@ while running:
 
                 # serial_handler.send_motor_command(XXX)
                 app.canvas.square_sent = True
+    # If movement scheduled and can move, call motors here
+    if arduino_robot_arm_instruction != "":
+        serial_handler.send_message(arduino_robot_arm_instruction)
 
     if buttons_updated:
         # Check for pressed buttons and send messages
@@ -78,37 +121,6 @@ while running:
     # Update last reading
     last_lattice_reading = [list(column) for column in lattice_reading]
     last_buttons_reading = list(buttons_reading)
-
-    # Detect two active squares in lattice_reading
-    active_squares = []
-    for x in range(8):
-        for y in range(8):
-            if lattice_reading[x][y] == 1:
-                active_squares.append((x, y))
-
-    if len(active_squares) == 2:
-        # Extract coordinates for the two detected squares
-        (x1_index, y1_index), (x2_index, y2_index) = active_squares
-
-        # Convert to centimeters
-        y1_cm = y1_index * 4.5 + 6.75
-        x1_cm = 15.75 - x1_index * 4.5
-        y2_cm = y2_index * 4.5 + 6.75
-        x2_cm = 15.75 - x2_index * 4.5
-
-        # Display the detected move
-        serial_handler.display_text(f"{x1_index},{y1_index}", f"{x2_index},{y2_index}")
-        shoulder1_start, shoulder2_start = calc_angles(x1_cm, y1_cm)
-        shoulder1_end, shoulder2_end = calc_angles(x2_cm, y2_cm)
-
-        steps1, steps2 = calculate_step_difference((shoulder1_start, shoulder2_start), (shoulder1_end, shoulder2_end))
-
-        serial_handler.send_motor_command(steps1=steps1,steps2=steps2)
-        error = 0
-    elif len(active_squares) > 2:
-        # Error: more than two squares detected
-        # serial_handler.display_text("this is error, this", " shouldnt be here")
-        error = 1
 
     # Reset lattice reading after processing
     lattice_sensor.sense()

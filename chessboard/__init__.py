@@ -1,0 +1,1 @@
+from .piece_recognition import Chessboard
