@@ -11,6 +11,7 @@ AccelStepper stepper2(motorInterfaceType, 5, 4); // Stepper2 (Step, Dir)
 
 // Initialize the LCD with the I2C address (usually 0x27 or 0x3F)
 LiquidCrystal_I2C_Hangul lcd(0x27, 16, 2); // Address 0x27, 16 columns, 2 rows
+bool ConnectedBollean=0;
 
 // Define homing button pins
 const int homeButton1Pin = 7; // Button for Stepper1 Homing
@@ -242,7 +243,6 @@ void setup() {
     // Initialize button pins with internal pull-up resistors
     pinMode(homeButton1Pin, INPUT_PULLUP);
     pinMode(homeButton2Pin, INPUT_PULLUP);
-
     Wire.begin();
     Serial.begin(9600); // Begin serial communication
     Serial.setTimeout(100); // Increased timeout for better message reception
@@ -264,9 +264,10 @@ void setup() {
 
 
 void loop() {
-    waitingDisplay();
+    if (ConnectedBollean==0){waitingDisplay();}
     // Handle serial commands
     if (Serial.available() > 0) {
+        ConnectedBollean=1;
         String message = Serial.readStringUntil('\n');
         message.trim(); // Remove any leading/trailing whitespace or newline characters
 
