@@ -1,53 +1,68 @@
 import chess
+from chess import Board, Move
+from copy import deepcopy
 
 
-class Chessboard:
+class ChessGameSimulator:
     def __init__(self):
-        self.board = chess.Board()
-        self.lattice_reading = None
+        self.board = Board()
+        self.holm = [self._board_to_matrix(self.board)]
+        self.hotm = [self.holm[-1]]
         self.game_started = False
-        self.expected_matrix = self._board_to_matrix(self.board)
+        self.promotion_pending = False
+        self.promotion_move = None
+        self.promotion_choice = None
 
     def update_from_sensor(self, lattice_reading):
-        """Update the internal state with sensor reading and validate position"""
-        self.lattice_reading = lattice_reading
+        """Update with new sensor reading and maintain HOTM history"""
+        self.hotm.append(deepcopy(lattice_reading))
 
+        # Check if game has started (initial position match)
         if not self.game_started:
-            # Check if initial setup matches
-            self.game_started = (self.lattice_reading == self.expected_matrix)
+            self.game_started = (lattice_reading == self.holm[0])
 
     def is_state_correct(self):
-        """Return the validation state of the board"""
-        # Generate all possible next positions
-        legal_moves = list(self.board.legal_moves)
-        for move in legal_moves:
-            temp_board = self.board.copy()
-            temp_board.push(move)
-
-            if self._board_to_matrix(temp_board) == self.lattice_reading:
-                return True
-
-        return False
-
-
-    def push_move(self):
-        """Attempt to update board state based on sensor reading and legal moves"""
-        if not self.game_started or self.lattice_reading is None:
+        """Check if current HOTM state matches any legal move"""
+        try:
+            source, dest = detect_move(self.holm[-1], self.hotm)
+            return source is not None and dest is not None
+        except:
             return False
 
-        # Generate all possible next positions
-        legal_moves = list(self.board.legal_moves)
-        for move in legal_moves:
-            temp_board = self.board.copy()
-            temp_board.push(move)
+    def push_move(self):
+        """Updated to handle promotions"""
+        if not self.game_started or len(self.hotm) < 2:
+            return False
 
-            if self._board_to_matrix(temp_board) == self.lattice_reading:
-                self.board.push(move)
-                self.expected_matrix = self.lattice_reading
-                return True
+        legal_move = find_legal_move(self.board, self.hotm[-1])
+        if legal_move:
+            # Check if promotion is needed
+            if legal_move.promotion:
+                self.promotion_pending = True
+                self.promotion_move = legal_move
+                return "promotion_needed"
 
+            self.board.push(legal_move)
+            self._update_state()
+            return True
         return False
 
+    def finalize_promotion(self, choice):
+        """Call this when promotion choice is selected"""
+        if not self.promotion_pending:
+            return False
+
+        promoted_move = Move(self.promotion_move.from_square,
+                             self.promotion_move.to_square,
+                             promotion=choice)
+        self.board.push(promoted_move)
+        self._update_state()
+        self.promotion_pending = False
+        return True
+
+    def _update_state(self):
+        self.holm.append(deepcopy(self.hotm[-1]))
+        self.hotm = [deepcopy(self.holm[-1])]
     def _board_to_matrix(self, board):
         """Convert chess.Board to binary matrix representation"""
         matrix = []
@@ -60,5 +75,40 @@ class Chessboard:
         return matrix
 
     def get_current_board(self):
-        """Return the internal python-chess board object"""
         return self.board
+
+
+def detect_move(legal_board, hotm_list):
+    final_board = hotm_list[-1]
+    source = None
+    dest = None
+
+    for r in range(8):
+        for c in range(8):
+            if legal_board[r][c] != final_board[r][c]:
+                if legal_board[r][c] == 1 and final_board[r][c] == 0:
+                    source = (r, c)
+                elif legal_board[r][c] == 0 and final_board[r][c] == 1:
+                    dest = (r, c)
+
+    if dest is None:  # Handle captures
+        for board in hotm_list[1:]:
+            for r in range(8):
+                for c in range(8):
+                    if legal_board[r][c] == 1 and board[r][c] == 0 and final_board[r][c] == 1:
+                        dest = (r, c)
+                        break
+                if dest: break
+            if dest: break
+
+    return source, dest
+
+
+def find_legal_move(chess_board, final_board):
+    for move in chess_board.legal_moves:
+        board_copy = chess_board.copy()
+        board_copy.push(move)
+        simulated_board = ChessGameSimulator()._board_to_matrix(board_copy)
+        if simulated_board == final_board:
+            return move
+    return None

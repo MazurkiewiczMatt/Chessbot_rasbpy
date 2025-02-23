@@ -1,1 +1,1 @@
-from .piece_recognition import Chessboard
+from .piece_recognition import ChessGameSimulator

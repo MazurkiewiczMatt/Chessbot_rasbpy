@@ -5,10 +5,12 @@ from debugger_app.arduino_canvas import ArduinoCanvas
 from debugger_app.trajectory import Trajectory
 from arduino_serial import SerialHandler
 from buttons import ButtonSensors
-from chessboard import Chessboard
+from chessboard import ChessGameSimulator
 from gameplay import Gameplay
 from robot_arms import RobotArmHandler
-
+# Add this import at the top with other imports
+import chess
+from chess import QUEEN, ROOK, BISHOP, KNIGHT
 running = True
 
 print("The ChessBot's Raspberry Pi software has been launched!")
@@ -24,14 +26,18 @@ lattice_sensor = LatticeSensor(dummy=DUMMY)
 last_lattice_reading = None
 
 # Software modules
-chessboard = Chessboard()
 chessboard_state_correct = None
 gameplay = Gameplay()
 robot_arm = RobotArmHandler()
-
+chess_game = ChessGameSimulator()
 
 #serial_handler.display_text("INITIATED", "NOTHING")
-
+PROMOTION_MAP = {
+    4: chess.QUEEN,  # UI 1
+    5: chess.ROOK,  # UI 2
+    6: chess.BISHOP,  # UI 3
+    7: chess.KNIGHT  # UI 4
+}
 while running:
 
     # Process lattice
@@ -50,20 +56,53 @@ while running:
     if DEBUG:
         app.set_task("chessboard")
     if lattice_updated:
-        chessboard.update_from_sensor(lattice_reading)
-        chessboard_state_correct = chessboard.is_state_correct()
-        if not(chessboard.game_started):
+        chess_game.update_from_sensor(lattice_reading)
+        chessboard_state_correct = chess_game.is_state_correct()
+
+        # Update Arduino display
+        if not chess_game.game_started:
             serial_handler.display_text("GAME NOT", "STARTED")
         elif chessboard_state_correct:
             serial_handler.display_text("GOOD TO GO", ":)")
         else:
             serial_handler.display_text("MAKE A", "MOVE")
+
+
     if buttons_updated:
+        for i, pressed in enumerate(buttons_reading):
+            if pressed and i in PROMOTION_MAP:
+                chess_game.promotion_choice = PROMOTION_MAP[i]
+
         # Check for pressed buttons and send messages
         if buttons_reading[0]:
-            chessboard.push_move()
-
-    # Gameplay
+            if chess_game.promotion_pending:
+                if chess_game.promotion_choice:
+                    success = chess_game.finalize_promotion(chess_game.promotion_choice)
+                    if success:
+                        piece_name = {
+                            QUEEN: "QUEEN",
+                            ROOK: "ROOK",
+                            BISHOP: "BISHOP",
+                            KNIGHT: "KNIGHT"
+                        }[chess_game.promotion_choice]
+                        serial_handler.display_text("PROMOTED TO", piece_name)
+                        move = chess_game.board.peek().uci()
+                        serial_handler.display_text("MOVE MADE", move, delay=2000)
+                    else:
+                        serial_handler.display_text("INVALID", "PROMOTION")
+                    chess_game.promotion_choice = None
+                else:
+                    serial_handler.display_text("SELECT", "PROMOTION!")
+                    serial_handler.display_text("USE UI", "BUTTONS 1-4")
+            else:
+                result = chess_game.push_move()
+                if result == "promotion_needed":
+                    serial_handler.display_text("CHOOSE", "PROMOTION")
+                elif result:
+                    serial_handler.display_text("MOVE MADE",
+                                                f"{chess_game.board.peek().uci()}")
+                else:
+                    serial_handler.display_text("INVALID", "MOVE")    # Gameplay
     if DEBUG:
         app.set_task("gameplay")
     # here call gameplay, with any if statement, any method any parameters
