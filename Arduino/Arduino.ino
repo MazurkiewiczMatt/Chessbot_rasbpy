@@ -211,32 +211,35 @@ void homeAllSteppers() {
     Serial.println("Homing sequence completed.");
 }
 void waitingDisplay() {
-  unsigned long startTime = millis(); // Record the start time
-  unsigned long elapsedTime = 0;
-  int countdown = 90; // Start countdown from 90 seconds
-  int messageIndex = 0; // Index for the current message
+  static unsigned long startTime = millis();
+  static unsigned long lastMessageTime = 0;
+  static int messageIndex = random(numMessages);
+  const unsigned long timeout = 90000; // 90 seconds timeout
 
-  while (countdown > 0) {
-    elapsedTime = (millis() - startTime) / 1000; // Calculate elapsed time in seconds
-
-    // Display the current message for 5 seconds
-    if (elapsedTime % 6 < 5) { // 5 seconds for the message
-      displayLCD(messages[messageIndex][0], messages[messageIndex][1]);
-    } else { // 1 second for the countdown timer
-      displayLCD("Time Left:", String(countdown).c_str());
-      countdown--; // Update the countdown
-    }
-
-    // Switch to the next message after 5 seconds
-    if (elapsedTime % 6 == 5) {
-      messageIndex = (messageIndex + 1) % numMessages; // Cycle through messages
-    }
-
-    delay(1000); // Wait for 1 second before updating the display
+  if (millis() - startTime >= timeout) {
+    displayLCD("Error:", "Raspberry Not Connected");
+    startTime = millis(); // Reset timer
+    return;
   }
 
-  // After 90 seconds, display the error message
-  displayLCD("Error:", "Raspberry Not Connected");
+  if (millis() - lastMessageTime >= 5000) {
+    // Display new random message every 5 seconds
+    messageIndex = random(numMessages);
+    displayLCD(messages[messageIndex][0], messages[messageIndex][1]);
+    lastMessageTime = millis();
+  }
+
+  // Briefly yield to allow serial processing
+  if (Serial.available() > 0) {
+    // Process any incoming data
+    String message = Serial.readStringUntil('\n');
+    message.trim();
+    if (message.length() > 0) {
+      ConnectedBollean = 1;
+      displayLCD("Connection", "Established!");
+      delay(2000);
+    }
+  }
 }
 
 void setup() {
@@ -264,10 +267,11 @@ void setup() {
 
 
 void loop() {
-    if (ConnectedBollean==0){waitingDisplay();}
-    // Handle serial commands
+  if (ConnectedBollean == 0) {
+    waitingDisplay();
+  }
+  else {
     if (Serial.available() > 0) {
-        ConnectedBollean=1;
         String message = Serial.readStringUntil('\n');
         message.trim(); // Remove any leading/trailing whitespace or newline characters
 
@@ -295,4 +299,5 @@ void loop() {
             Serial.println("Unknown command");
         }
     }
+}
 }
