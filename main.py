@@ -71,8 +71,9 @@ while running:
     if buttons_updated:
         for i, pressed in enumerate(buttons_reading):
             if pressed and i in PROMOTION_MAP:
-                chess_game.promotion_choice = PROMOTION_MAP[i]
 
+                chess_game.promotion_choice = PROMOTION_MAP[i]
+                serial_handler.display_text("This is:",PROMOTION_MAP[i])
         # Check for pressed buttons and send messages
         if buttons_reading[0]:
             if chess_game.promotion_pending:

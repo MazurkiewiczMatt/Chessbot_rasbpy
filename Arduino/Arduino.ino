@@ -34,7 +34,46 @@ const char* messages[][2] = {
   {"predicting your", "every possible move"},
   {"praying to", "deepBlue"},
   {"Effecting", "Oberth"},
-  {"Cleaning", "transfer windows"}
+  {"Cleaning", "transfer windows"},
+  {"Electro-", "liminescing"},
+  {"Defending", "king"},
+  {"Multiplexing", "read switches"},
+  {"Boxing", "gears"},
+  {"Venting", "heat"},
+  {"Consulting", "Stockfish"},
+  {"Electrifying", "fields"},
+  {"Recursive", "selfplay"},
+  {"Optimizing", "Estimator"},
+  {"Machine", "Learning"},
+  {"Beating Korean", "Grandmaster"},
+  {"Sparring", "Kasparov"},
+  {"Arguing with", "Fide"},
+  {"Qualifying", "to candidates"},
+  {"Forgetting", "Board layout"},
+  {"Watching", "Chess gambit"},
+  {"Confusing", "pawn captures"},
+  {"Randomly", "promoting"},
+  {"Adjusting", "Neurons"},
+  {"Studying Bong", "Cloud opening"},
+  {"Hating", "London"},
+  {"Waiting for", "Another input"},
+  {"take take take", "take and take"},
+  {"Capturing", "Juicers"},
+  {"Forking", "knights"},
+  {"sacrificing the", "ROOK"},
+  {"Another", "interesting text"},
+  {"Something with", "times new Roman"},
+  {"Destroying", "hotel room"},
+  {"Communication", "with yogurt"},
+  {"Glasses to", "throw opponent off"},
+  {"<><><><>", "><><><><"},
+  {"Failing", "Compiling (JOKE)"},
+  {"Almost last", "message"},
+  {"01100010", "10011100"},
+  {"Defending", "outcome"}
+
+
+
 };
 const int numMessages = sizeof(messages) / sizeof(messages[0]); // Number of messages
 
