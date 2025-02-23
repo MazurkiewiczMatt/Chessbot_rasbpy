@@ -264,7 +264,7 @@ void setup() {
 
 
 void loop() {
-    waitingDisplay()
+    waitingDisplay();
     // Handle serial commands
     if (Serial.available() > 0) {
         String message = Serial.readStringUntil('\n');
