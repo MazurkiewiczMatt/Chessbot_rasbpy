@@ -1,7 +1,6 @@
 #!/bin/bash
 
 LOGFILE="log.txt"
-REPO_DIR="log-repo"  # Directory for the repository
 
 # Ensure log file exists
 touch "$LOGFILE"
@@ -16,23 +15,9 @@ chmod +x run2.sh
     echo "=== Finished run2.sh at $(date) ==="
 } >> "$LOGFILE" 2>&1
 
-# Install GitHub CLI and git
-sudo apt update && sudo apt install gh git -y
-
-# Authenticate with GitHub (replace token)
-
-# Clone or initialize the repository
-if [ -d "$REPO_DIR" ]; then
-    cd "$REPO_DIR"
-    git pull
-else
-    gh repo create "log-repo" --public --confirm
-    git clone "https://github.com/yourusername/log-repo.git" "$REPO_DIR"
-    cd "$REPO_DIR"
-fi
 
 # Copy log file into the repository
-cp "../$LOGFILE" .
+#cp "../$LOGFILE" .
 
 # Commit and push
 git add "$LOGFILE"
