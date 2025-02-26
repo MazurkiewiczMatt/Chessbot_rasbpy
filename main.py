@@ -32,12 +32,59 @@ robot_arm = RobotArmHandler()
 chess_game = ChessGameSimulator()
 
 #serial_handler.display_text("INITIATED", "NOTHING")
+
 PROMOTION_MAP = {
-    4: chess.QUEEN,  # UI 1
-    5: chess.ROOK,  # UI 2
-    6: chess.BISHOP,  # UI 3
-    7: chess.KNIGHT  # UI 4
+    3: chess.QUEEN,   # UI Button 3 - Queen
+    2: chess.ROOK,    # UI Button 2 - Rook
+    5: chess.BISHOP,  # UI Button 5 - Bishop
+    4: chess.KNIGHT   # UI Button 4 - Knight
 }
+
+PROMOTION_NAMES = {
+    chess.QUEEN: "QUEEN",
+    chess.ROOK: "ROOK",
+    chess.BISHOP: "BISHOP",
+    chess.KNIGHT: "KNIGHT"
+}
+
+def handle_promotion_selection(buttons_reading):
+    """Process promotion button selections and update display"""
+    for btn_idx, pressed in enumerate(buttons_reading):
+        if pressed and btn_idx in PROMOTION_MAP:
+            choice = PROMOTION_MAP[btn_idx]
+            chess_game.promotion_choice = choice
+            piece_name = PROMOTION_NAMES.get(choice, "UNKNOWN")
+            serial_handler.display_text("SELECTED", piece_name)
+            return True
+    return False
+
+def handle_main_action_button(chess_game):
+    """Process the main action button (Button 0)"""
+    if chess_game.promotion_pending:
+        if chess_game.promotion_choice:
+            success = chess_game.finalize_promotion(chess_game.promotion_choice)
+            if success:
+                piece_name = PROMOTION_NAMES.get(chess_game.promotion_choice, "UNKNOWN")
+                serial_handler.display_text("PROMOTED TO", piece_name)
+                move = chess_game.board.peek().uci()
+                serial_handler.display_text("MOVE MADE", move, delay=2000)
+            else:
+                serial_handler.display_text("INVALID", "PROMOTION")
+            chess_game.promotion_choice = None
+        else:
+            serial_handler.display_text("SELECT", "PROMOTION!")
+            serial_handler.display_text("USE UI", "BUTTONs 2-5")
+    else:
+        result = chess_game.push_move()
+        if result == "promotion_needed":
+            serial_handler.display_text("CHOOSE", "PROMOTION")
+            serial_handler.display_text("USE BUTTONS", "2-5")
+        elif result:
+            serial_handler.display_text("MOVE MADE", f"{chess_game.board.peek().uci()}")
+        else:
+            serial_handler.display_text("INVALID", "MOVE")
+
+
 while running:
 
     # Process lattice
@@ -67,43 +114,18 @@ while running:
         else:
             serial_handler.display_text("MAKE A", "MOVE")
 
-
     if buttons_updated:
-        for i, pressed in enumerate(buttons_reading):
-            if pressed and i in PROMOTION_MAP:
+        # Process promotion buttons first
+        promotion_selected = handle_promotion_selection(buttons_reading)
 
-                chess_game.promotion_choice = PROMOTION_MAP[i]
-                serial_handler.display_text("This is:",PROMOTION_MAP[i])
-        # Check for pressed buttons and send messages
+        # Process main action button (Button 0)
         if buttons_reading[0]:
-            if chess_game.promotion_pending:
-                if chess_game.promotion_choice:
-                    success = chess_game.finalize_promotion(chess_game.promotion_choice)
-                    if success:
-                        piece_name = {
-                            QUEEN: "QUEEN",
-                            ROOK: "ROOK",
-                            BISHOP: "BISHOP",
-                            KNIGHT: "KNIGHT"
-                        }[chess_game.promotion_choice]
-                        serial_handler.display_text("PROMOTED TO", piece_name)
-                        move = chess_game.board.peek().uci()
-                        serial_handler.display_text("MOVE MADE", move, delay=2000)
-                    else:
-                        serial_handler.display_text("INVALID", "PROMOTION")
-                    chess_game.promotion_choice = None
-                else:
-                    serial_handler.display_text("SELECT", "PROMOTION!")
-                    serial_handler.display_text("USE UI", "BUTTONS 1-4")
-            else:
-                result = chess_game.push_move()
-                if result == "promotion_needed":
-                    serial_handler.display_text("CHOOSE", "PROMOTION")
-                elif result:
-                    serial_handler.display_text("MOVE MADE",
-                                                f"{chess_game.board.peek().uci()}")
-                else:
-                    serial_handler.display_text("INVALID", "MOVE")    # Gameplay
+            handle_main_action_button(chess_game)
+
+        # Log other button presses
+        for i, pressed in enumerate(buttons_reading):
+            if pressed and i not in PROMOTION_MAP and i != 0:
+                serial_handler.display_text(f"Button B{i}", "PRESSED")
     if DEBUG:
         app.set_task("gameplay")
     # here call gameplay, with any if statement, any method any parameters
@@ -139,13 +161,6 @@ while running:
     # If movement scheduled and can move, call motors here
     if arduino_robot_arm_instruction != "":
         serial_handler.send_message(arduino_robot_arm_instruction)
-
-    if buttons_updated:
-        # Check for pressed buttons and send messages
-        for i, button_reading in enumerate(buttons_reading, start=1):
-            if button_reading:
-                serial_handler.send_message(f"B{i}")
-                serial_handler.display_text(f"Button B{i} ", "is ON")
 
     # GUI
     if DEBUG:

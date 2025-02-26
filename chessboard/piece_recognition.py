@@ -24,7 +24,7 @@ class ChessGameSimulator:
     def is_state_correct(self):
         """Check if current HOTM state matches any legal move"""
         try:
-            source, dest = detect_move(self.holm[-1], self.hotm)
+            source, dest, _ = detect_move(self.holm[-1], self.hotm)
             return source is not None and dest is not None
         except:
             return False
@@ -34,18 +34,20 @@ class ChessGameSimulator:
         if not self.game_started or len(self.hotm) < 2:
             return False
 
-        legal_move = find_legal_move(self.board, self.hotm[-1])
+        # Detect move details including captured square
+        source, dest, captured_square = detect_move(self.holm[-1], self.hotm)
+        legal_move = find_legal_move(self.board, self.hotm[-1], captured_square)
+
         if legal_move:
-            # Check if promotion is needed
             if legal_move.promotion:
                 self.promotion_pending = True
                 self.promotion_move = legal_move
                 return "promotion_needed"
-
             self.board.push(legal_move)
             self._update_state()
             return True
         return False
+
 
     def finalize_promotion(self, choice):
         """Call this when promotion choice is selected"""
@@ -80,9 +82,9 @@ class ChessGameSimulator:
 
 def detect_move(legal_board, hotm_list):
     final_board = hotm_list[-1]
-    source = None
-    dest = None
+    source, dest, captured_square = None, None, None
 
+    # Find source and destination
     for r in range(8):
         for c in range(8):
             if legal_board[r][c] != final_board[r][c]:
@@ -91,24 +93,59 @@ def detect_move(legal_board, hotm_list):
                 elif legal_board[r][c] == 0 and final_board[r][c] == 1:
                     dest = (r, c)
 
-    if dest is None:  # Handle captures
-        for board in hotm_list[1:]:
-            for r in range(8):
-                for c in range(8):
-                    if legal_board[r][c] == 1 and board[r][c] == 0 and final_board[r][c] == 1:
-                        dest = (r, c)
-                        break
-                if dest: break
-            if dest: break
+    # Check for standard captures (destination was occupied)
+    if dest and legal_board[dest[0]][dest[1]] == 1:
+        for step in hotm_list:
+            if step[dest[0]][dest[1]] == 0:
+                captured_square = dest
+                break
 
-    return source, dest
+    # Check for en passant or other captures (squares cleared in HOTM)
+    if not captured_square:
+        candidates = []
+        for r in range(8):
+            for c in range(8):
+                if legal_board[r][c] == 1 and final_board[r][c] == 0:
+                    for step in hotm_list:
+                        if step[r][c] == 0:
+                            candidates.append((r, c))
+                            break
+        if len(candidates) == 1:
+            captured_square = candidates[0]
+
+    return source, dest, captured_square
 
 
-def find_legal_move(chess_board, final_board):
+def get_captured_square(board, move):
+    if board.is_en_passant(move):
+        to_rank = chess.square_rank(move.to_square)
+        to_file = chess.square_file(move.to_square)
+        captured_rank = to_rank - 1 if board.turn == chess.WHITE else to_rank + 1
+        return chess.square(to_file, captured_rank)
+    elif board.is_capture(move):
+        return move.to_square
+    return None
+
+
+def find_legal_move(chess_board, final_board, detected_captured_square):
+    detected_chess_square = None
+    if detected_captured_square:
+        r, c = detected_captured_square
+        detected_chess_square = chess.square(c, 7 - r)
+
     for move in chess_board.legal_moves:
         board_copy = chess_board.copy()
+        captured_square = get_captured_square(board_copy, move)
+
+        # Check captured square match
+        if (captured_square is None) != (detected_chess_square is None):
+            continue
+        if captured_square != detected_chess_square:
+            continue
+
+        # Check board state after move
         board_copy.push(move)
-        simulated_board = ChessGameSimulator()._board_to_matrix(board_copy)
-        if simulated_board == final_board:
+        simulated = ChessGameSimulator()._board_to_matrix(board_copy)
+        if simulated == final_board:
             return move
     return None
