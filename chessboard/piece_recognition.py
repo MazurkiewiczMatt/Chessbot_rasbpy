@@ -2,9 +2,7 @@ import chess
 from chess import Board, Move
 from copy import deepcopy
 
-
 class ChessGameSimulator:
-    # In piece_recognition.py, modify __init__ method:
     def __init__(self):
         self.board = Board()
         self.holm = [self._board_to_matrix(self.board)]
@@ -13,12 +11,11 @@ class ChessGameSimulator:
         self.promotion_pending = False
         self.promotion_move = None
         self.promotion_choice = None
-        self.current_turn = chess.WHITE  # Add this line
+        self.current_turn = chess.WHITE
+
     def update_from_sensor(self, lattice_reading):
         """Update with new sensor reading and maintain HOTM history"""
         self.hotm.append(deepcopy(lattice_reading))
-
-        # Check if game has started (initial position match)
         if not self.game_started:
             self.game_started = (lattice_reading == self.holm[0])
 
@@ -35,7 +32,6 @@ class ChessGameSimulator:
         if not self.game_started or len(self.hotm) < 2:
             return False
 
-        # Detect move details including captured square
         source, dest, captured_square = detect_move(self.holm[-1], self.hotm)
         legal_move = find_legal_move(self.board, self.hotm[-1], captured_square)
 
@@ -48,7 +44,6 @@ class ChessGameSimulator:
             self._update_state()
             return True
         return False
-
 
     def finalize_promotion(self, choice):
         """Call this when promotion choice is selected"""
@@ -63,9 +58,26 @@ class ChessGameSimulator:
         self.promotion_pending = False
         return True
 
+    def get_missing_start_pieces(self, current_matrix):
+        """Compare with standard initial position, return missing squares"""
+        initial_matrix = self._board_to_matrix(Board())
+        missing = []
+        for rank in [0, 1, 6, 7]:  # First 2 and last 2 ranks
+            for file in range(8):
+                if initial_matrix[rank][file] == 1 and current_matrix[rank][file] == 0:
+                    chess_rank = 8 - rank
+                    chess_file = chr(ord('A') + file)
+                    missing.append(f"{chess_file}{chess_rank}")
+        return missing
+
+    def validate_initial_position(self, current_matrix):
+        """Check if all start pieces are present"""
+        return len(self.get_missing_start_pieces(current_matrix)) == 0
+
     def _update_state(self):
         self.holm.append(deepcopy(self.hotm[-1]))
         self.hotm = [deepcopy(self.holm[-1])]
+
     def _board_to_matrix(self, board):
         """Convert chess.Board to binary matrix representation"""
         matrix = []
@@ -79,6 +91,7 @@ class ChessGameSimulator:
 
     def get_current_board(self):
         return self.board
+
 
 
 # Add these methods to ChessGameSimulator class:
