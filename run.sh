@@ -13,7 +13,7 @@ chmod +x run2.sh
     echo "=== Starting run2.sh at $(date) ==="
     ./run2.sh
     echo "=== Finished run2.sh at $(date) ==="
-} >> "$LOGFILE" 2>&1
+} &> "$LOGFILE" 
 
 
 # Copy log file into the repository
