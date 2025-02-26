@@ -13,13 +13,12 @@ chmod +x run2.sh
     echo "=== Starting run2.sh at $(date) ==="
     ./run2.sh
     echo "=== Finished run2.sh at $(date) ==="
-} >> "$LOGFILE" 2>&1
+} &> "$LOGFILE" 
 
 
 # Copy log file into the repository
-#cp "../$LOGFILE" .
+cp "../$LOGFILE" .
 
 # Commit and push
-git add "$LOGFILE"
 git commit . -m "Add log from $(date)"
 git push origin main
