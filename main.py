@@ -33,11 +33,12 @@ chess_game = ChessGameSimulator()
 
 #serial_handler.display_text("INITIATED", "NOTHING")
 
+# Update PROMOTION_MAP in main.py
 PROMOTION_MAP = {
-    3: chess.QUEEN,   # UI Button 3 - Queen
-    2: chess.ROOK,    # UI Button 2 - Rook
-    5: chess.BISHOP,  # UI Button 5 - Bishop
-    4: chess.KNIGHT   # UI Button 4 - Knight
+    4: chess.BISHOP,  # B4 - Bishop
+    5: chess.KNIGHT,  # B5 - Knight
+    6: chess.QUEEN,   # B6 - Queen
+    7: chess.ROOK     # B7 - Rook
 }
 
 PROMOTION_NAMES = {
@@ -58,8 +59,10 @@ def handle_promotion_selection(buttons_reading):
             return True
     return False
 
+
+# Update handle_main_action_button in main.py:
 def handle_main_action_button(chess_game):
-    """Process the main action button (Button 0)"""
+    """Process the main action button (Now using B0/B2 for turns)"""
     if chess_game.promotion_pending:
         if chess_game.promotion_choice:
             success = chess_game.finalize_promotion(chess_game.promotion_choice)
@@ -73,16 +76,22 @@ def handle_main_action_button(chess_game):
             chess_game.promotion_choice = None
         else:
             serial_handler.display_text("SELECT", "PROMOTION!")
-            serial_handler.display_text("USE UI", "BUTTONs 2-5")
+            serial_handler.display_text("USE BTNS", "4-7")
     else:
+        # Restrict moves to current player's turn
+        if chess_game.board.turn != chess_game.current_turn:
+            serial_handler.display_text("WRONG TURN", "USE B0/B2")
+            return
+
         result = chess_game.push_move()
         if result == "promotion_needed":
             serial_handler.display_text("CHOOSE", "PROMOTION")
-            serial_handler.display_text("USE BUTTONS", "2-5")
+            serial_handler.display_text("USE BTNS", "4-7")
         elif result:
             serial_handler.display_text("MOVE MADE", f"{chess_game.board.peek().uci()}")
         else:
             serial_handler.display_text("INVALID", "MOVE")
+
 
 
 while running:
@@ -102,30 +111,54 @@ while running:
     # Gameplay
     if DEBUG:
         app.set_task("chessboard")
+
+    # Replace the lattice_updated block in main.py's while loop:
     if lattice_updated:
         chess_game.update_from_sensor(lattice_reading)
         chessboard_state_correct = chess_game.is_state_correct()
 
-        # Update Arduino display
+        # Handle game setup assistance
         if not chess_game.game_started:
-            serial_handler.display_text("GAME NOT", "STARTED")
-        elif chessboard_state_correct:
-            serial_handler.display_text("GOOD TO GO", ":)")
+            missing = chess_game.get_missing_start_pieces(lattice_reading)
+            if len(missing) > 0 and len(missing) <= 4:
+                # Format missing squares for display
+                line1 = " ".join(missing[:2]).ljust(16)
+                line2 = " ".join(missing[2:4]).ljust(16)
+                serial_handler.display_text(line1, line2)
+            elif len(missing) > 4:
+                serial_handler.display_text("TOO MANY PIECES", "MISSING")
+            else:
+                serial_handler.display_text("READY TO START", "PRESS B0/B2")
         else:
-            serial_handler.display_text("MAKE A", "MOVE")
+            # Existing game state display
+            if chessboard_state_correct:
+                serial_handler.display_text("GOOD TO GO", ":)")
+            else:
+                serial_handler.display_text("MAKE A", "MOVE")
 
+    # Replace the buttons_updated block in main.py's while loop:
     if buttons_updated:
-        # Process promotion buttons first
+        # Process promotion buttons
         promotion_selected = handle_promotion_selection(buttons_reading)
 
-        # Process main action button (Button 0)
-        if buttons_reading[0]:
-            handle_main_action_button(chess_game)
+        # Handle turn completion buttons
+        if buttons_reading[0]:  # B0 - White's turn complete
+            if chess_game.current_turn == chess.WHITE:
+                chess_game.current_turn = chess.BLACK
+                serial_handler.display_text("BLACK'S TURN", "PRESS B2")
+            else:
+                serial_handler.display_text("WRONG TURN", "WHITE'S TURN")
 
-        # Log other button presses
-        for i, pressed in enumerate(buttons_reading):
-            if pressed and i not in PROMOTION_MAP and i != 0:
-                serial_handler.display_text(f"Button B{i}", "PRESSED")
+        if buttons_reading[2]:  # B2 - Black's turn complete
+            if chess_game.current_turn == chess.BLACK:
+                chess_game.current_turn = chess.WHITE
+                serial_handler.display_text("WHITE'S TURN", "PRESS B0")
+            else:
+                serial_handler.display_text("WRONG TURN", "BLACK'S TURN")
+
+        # Process main action button (now handled by B0/B2)
+        # ... rest of button handling remains same
+
     if DEBUG:
         app.set_task("gameplay")
     # here call gameplay, with any if statement, any method any parameters

@@ -256,7 +256,7 @@ void waitingDisplay() {
   const unsigned long timeout = 90000; // 90 seconds timeout
 
   if (millis() - startTime >= timeout) {
-    displayLCD("Error:", "Raspberry Not Connected");
+    displayLCD("90s Mark:", "Raspberry Not Connected");
     startTime = millis(); // Reset timer
     return;
   }

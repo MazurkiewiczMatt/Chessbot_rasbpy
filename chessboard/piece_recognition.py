@@ -4,6 +4,7 @@ from copy import deepcopy
 
 
 class ChessGameSimulator:
+    # In piece_recognition.py, modify __init__ method:
     def __init__(self):
         self.board = Board()
         self.holm = [self._board_to_matrix(self.board)]
@@ -12,7 +13,7 @@ class ChessGameSimulator:
         self.promotion_pending = False
         self.promotion_move = None
         self.promotion_choice = None
-
+        self.current_turn = chess.WHITE  # Add this line
     def update_from_sensor(self, lattice_reading):
         """Update with new sensor reading and maintain HOTM history"""
         self.hotm.append(deepcopy(lattice_reading))
@@ -79,6 +80,27 @@ class ChessGameSimulator:
     def get_current_board(self):
         return self.board
 
+
+# Add these methods to ChessGameSimulator class:
+def get_missing_start_pieces(self, current_matrix):
+    """Compare with standard initial position, return missing squares"""
+    initial_matrix = self._board_to_matrix(Board())
+    missing = []
+
+    # Check only first 2 and last 2 ranks
+    for rank in [0, 1, 6, 7]:
+        for file in range(8):
+            if initial_matrix[rank][file] == 1 and current_matrix[rank][file] == 0:
+                # Convert to chess notation
+                chess_rank = 8 - rank
+                chess_file = chr(ord('A') + file)
+                missing.append(f"{chess_file}{chess_rank}")
+    return missing
+
+
+def validate_initial_position(self, current_matrix):
+    """Check if all start pieces are present"""
+    return len(self.get_missing_start_pieces(current_matrix)) == 0
 
 def detect_move(legal_board, hotm_list):
     final_board = hotm_list[-1]
