@@ -21,5 +21,5 @@ chmod +x run2.sh
 
 # Commit and push
 git add "$LOGFILE"
-git commit -m "Add log from $(date)"
+git commit . -m "Add log from $(date)"
 git push origin main
