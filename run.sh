@@ -17,9 +17,8 @@ chmod +x run2.sh
 
 
 # Copy log file into the repository
-#cp "../$LOGFILE" .
+cp "../$LOGFILE" .
 
 # Commit and push
-git add "$LOGFILE"
 git commit . -m "Add log from $(date)"
 git push origin main
