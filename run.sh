@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LOGFILE="log.txt"
-
+rm "$LOGFILE"
 # Ensure log file exists
 touch "$LOGFILE"
 
