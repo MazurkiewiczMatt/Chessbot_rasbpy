@@ -47,4 +47,3 @@ sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || {
 echo "Arduino setup complete."
 
 # Launch the Python script
-python3 /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/main.py

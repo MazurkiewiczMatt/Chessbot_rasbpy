@@ -22,3 +22,4 @@ cp "../$LOGFILE" .
 # Commit and push
 git commit . -m "Add log from $(date)"
 git push origin main
+python3 /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/main.py
