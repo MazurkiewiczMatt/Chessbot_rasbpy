@@ -144,8 +144,9 @@ while running:
 
     # Replace the buttons_updated block in main.py's while loop:
     # Replace the existing button handling code with:
+
     if buttons_updated:
-        # Handle turn completion buttons first
+        # Handle turn completion buttons
         if buttons_reading[0]:  # B0 - White's turn complete
             if chess_game.current_turn == chess.WHITE and chess_game.board.turn == chess.WHITE:
                 chess_game.current_turn = chess.BLACK
@@ -160,15 +161,16 @@ while running:
             else:
                 serial_handler.display_text("CAN'T END TURN", "MAKE BLACK MOVE")
 
-        # Process promotion buttons
+        # Process promotion selection buttons (4-7)
         promotion_selected = handle_promotion_selection(buttons_reading)
 
-        # Handle main move validation
-        if any(buttons_reading[1:3]) and not promotion_selected:  # B1/B3
+        # Handle reserved player buttons (B1 and B3)
+        if any(buttons_reading[i] for i in [1, 3]) and not promotion_selected:
             serial_handler.display_text("BUTTON RESERVED", "FOR FUTURE USE")
 
-        # Update turn display after any button press
+        # Update turn display after any button interaction
         display_turn_status()
+
     if DEBUG:
         app.set_task("gameplay")
     # here call gameplay, with any if statement, any method any parameters
