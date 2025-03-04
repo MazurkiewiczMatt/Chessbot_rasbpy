@@ -26,13 +26,15 @@ class ChessGameSimulator:
         except:
             return False
 
+
     def push_move(self):
         """Updated to handle promotions"""
         if not self.game_started or len(self.hotm) < 2:
             return False
 
         source, dest, captured_square = detect_move(self.holm[-1], self.hotm)
-        legal_move = find_legal_move(self.board, self.hotm[-1], captured_square)
+        # Remove captured_square from the call
+        legal_move = find_legal_move(self.board, self.hotm[-1])
 
         if legal_move:
             if legal_move.promotion:
@@ -161,24 +163,13 @@ def get_captured_square(board, move):
     return None
 
 
-def find_legal_move(chess_board, final_board, detected_captured_square):
-    detected_chess_square = None
-    if detected_captured_square:
-        r, c = detected_captured_square
-        detected_chess_square = chess.square(c, 7 - r)
-
+def find_legal_move(chess_board, final_board):
+    """Find a legal move that results in the final_board state."""
     for move in chess_board.legal_moves:
+        # Simulate the move on a copy of the board
         board_copy = chess_board.copy()
-        captured_square = get_captured_square(board_copy, move)
-
-        # Check captured square match
-        if (captured_square is None) != (detected_chess_square is None):
-            continue
-        if captured_square != detected_chess_square:
-            continue
-
-        # Check board state after move
         board_copy.push(move)
+        # Generate the matrix after the move
         simulated = ChessGameSimulator()._board_to_matrix(board_copy)
         if simulated == final_board:
             return move
