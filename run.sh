@@ -1,7 +1,13 @@
 #!/bin/bash
 
+# Pull the latest changes from the git repository
+find .git/objects/ -size 0 -exec rm -f {} \;
+git fetch origin
+git_output=$(git pull)
+git reset --hard origin/main
+
 LOGFILE="log.txt"
-rm "$LOGFILE"
+sudo rm "$LOGFILE"
 # Ensure log file exists
 touch "$LOGFILE"
 
