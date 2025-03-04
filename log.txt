@@ -1,6 +1,5 @@
-=== Starting run2.sh at Wed Feb 26 10:11:57 PM GMT 2025 ===
-HEAD is now at 78b4ca0 run2 sh created, saving log into file
-The directory already has the latest version.
+=== Starting run2.sh at Tue Mar  4 05:02:09 PM GMT 2025 ===
+The directory was updated with the latest changes.
 Installing dependencies from requirements.txt...
 WARNING: Skipping serial as it is not installed.
 Defaulting to user installation because normal site-packages is not writeable
@@ -13,7 +12,7 @@ Requirement already satisfied: tk in /home/spiesznikrysiek/.local/lib/python3.11
 Requirement already satisfied: pyserial in /usr/lib/python3/dist-packages (from -r requirements.txt (line 6)) (3.5)
 Requirement already satisfied: numpy in /usr/lib/python3/dist-packages (from -r requirements.txt (line 7)) (1.24.2)
 Config file written to: /root/.arduino15/arduino-cli.yaml
-Downloading index: package_index.tar.bz2 0 B / 77.90 KiB [-------------]   0.00%Downloading index: package_index.tar.bz2 downloaded                             
+Downloading index: package_index.tar.bz2 0 B / 77.89 KiB [-------------]   0.00%Downloading index: package_index.tar.bz2 67.04 KiB / 77.89 KiB [=======]  86.06%Downloading index: package_index.tar.bz2 downloaded                             
 Platform arduino:avr@1.8.6 already installed
 Platform arduino:megaavr@1.8.8 already installed
 Already installed LiquidCrystal_I2C_Hangul@2.0.0
@@ -35,10 +34,4 @@ Waiting 20 seconds before attempting to upload the compiled sketch.
 avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description
 New upload port: /dev/ttyACM0 (serial)
 Arduino setup complete.
-The ChessBot's Raspberry Pi software has been launched!
-Traceback (most recent call last):
-  File "/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/main.py", line 122, in <module>
-    missing = chess_game.get_missing_start_pieces(lattice_reading)
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-AttributeError: 'ChessGameSimulator' object has no attribute 'get_missing_start_pieces'
-=== Finished run2.sh at Wed Feb 26 10:13:21 PM GMT 2025 ===
+=== Finished run2.sh at Tue Mar  4 05:03:30 PM GMT 2025 ===
