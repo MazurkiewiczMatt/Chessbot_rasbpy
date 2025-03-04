@@ -44,58 +44,6 @@ PROMOTION_NAMES = {
     chess.BISHOP: "BISHOP",
     chess.KNIGHT: "KNIGHT"
 }
-def display_turn_status():
-    """Update display with current turn information"""
-    if chess_game.current_turn == chess.WHITE:
-        serial_handler.display_text("WHITE'S TURN", "PRESS B0 TO END")
-    else:
-        serial_handler.display_text("BLACK'S TURN", "PRESS B2 TO END")
-def handle_promotion_selection(buttons_reading):
-    """Process promotion button selections and update display"""
-    for btn_idx, pressed in enumerate(buttons_reading):
-        if pressed and btn_idx in PROMOTION_MAP:
-            choice = PROMOTION_MAP[btn_idx]
-            chess_game.promotion_choice = choice
-            piece_name = PROMOTION_NAMES.get(choice, "UNKNOWN")
-            serial_handler.display_text("SELECTED", piece_name)
-            return True
-    return False
-
-
-# Update handle_main_action_button in main.py:
-def handle_main_action_button(chess_game):
-    """Process the main action button (Now using B0/B2 for turns)"""
-    if chess_game.promotion_pending:
-        if chess_game.promotion_choice:
-            success = chess_game.finalize_promotion(chess_game.promotion_choice)
-            if success:
-                piece_name = PROMOTION_NAMES.get(chess_game.promotion_choice, "UNKNOWN")
-                serial_handler.display_text("PROMOTED TO", piece_name)
-                move = chess_game.board.peek().uci()
-                serial_handler.display_text("MOVE MADE", move)
-            else:
-                serial_handler.display_text("INVALID", "PROMOTION")
-            chess_game.promotion_choice = None
-        else:
-            serial_handler.display_text("SELECT", "PROMOTION!")
-            serial_handler.display_text("USE BTNS", "4-7")
-    else:
-        # Restrict moves to current player's turn
-        if chess_game.board.turn != chess_game.current_turn:
-            serial_handler.display_text("WRONG TURN", "USE B0/B2")
-            return
-
-        result = chess_game.push_move()
-        if result == "promotion_needed":
-            serial_handler.display_text("CHOOSE", "PROMOTION")
-            serial_handler.display_text("USE BTNS", "4-7")
-        elif result:
-            serial_handler.display_text("MOVE MADE", f"{chess_game.board.peek().uci()}")
-        else:
-            serial_handler.display_text("INVALID", "MOVE")
-
-
-
 while running:
 
     # Process lattice
@@ -142,42 +90,13 @@ while running:
             else:
                 serial_handler.display_text("MAKE A", "MOVE")
 
-    # Replace the buttons_updated block in main.py's while loop:
-    # Replace the existing button handling code with:
-
-    if buttons_updated:
-        # Handle turn completion buttons
-        if buttons_reading[0]:  # B0 - White's turn complete
-            if chess_game.current_turn == chess.WHITE and chess_game.board.turn == chess.WHITE:
-                chess_game.current_turn = chess.BLACK
-                serial_handler.display_text("TURN ENDED", "BLACK'S TURN")
-            else:
-                serial_handler.display_text("CAN'T END TURN", "MAKE WHITE MOVE")
-
-        if buttons_reading[2]:  # B2 - Black's turn complete
-            if chess_game.current_turn == chess.BLACK and chess_game.board.turn == chess.BLACK:
-                chess_game.current_turn = chess.WHITE
-                serial_handler.display_text("TURN ENDED", "WHITE'S TURN")
-            else:
-                serial_handler.display_text("CAN'T END TURN", "MAKE BLACK MOVE")
-
-        # Process promotion selection buttons (4-7)
-        promotion_selected = handle_promotion_selection(buttons_reading)
-
-        # Handle reserved player buttons (B1 and B3)
-        if any(buttons_reading[i] for i in [1, 3]) and not promotion_selected:
-            serial_handler.display_text("BUTTON RESERVED", "FOR FUTURE USE")
-
-        # Update turn display after any button interaction
-        display_turn_status()
-
     if DEBUG:
         app.set_task("gameplay")
-    # here call gameplay, with any if statement, any method any parameters
-    gameplay.update(None)
-    action = gameplay.get_action()
-    if action is not None:
-        robot_arm.scheduled_movements(action)
+    if buttons_updated:
+        # Handle turn completion buttons, promotion, etc., in the game logic
+        gameplay.process_button_reading(buttons_reading)
+    # here move robot
+    #robot_arm.scheduled_movements(action)
 
     if DEBUG:
         app.set_task("robot_arm")

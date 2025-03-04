@@ -55,3 +55,39 @@ class SerialHandler:
             return "MOVE SUCCESS" in response
         else:
             return False
+    def lights(self, mode):
+        if self.ser is not None:
+            self.ser.write(f"lights {mode}")
+            response = self.receive_message()
+            return response == "LIGHTS"
+        else:
+            return False
+    def electromagnet_drop(self, Target_height):
+        if self.ser is not None:
+            self.ser.write(f"EM_D {Target_height}")
+            response = self.receive_message()
+            return response == "EM_dropped"
+        else:
+            return False
+    def electromagnet_raise(self, Target_height):
+        if self.ser is not None:
+            self.ser.write(f"EM_R {Target_height}")
+            response = self.receive_message()
+            return response == "EM_rose"
+        else:
+            return False
+
+    def electromagnet_turn(self, turn):
+        if self.ser is not None:
+            if turn == 1:
+                self.ser.write(f"EM_ON")
+                response = self.receive_message()
+                if response == "EM_on":
+                    return True
+            else:
+                self.ser.write(f"EM_OFF")
+                response = self.receive_message()
+                if response == "EM_off":
+                    return True
+        else:
+            return False

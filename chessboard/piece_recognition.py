@@ -11,7 +11,6 @@ class ChessGameSimulator:
         self.promotion_pending = False
         self.promotion_move = None
         self.promotion_choice = None
-        self.current_turn = chess.WHITE
 
     def update_from_sensor(self, lattice_reading):
         """Update with new sensor reading and maintain HOTM history"""
