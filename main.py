@@ -30,20 +30,6 @@ robot_arm = RobotArmHandler()
 chess_game = ChessGameSimulator()
 #serial_handler.display_text("INITIATED", "NOTHING")
 
-# Update PROMOTION_MAP in main.py
-PROMOTION_MAP = {
-    4: chess.BISHOP,  # B4 - Bishop
-    5: chess.KNIGHT,  # B5 - Knight
-    6: chess.QUEEN,   # B6 - Queen
-    7: chess.ROOK     # B7 - Rook
-}
-
-PROMOTION_NAMES = {
-    chess.QUEEN: "QUEEN",
-    chess.ROOK: "ROOK",
-    chess.BISHOP: "BISHOP",
-    chess.KNIGHT: "KNIGHT"
-}
 while running:
 
     # Process lattice
