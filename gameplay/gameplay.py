@@ -43,7 +43,7 @@ class Gameplay:
             self.handle_main_action_button()
 
         # Update turn display after any button interaction
-        self.display_turn_status()
+        #self.display_turn_status()
 
     def display_turn_status(self):
         """Update display with current turn information"""
