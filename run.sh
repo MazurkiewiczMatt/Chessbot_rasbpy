@@ -13,8 +13,6 @@ LOGFILE="log-${TIMESTAMP}.txt"
 
 # Ensure log file is created
 touch "$LOGFILE"
-git commit . -m "empty log from $(TIMESTAMP)"
-git push origin main
 
 # Make run2.sh executable
 chmod +x run2.sh
