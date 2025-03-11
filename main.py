@@ -30,6 +30,8 @@ robot_arm = RobotArmHandler()
 chess_game = ChessGameSimulator()
 #serial_handler.display_text("INITIATED", "NOTHING")
 
+
+
 while running:
 
     # Process lattice
@@ -55,26 +57,11 @@ while running:
 
         # Handle game setup assistance
         if not chess_game.game_started:
-            missing = chess_game.get_missing_start_pieces(lattice_reading)
-
-            # Replace the missing pieces display logic with:
-            if len(missing) > 0 and len(missing) <= 4:
-                # Split missing squares into chunks of 2
-                chunks = [missing[i:i + 2] for i in range(0, len(missing), 2)]
-                # Format with proper spacing
-                line1 = " ".join(chunks[0]).ljust(14) if len(chunks) > 0 else ""
-                line2 = " ".join(chunks[1]).ljust(14) if len(chunks) > 1 else ""
-                serial_handler.display_text(line1[:14], line2[:14])
-            elif len(missing) > 4:
-                serial_handler.display_text("MISSING", f"{len(missing)} PIECES")
-            else:
-                serial_handler.display_text("READY TO START", "PRESS B0/B2")
+            Gameplay.missing(lattice_reading, chess_game)
         else:
             # Existing game state display
             if chessboard_state_correct:
                 serial_handler.display_text("GOOD TO GO", ":)")
-            else:
-                serial_handler.display_text("MAKE A", "MOVE")
 
     if DEBUG:
         app.set_task("gameplay")

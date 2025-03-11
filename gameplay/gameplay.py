@@ -22,14 +22,14 @@ class Gameplay:
     def process_button_reading(self, buttons_reading):
         # Handle turn completion buttons
         if buttons_reading[0]:  # B0 - White's turn complete
-            if self.chess_game.board.turn == chess.WHITE and self.chess_game.board.turn == chess.WHITE:
+            if self.chess_game.board.turn == chess.WHITE:
                 self.chess_game.board.turn = chess.BLACK
                 self.serial_handler.display_text("TURN ENDED", "BLACK'S TURN")
             else:
                 self.serial_handler.display_text("CAN'T END TURN", "MAKE WHITE MOVE")
 
         if buttons_reading[2]:  # B2 - Black's turn complete
-            if self.chess_game.board.turn == chess.BLACK and self.chess_game.board.turn == chess.BLACK:
+            if self.chess_game.board.turn == chess.BLACK:
                 self.chess_game.board.turn = chess.WHITE
                 self.serial_handler.display_text("TURN ENDED", "WHITE'S TURN")
             else:
@@ -89,3 +89,17 @@ class Gameplay:
                 self.serial_handler.display_text("MOVE MADE", move)
             else:
                 self.serial_handler.display_text("INVALID MOVE", "TRY AGAIN")
+
+    def missing(self,lattice_reading, chess_game):
+        missing = chess_game.get_missing_start_pieces(lattice_reading)
+
+        # Replace the missing pieces display logic with:
+        if 0 < len(missing) <= 4:
+            # Split missing squares into chunks of 2
+            chunks = [missing[i:i + 2] for i in range(0, len(missing), 2)]
+            # Format with proper spacing
+            line1 = " ".join(chunks[0]).ljust(14) if len(chunks) > 0 else ""
+            line2 = " ".join(chunks[1]).ljust(14) if len(chunks) > 1 else ""
+            self.serial_handler.display_text(line1[:14], line2[:14])
+        elif len(missing) > 4:
+            self.serial_handler.display_text("MISSING", f"{len(missing)} PIECES")
