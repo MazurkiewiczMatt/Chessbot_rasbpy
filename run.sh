@@ -19,7 +19,7 @@ git push origin main
 
 # Make run2.sh executable
 chmod +x run2.sh
-echo "run2.sh"
+echo "run2.sh START"
 # Capture output of run2.sh into the log file
 {
     echo "=== Starting run2.sh at $(date) ==="
@@ -27,10 +27,12 @@ echo "run2.sh"
     echo "=== Finished run2.sh at $(date) ==="
 } &> "$LOGFILE" 
 
+echo "run2.sh ENDING"
 
 # Copy log file into the repository
+echo "cp logfile start"
 cp "../$LOGFILE" .
-
+echo "cp logfile end"
 # Commit and push
 git commit . -m "Add log from $(TIMESTAMP)"
 git push origin main
