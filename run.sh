@@ -19,7 +19,7 @@ git push origin main
 
 # Make run2.sh executable
 chmod +x run2.sh
-
+echo "run2.sh"
 # Capture output of run2.sh into the log file
 {
     echo "=== Starting run2.sh at $(date) ==="
