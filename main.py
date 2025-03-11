@@ -58,6 +58,7 @@ while running:
                 chess_game.game_started = True
                 serial_handler.display_text("GAME STARTED!", "WHITE MOVES FIRST")
             else:
+                serial_handler.display_text("version 11/03/1732","")
                 gameplay.missing(lattice_reading,chess_game)
 
     if DEBUG:
