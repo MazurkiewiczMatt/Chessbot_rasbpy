@@ -26,21 +26,21 @@ class ChessGameSimulator:
         except:
             return False
 
-
     def push_move(self):
-        """Updated to handle promotions"""
-        if not self.game_started or len(self.hotm) < 2:
+        """Updated to use detected move"""
+        if not self.game_started:
             return False
 
-        source, dest, captured_square = detect_move(self.holm[-1], self.hotm)
-        # Remove captured_square from the call
-        legal_move = find_legal_move(self.board, self.hotm[-1])
+        detected = detect_move(self.holm[-1], self.hotm)
+        legal_move = find_legal_move(self.board, detected)
 
         if legal_move:
+            # Handle promotion
             if legal_move.promotion:
                 self.promotion_pending = True
                 self.promotion_move = legal_move
                 return "promotion_needed"
+
             self.board.push(legal_move)
             self._update_state()
             return True
@@ -116,42 +116,6 @@ def validate_initial_position(self, current_matrix):
     """Check if all start pieces are present"""
     return len(self.get_missing_start_pieces(current_matrix)) == 0
 
-def detect_move(legal_board, hotm_list):
-    final_board = hotm_list[-1]
-    source, dest, captured_square = None, None, None
-
-    # Find source and destination
-    for r in range(8):
-        for c in range(8):
-            if legal_board[r][c] != final_board[r][c]:
-                if legal_board[r][c] == 1 and final_board[r][c] == 0:
-                    source = (r, c)
-                elif legal_board[r][c] == 0 and final_board[r][c] == 1:
-                    dest = (r, c)
-
-    # Check for standard captures (destination was occupied)
-    if dest and legal_board[dest[0]][dest[1]] == 1:
-        for step in hotm_list:
-            if step[dest[0]][dest[1]] == 0:
-                captured_square = dest
-                break
-
-    # Check for en passant or other captures (squares cleared in HOTM)
-    if not captured_square:
-        candidates = []
-        for r in range(8):
-            for c in range(8):
-                if legal_board[r][c] == 1 and final_board[r][c] == 0:
-                    for step in hotm_list:
-                        if step[r][c] == 0:
-                            candidates.append((r, c))
-                            break
-        if len(candidates) == 1:
-            captured_square = candidates[0]
-
-    return source, dest, captured_square
-
-
 def get_captured_square(board, move):
     if board.is_en_passant(move):
         to_rank = chess.square_rank(move.to_square)
@@ -163,14 +127,58 @@ def get_captured_square(board, move):
     return None
 
 
-def find_legal_move(chess_board, final_board):
-    """Find a legal move that results in the final_board state."""
-    for move in chess_board.legal_moves:
-        # Simulate the move on a copy of the board
-        board_copy = chess_board.copy()
-        board_copy.push(move)
-        # Generate the matrix after the move
-        simulated = ChessGameSimulator()._board_to_matrix(board_copy)
-        if simulated == final_board:
-            return move
+def detect_move(legal_board, hotm_list):
+    # Convert all matrices in HOTM to chess.Board states
+    hotm_states = []
+    for matrix in hotm_list:
+        board = chess.Board()
+        board.clear()
+        for r in range(8):
+            for c in range(8):
+                if matrix[r][c]:
+                    # Place a generic piece (type doesn't matter for our binary detection)
+                    board.set_piece_at(chess.square(c, 7 - r), chess.Piece(chess.PAWN, chess.WHITE))
+        hotm_states.append(board)
+
+    # Find all square changes through HOTM steps
+    move_sequence = []
+    for i in range(1, len(hotm_states)):
+        prev = hotm_states[i - 1]
+        curr = hotm_states[i]
+        moved = list(prev.squares ^ curr.squares)
+        if len(moved) == 2:
+            # Simple move
+            move_sequence.append((moved[0], moved[1]))
+        elif len(moved) == 3:
+            # Capture move
+            captured = list(set(prev.squares) - set(curr.squares))[0]
+            move_sequence.append((moved[0], moved[1], captured))
+
+    # Reconstruct move from sequence
+    final_move = None
+    if move_sequence:
+        # Get first and last squares from sequence
+        from_sq = move_sequence[0][0]
+        to_sq = move_sequence[-1][1]
+        captured_sq = move_sequence[-1][2] if len(move_sequence[-1]) > 2 else None
+
+        # Convert to chess.Move
+        final_move = chess.Move(from_sq, to_sq)
+        final_move.captured = captured_sq
+
+    return final_move
+
+
+def find_legal_move(chess_board, detected_move):
+    """Find a legal move matching detected move trajectory and captures"""
+    if not detected_move:
+        return None
+
+    for move in chess_board.generate_legal_moves():
+        if (move.from_square == detected_move.from_square and
+                move.to_square == detected_move.to_square):
+            # Check captures
+            actual_captured = get_captured_square(chess_board, move)
+            if actual_captured == detected_move.captured:
+                return move
     return None

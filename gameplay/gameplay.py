@@ -19,76 +19,48 @@ class Gameplay:
         self.chess_game = chess_game
         self.serial_handler = serial_handler
 
-    def process_button_reading(self, buttons_reading):
-        # Handle turn completion buttons
-        if buttons_reading[0]:  # B0 - White's turn complete
-            if self.chess_game.board.turn == chess.WHITE:
-                self.chess_game.board.turn = chess.BLACK
-                self.serial_handler.display_text("TURN ENDED", "BLACK'S TURN")
-            else:
-                self.serial_handler.display_text("CAN'T END TURN", "MAKE WHITE MOVE")
-
-        if buttons_reading[2]:  # B2 - Black's turn complete
-            if self.chess_game.board.turn == chess.BLACK:
-                self.chess_game.board.turn = chess.WHITE
-                self.serial_handler.display_text("TURN ENDED", "WHITE'S TURN")
-            else:
-                self.serial_handler.display_text("CAN'T END TURN", "MAKE BLACK MOVE")
-
-        # Process promotion selection buttons (4-7)
-        promotion_selected = self.handle_promotion_selection(buttons_reading)
-
-        # Handle main action buttons (B1 and B3)
-        if any(buttons_reading[i] for i in [1, 3]) and not promotion_selected:
-            self.handle_main_action_button()
-
-        # Update turn display after any button interaction
-        #self.display_turn_status()
-
-    def display_turn_status(self):
-        """Update display with current turn information"""
-        if self.chess_game.board.turn == chess.WHITE:
-            self.serial_handler.display_text("WHITE'S TURN", "PRESS B0 TO END")
-        else:
-            self.serial_handler.display_text("BLACK'S TURN", "PRESS B2 TO END")
 
     def handle_promotion_selection(self, buttons_reading):
-        """Process promotion button selections and update display"""
-        for btn_idx, pressed in enumerate(buttons_reading):
-            if pressed and btn_idx in self.PROMOTION_MAP:
+        """Show promotion options only when pending"""
+        if not self.chess_game.promotion_pending:
+            return False
+
+        for btn_idx in [4,5,6,7]:
+            if buttons_reading[btn_idx]:
                 choice = self.PROMOTION_MAP[btn_idx]
-                self.chess_game.promotion_choice = choice
-                piece_name = self.PROMOTION_NAMES.get(choice, "UNKNOWN")
-                self.serial_handler.display_text("SELECTED", piece_name)
+                self.chess_game.finalize_promotion(choice)
+                self.serial_handler.display_text("PROMOTED TO",
+                    self.PROMOTION_NAMES[choice])
                 return True
         return False
 
-    def handle_main_action_button(self):
-        """Process the main action button (Now using B0/B2 for turns)"""
+    def process_button_reading(self, buttons_reading):
+        # Handle promotion first
         if self.chess_game.promotion_pending:
-            if self.chess_game.promotion_choice:
-                success = self.chess_game.finalize_promotion(self.chess_game.promotion_choice)
-                if success:
-                    piece_name = self.PROMOTION_NAMES.get(self.chess_game.promotion_choice, "UNKNOWN")
-                    self.serial_handler.display_text("PROMOTED TO", piece_name)
-                    move = self.chess_game.board.peek().uci()
-                    self.serial_handler.display_text("MOVE MADE", move)
-                else:
-                    self.serial_handler.display_text("INVALID", "PROMOTION")
-                self.chess_game.promotion_choice = None
-            else:
-                self.serial_handler.display_text("SELECT", "PROMOTION!")
-                self.serial_handler.display_text("USE BTNS", "4-7")
-        else:
+            self.handle_promotion_selection(buttons_reading)
+            return
 
-            result = self.chess_game.push_move()
-            if result == "promotion_needed":
-                self.serial_handler.display_text("CHOOSE PROMOTION", "USE BTNS 4-7")
-            elif result:
-                move = self.chess_game.board.peek().uci()
-                self.serial_handler.display_text("MOVE MADE", move)
-            else:
-                self.serial_handler.display_text("INVALID MOVE", "TRY AGAIN")
+        # Handle move confirmation
+        if buttons_reading[1]:  # Main action button
+            self.handle_main_action()
+
+        # Display simplified turn status
+        self.display_turn_status()
+
+    def display_turn_status(self):
+        """Only show turn status when no other messages"""
+        status = "WHITE" if self.chess_game.board.turn == chess.WHITE else "BLACK"
+        self.serial_handler.display_text(f"{status}'S TURN", "CONFIRM WITH B1")
+
+    def handle_main_action(self):
+        result = self.chess_game.push_move()
+        if result == "promotion_needed":
+            self.serial_handler.display_text("PROMOTE: 4=Q 5=R", "6=B 7=N")
+        elif result:
+            move = self.chess_game.board.peek().uci()
+            self.serial_handler.display_text("MOVED", move[:14])
+        else:
+            self.serial_handler.display_text("INVALID MOVE", "ADJUST BOARD")
 
     def missing(self,lattice_reading, chess_game):
         missing = chess_game.get_missing_start_pieces(lattice_reading)
@@ -101,5 +73,9 @@ class Gameplay:
             line1 = " ".join(chunks[0]).ljust(14) if len(chunks) > 0 else ""
             line2 = " ".join(chunks[1]).ljust(14) if len(chunks) > 1 else ""
             self.serial_handler.display_text(line1[:14], line2[:14])
+
         elif len(missing) > 4:
             self.serial_handler.display_text("MISSING", f"{len(missing)} PIECES")
+
+
+

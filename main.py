@@ -53,15 +53,12 @@ while running:
     # Replace the lattice_updated block in main.py's while loop:
     if lattice_updated:
         chess_game.update_from_sensor(lattice_reading)
-        chessboard_state_correct = chess_game.is_state_correct()
-
-        # Handle game setup assistance
         if not chess_game.game_started:
-            Gameplay.missing(lattice_reading, chess_game)
-        else:
-            # Existing game state display
-            if chessboard_state_correct:
-                serial_handler.display_text("GOOD TO GO", ":)")
+            if chess_game.validate_initial_position(lattice_reading):
+                chess_game.game_started = True
+                serial_handler.display_text("GAME STARTED!", "WHITE MOVES FIRST")
+            else:
+                gameplay.missing(lattice_reading,chess_game)
 
     if DEBUG:
         app.set_task("gameplay")
