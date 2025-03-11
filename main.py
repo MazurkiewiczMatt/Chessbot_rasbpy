@@ -55,17 +55,15 @@ while running:
     if lattice_updated:
         chess_game.update_from_sensor(lattice_reading)
         if not chess_game.game_started:
-            if chess_game.validate_initial_position(lattice_reading):
-                chess_game.game_started = True
+            missing_binary=gameplay.missing(lattice_reading,chess_game)
+            if missing_binary:
                 serial_handler.display_text("GAME STARTED!", "WHITE MOVES FIRST")
-            else:
-                serial_handler.display_text("version 11/03/1732","")
-                gameplay.missing(lattice_reading,chess_game)
+                chess_game.game_started = True
+
 
     if DEBUG:
         app.set_task("gameplay")
     if buttons_updated:
-        # Handle turn completion buttons, promotion, etc., in the game logic
         gameplay.process_button_reading(buttons_reading)
     # here move robot
     #robot_arm.scheduled_movements(action)

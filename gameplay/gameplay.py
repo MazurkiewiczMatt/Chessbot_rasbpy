@@ -39,7 +39,6 @@ class Gameplay:
         # Handle promotion first
         if self.chess_game.promotion_pending:
             self.handle_promotion_selection(buttons_reading)
-            return
 
         # Handle move confirmation
 
@@ -70,9 +69,12 @@ class Gameplay:
             line1 = " ".join(chunks[0]).ljust(14) if len(chunks) > 0 else ""
             line2 = " ".join(chunks[1]).ljust(14) if len(chunks) > 1 else ""
             self.serial_handler.display_text(line1[:14], line2[:14])
+            return 0
 
         elif len(missing) > 4:
-            self.serial_handler.display_text("XD MISSING", f"{len(missing)} PIECES")
-
+            self.serial_handler.display_text("MISSING", f"{len(missing)} PIECES")
+            return 0
+        else:
+            return 1
 
 
