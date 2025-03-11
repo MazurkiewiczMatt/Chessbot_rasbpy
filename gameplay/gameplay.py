@@ -75,7 +75,7 @@ class Gameplay:
             self.serial_handler.display_text(line1[:14], line2[:14])
 
         elif len(missing) > 4:
-            self.serial_handler.display_text("MISSING", f"{len(missing)} PIECES")
+            self.serial_handler.display_text("XD MISSING", f"{len(missing)} PIECES")
 
 
 
