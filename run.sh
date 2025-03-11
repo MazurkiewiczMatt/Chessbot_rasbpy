@@ -2,38 +2,33 @@
 
 cd /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy
 
-# Pull the latest changes from the git repository
+# Pull latest changes and reset
 find .git/objects/ -size 0 -exec rm -f {} \;
 git fetch origin
-git_output=$(git pull)
+git pull
 git reset --hard origin/main
 
-TIMESTAMP=$(date +%Y%m%d%H%M%S)
-LOGFILE="log-${TIMESTAMP}.txt"
-
-# Ensure log file is created
+# Create log file with basic timestamp
+LOGFILE="log-$(date +%Y%m%d-%H%M%S).txt"
 touch "$LOGFILE"
+
+# Initial commit with empty log
 git add "$LOGFILE"
-git commit . -m "empty log from $(date +%Y%m%d%H%M%S)"
+git commit -m "Empty log created"
 git push origin main
 
-# Make run2.sh executable
+# Execute and log run2.sh
 chmod +x run2.sh
-echo "run2.sh START"
-# Capture output of run2.sh into the log file
 {
-    echo "=== Starting run2.sh at $(date) ==="
+    echo "=== Run started: $(date) ==="
     ./run2.sh
-    echo "=== Finished run2.sh at $(date) ==="
-} &> "$LOGFILE" 
+    echo "=== Run completed: $(date) ==="
+} &> "$LOGFILE"
 
-echo "run2.sh ENDING"
-
-# Copy log file into the repository
-echo "cp logfile start"
-cp "../$LOGFILE" .
-echo "cp logfile end"
-# Commit and push
-git commit . -m "Add log from $(TIMESTAMP)"
+# Final commit with actual log
+git add "$LOGFILE"
+git commit -m "Log from $(date +%Y%m%d-%H%M%S)"
 git push origin main
+
+# Launch main application
 python3 /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/main.py
