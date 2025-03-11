@@ -25,9 +25,10 @@ last_lattice_reading = None
 
 # Software modules
 chessboard_state_correct = None
-gameplay = Gameplay()
-robot_arm = RobotArmHandler()
 chess_game = ChessGameSimulator()
+
+gameplay = Gameplay(chess_game,serial_handler)
+robot_arm = RobotArmHandler()
 #serial_handler.display_text("INITIATED", "NOTHING")
 
 
