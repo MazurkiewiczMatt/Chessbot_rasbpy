@@ -1,0 +1,103 @@
+spiesznikrysiek@raspberrypi:~ $ cd Desktop/Chessbot/Chessbot_rasbpy/
+spiesznikrysiek@raspberrypi:~/Desktop/Chessbot/Chessbot_rasbpy $ git add "error.txt"
+fatal: pathspec 'error.txt' did not match any files
+spiesznikrysiek@raspberrypi:~/Desktop/Chessbot/Chessbot_rasbpy $ ls
+Arduino                 log-20250311174845.txt  log-20250311192354.txt
+arduino_serial          log-20250311174852.txt  log.txt
+buttons                 log-20250311175327.txt  main.py
+chessboard              log-20250311175339.txt  __pycache__
+debugger_app            log-20250311180114.txt  relevant_changes
+gameplay                log-20250311180422.txt  requirements.txt
+homing                  log-20250311180709.txt  robot_arms
+lattice                 log-20250311180716.txt  run2.sh
+log-20250311170715.txt  log-20250311182203.txt  run.sh
+log-20250311170943.txt  log-20250311183010.txt  settings.py
+log-20250311170945.txt  log-20250311183016.txt  trajectory
+log-20250311174607.txt  log-20250311190445.txt  Trajectory
+log-20250311174614.txt  log-20250311190447.txt
+spiesznikrysiek@raspberrypi:~/Desktop/Chessbot/Chessbot_rasbpy $ ./run2.sh
+The directory was updated with the latest changes.
+Installing dependencies from requirements.txt...
+WARNING: Skipping serial as it is not installed.
+Defaulting to user installation because normal site-packages is not writeable
+Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
+Requirement already satisfied: chess==1.10.0 in /home/spiesznikrysiek/.local/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (1.10.0)
+Requirement already satisfied: colorzero==2.0 in /usr/lib/python3/dist-packages (from -r requirements.txt (line 2)) (2.0)
+Requirement already satisfied: gpiozero==2.0.1 in /usr/lib/python3/dist-packages (from -r requirements.txt (line 3)) (2.0.1)
+Requirement already satisfied: python-chess==1.999 in /home/spiesznikrysiek/.local/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (1.999)
+Requirement already satisfied: tk in /home/spiesznikrysiek/.local/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (0.1.0)
+Requirement already satisfied: pyserial in /usr/lib/python3/dist-packages (from -r requirements.txt (line 6)) (3.5)
+Requirement already satisfied: numpy in /usr/lib/python3/dist-packages (from -r requirements.txt (line 7)) (1.24.2)
+Config file written to: /root/.arduino15/arduino-cli.yaml
+Downloading index: package_index.tar.bz2 downloaded                             
+Platform arduino:avr@1.8.6 already installed
+Platform arduino:megaavr@1.8.8 already installed
+Already installed LiquidCrystal_I2C_Hangul@2.0.0
+Already installed AccelStepper@1.64.0
+Already installed AccelStepper@1.64.0
+Already installed AccelStepperWithDistances@1.0.4
+WARNING: library LiquidCrystal_I2C_Hangul claims to run on avr architecture(s) and may be incompatible with your current board which runs on megaavr architecture(s).
+Sketch uses 20530 bytes (41%) of program storage space. Maximum is 49152 bytes.
+Global variables use 1289 bytes (20%) of dynamic memory, leaving 4855 bytes for local variables. Maximum is 6144 bytes.
+
+Used library             Version Path
+AccelStepper             1.64    /root/Arduino/libraries/AccelStepper
+Wire                     1.0     /root/.arduino15/packages/arduino/hardware/megaavr/1.8.8/libraries/Wire
+LiquidCrystal_I2C_Hangul 2.0.0   /root/Arduino/libraries/LiquidCrystal_I2C_Hangul
+
+Used platform   Version Path
+arduino:megaavr 1.8.8   /root/.arduino15/packages/arduino/hardware/megaavr/1.8.8
+Waiting 20 seconds before attempting to upload the compiled sketch.
+avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description
+New upload port: /dev/ttyACM0 (serial)
+Arduino setup complete.
+spiesznikrysiek@raspberrypi:~/Desktop/Chessbot/Chessbot_rasbpy $ python3 main.py
+The ChessBot's Raspberry Pi software has been launched!
+Traceback (most recent call last):
+  File "/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/main.py", line 69, in <module>
+    gameplay.process_button_reading(buttons_reading)
+  File "/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/gameplay/gameplay.py", line 47, in process_button_reading
+    self.handle_main_action()
+  File "/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/gameplay/gameplay.py", line 53, in handle_main_action
+    result = self.chess_game.push_move()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/chessboard/piece_recognition.py", line 34, in push_move
+    detected = detect_move(self.holm[-1], self.hotm)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/chessboard/piece_recognition.py", line 148, in detect_move
+    moved = list(prev.squares ^ curr.squares)
+                 ^^^^^^^^^^^^
+AttributeError: 'Board' object has no attribute 'squares'
+spiesznikrysiek@raspberrypi:~/Desktop/Chessbot/Chessbot_rasbpy $ ./run.sh
+HEAD is now at 1d8c7f4 Add log from
+[main 8b8328d] empty log from 20250311194240
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ create mode 100644 log-20250311194240.txt
+Enumerating objects: 3, done.
+Counting objects: 100% (3/3), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (2/2), 267 bytes | 267.00 KiB/s, done.
+Total 2 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/MazurkiewiczMatt/Chessbot_rasbpy
+   1d8c7f4..8b8328d  main -> main
+run2.sh START
+run2.sh ENDING
+cp logfile start
+cp: cannot stat '../log-20250311194240.txt': No such file or directory
+cp logfile end
+./run.sh: line 37: TIMESTAMP: command not found
+[main c1b6007] Add log from
+ 1 file changed, 2 insertions(+)
+Enumerating objects: 5, done.
+Counting objects: 100% (5/5), done.
+Delta compression using up to 4 threads
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 342 bytes | 342.00 KiB/s, done.
+Total 3 (delta 1), reused 0 (delta 0), pack-reused 0
+remote: Resolving deltas: 100% (1/1), completed with 1 local object.
+To https://github.com/MazurkiewiczMatt/Chessbot_rasbpy
+   8b8328d..c1b6007  main -> main
+The ChessBot's Raspberry Pi software has been launched!
+
