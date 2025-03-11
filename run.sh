@@ -6,9 +6,10 @@ git fetch origin
 git_output=$(git pull)
 git reset --hard origin/main
 
-LOGFILE="log.txt"
-sudo rm "$LOGFILE"
-# Ensure log file exists
+TIMESTAMP=$(date +%Y%m%d%H%M%S)
+LOGFILE="log-${TIMESTAMP}.txt"
+
+# Ensure log file is created
 touch "$LOGFILE"
 
 # Make run2.sh executable
@@ -26,6 +27,6 @@ chmod +x run2.sh
 cp "../$LOGFILE" .
 
 # Commit and push
-git commit . -m "Add log from $(date)"
+git commit . -m "Add log from $(TIMESTAMP)"
 git push origin main
 python3 /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/main.py
