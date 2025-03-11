@@ -32,6 +32,7 @@ class Gameplay:
                 self.serial_handler.display_text("PROMOTED TO",
                     self.PROMOTION_NAMES[choice])
                 return True
+
         return False
 
     def process_button_reading(self, buttons_reading):
@@ -41,16 +42,12 @@ class Gameplay:
             return
 
         # Handle move confirmation
-        if buttons_reading[1]:  # Main action button
+
+        if (buttons_reading[0] and self.chess_game.board.turn == chess.WHITE) or (buttons_reading[2] and self.chess_game.board.turn == chess.BLACK):  # M
             self.handle_main_action()
+        #elif buttons_reading[0] or buttons_reading[2]:
+        #    self.serial_handler.display_text("OTHER GUYS TURN","")
 
-        # Display simplified turn status
-        self.display_turn_status()
-
-    def display_turn_status(self):
-        """Only show turn status when no other messages"""
-        status = "WHITE" if self.chess_game.board.turn == chess.WHITE else "BLACK"
-        self.serial_handler.display_text(f"{status}'S TURN", "CONFIRM WITH B1")
 
     def handle_main_action(self):
         result = self.chess_game.push_move()
