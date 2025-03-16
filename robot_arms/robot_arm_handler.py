@@ -5,6 +5,7 @@ class RobotArmHandler:
         self.scheduled_movements = []
         self.can_move = False
         self.position=[[2,2],[2,5]]
+        self.discard_position=[[8,3],[8,4]]
         #1 zone, 2 underline area
         self.matrixZone=[[0,0,0,0,0,0,1,1],
                         [0,0,0,0,0,1,1,1],
@@ -15,13 +16,30 @@ class RobotArmHandler:
                         [0,0,0,0,0,1,1,1],
                         [0,0,0,0,0,0,1,1]]
 
+        #  Rook, Bishop, Knight have the same height
+         # queen and king have the same height
+        # pawns have own height
+        # promoted piece might have different height due to substitute piece
+        self.matrixHeights=[[0,0,0,0,0,0,1,1],
+                            [0,0,0,0,0,1,1,1],        #here right arm
+                            [0,0,0,0,0,1,1,2],
+                            [0,0,0,0,1,1,2,2],
+                            [0,0,0,0,1,1,2,2],
+                            [0,0,0,0,0,1,1,2],
+                            [0,0,0,0,0,1,1,1],          # here left arm
+                            [0,0,0,0,0,0,1,1]]
+
+
+
     def schedule_movement(self, movement_params):
         self.scheduled_movements.append(movement_params)
+
     def is_in_zone(self,startMove):
         if self.matrixZone[startMove[0]][startMove[1]] == 1:
             return True
         else:
             return False
+
     def is_under_line(self,coordinates):
         if self.matrixZone[coordinates[0]][coordinates[1]] > 0:
             return True
@@ -44,7 +62,11 @@ class RobotArmHandler:
 
         if self.can_move and self.schedule_movements != []:
             self.can_move = False
-            arduino_instruction = ""
+            arduino_instruction = analyse_move(self.schedule_movements)
+
 
         return arduino_instruction
 
+    def arduino_instruction(self):
+        instructions=None #not None
+        return instructions
