@@ -281,6 +281,37 @@ void waitingDisplay() {
   }
 }
 
+void em_on() {
+//on
+Serial.println("EM on");
+
+}
+void em_off() {
+// off
+Serial.println("EM off");
+
+}
+void lights(module) {
+//module selection and affirmation
+Serial.println("module" + module +  "selected");
+
+}
+void servo_em_r(target_h) {
+// raise servo
+Serial.println("height raise to" + target_h);
+
+}
+void servo_em_d(target_h) {
+// raise servo
+Serial.println("height drop to" + target_h);
+
+}
+
+
+
+
+
+
 void setup() {
     // Initialize button pins with internal pull-up resistors
     pinMode(homeButton1Pin, INPUT_PULLUP);
@@ -337,6 +368,37 @@ void loop() {
         } else {
             Serial.println("Unknown command");
         }
+                // Handle EM ON command
+        } else if (message.startsWith("EM_on")) {
+            em_on();
+        } else {
+            Serial.println("Unknown command");
+        }
+        // Handle EM OFF command
+        } else if (message.startsWith("EM_off")) {
+            em_off();
+        } else {
+            Serial.println("Unknown command");
+        }
+        // Handle LIGHTS MODE command
+        } else if (message.startsWith("lights")) {
+            lights(message);
+        } else {
+            Serial.println("Unknown command");
+        }
+        // Handle electromagnet_raise command
+        } else if (message.startsWith("EM_R")) {
+            servo_em_r(message);
+        } else {
+            Serial.println("Unknown command");
+        }
+        // Handle electromagnet_drop command
+        } else if (message.startsWith("EM_D")) {
+            servo_em_d(message);
+        } else {
+            Serial.println("Unknown command");
+        }
+
     }
 }
 }
