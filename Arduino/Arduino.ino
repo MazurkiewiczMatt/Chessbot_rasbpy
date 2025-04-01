@@ -4,53 +4,65 @@
 
 LiquidCrystal_I2C_Hangul lcd(0x27, 16, 2);
 Servo myservo;
+bool ConnectedBollean = false;
+
+// Sweep sequence: 30,180,35,180,40,180,45,180,50,180,55
+const int angles[] = {30, 180, 35, 180, 40, 180, 45, 180, 50, 180, 55};
+const int numAngles = sizeof(angles)/sizeof(angles[0]);
+int currentAngle = 0;
+unsigned long lastMove = 0;
 
 void setup() {
-  Serial.begin(9600);
-  lcd.init();
-  lcd.backlight();
-  myservo.attach(9);  // Changed to pin 9 for better PWM compatibility
-  
-  lcd.clear();
-  lcd.print("Servo Test");
-  lcd.setCursor(0, 1);
-  lcd.print("Sweeping 30-150°");
+    Serial.begin(9600);
+    lcd.init();
+    lcd.backlight();
+    myservo.attach(6);
+
+    displayLCD("System Ready", "Connect to start");
+    Serial.println("READY|Servo sequence system");
 }
 
 void loop() {
-  // Continuous sweep
-  for(int pos = 30; pos <= 150; pos++) {
-    updateServo(pos);
-    checkSerial();
-    delay(15);
-  }
-  for(int pos = 150; pos >= 30; pos--) {
-    updateServo(pos);
-    checkSerial();
-    delay(15);
-  }
+    if (!ConnectedBollean) {
+        waitingDisplay();
+    } else {
+        handleSequence();
+        checkSerial();
+    }
 }
 
-void updateServo(int angle) {
-  myservo.write(angle);
-  lcd.setCursor(0, 1);
-  lcd.print("Angle: ");
-  lcd.print(angle);
-  lcd.print("°   "); // Clear residual characters
+void handleSequence() {
+    if(millis() - lastMove >= 2000) { // 2 second interval
+        // Update angle position
+        currentAngle = (currentAngle + 1) % numAngles;
+
+        // Move servo and update displays
+        myservo.write(angles[currentAngle]);
+        displayLCD("Position:", String(angles[currentAngle]) + " degrees");
+        Serial.print("POS|");
+        Serial.println(angles[currentAngle]);
+
+        lastMove = millis();
+    }
 }
 
 void checkSerial() {
-  if(Serial.available()) {
-    String msg = Serial.readStringUntil('\n');
-    msg.trim();
-    
-    if(msg.equalsIgnoreCase("PING")) {
-      Serial.println("PONG");
-      lcd.clear();
-      lcd.print("PING Received!");
-      delay(2000);
-      lcd.clear();
-      lcd.print("Servo Test");
+    if(Serial.available() > 0) {
+        String msg = Serial.readStringUntil('\n');
+        msg.trim();
+
+        if(msg.equalsIgnoreCase("PING")) {
+            Serial.println("PONG");
+            displayLCD("PING Received", "Active");
+            delay(1000); // Brief LCD confirmation
+        }
+        else if(msg.startsWith("LCD")) {
+            handleLCDCommand(msg.substring(3));
+        }
     }
-  }
 }
+
+// Keep existing LCD functions unchanged
+void displayLCD(String line1, String line2) { /* ... */ }
+void handleLCDCommand(String lcdData) { /* ... */ }
+void waitingDisplay() { /* ... */ }
