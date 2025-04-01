@@ -1,11 +1,11 @@
 #include <AccelStepper.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C_Hangul.h>
-#include <Servo.h>
 
 #define motorInterfaceType AccelStepper::DRIVER
-
-Servo myservo;  // Create servo object
+#define SERVO_PIN 9       // Use a PWM-capable pin (9 or 10 for Timer1)
+#define PWM_MIN 102       // 1ms pulse (0°): 1ms / 20ms * 65535 = ~3276 but adjusted for 50Hz
+#define PWM_MAX 512       // 2ms pulse (180°): 2ms / 20ms * 65535 = ~6553 but adjusted for 50Hz
 // Initialize stepper motors with appropriate pins
 AccelStepper stepper1(motorInterfaceType, 3, 2); // Stepper1 (Step, Dir)
 AccelStepper stepper2(motorInterfaceType, 5, 4); // Stepper2 (Step, Dir)
@@ -298,24 +298,28 @@ void lights(int module) {
     Serial.println(" selected");
 }
 
-void servo_em_r(int target_h) {
-    myservo.write(target_h);
+void servo_em_r(int angle) {
+    int pulseWidth = map(angle, 0, 180, PWM_MIN, PWM_MAX);
+    analogWrite(SERVO_PIN, pulseWidth);
     Serial.print("Servo raised to: ");
-    Serial.println(target_h);
+    Serial.println(angle);
 }
 
-void servo_em_d(int target_h) {
-    myservo.write(target_h);
+void servo_em_d(int angle) {
+    int pulseWidth = map(angle, 0, 180, PWM_MIN, PWM_MAX);
+    analogWrite(SERVO_PIN, pulseWidth);
     Serial.print("Servo lowered to: ");
-    Serial.println(target_h);
+    Serial.println(angle);
 }
-
 
 
 
 
 void setup() {
-    myservo.attach(6);  // Attaches the servo on pin 9
+    pinMode(SERVO_PIN, OUTPUT);
+    TCCR1A = _BV(COM1A1) | _BV(WGM11);
+    TCCR1B = _BV(WGM13) | _BV(CS11);
+    ICR1 = 40000;  // 50Hz frequency (16MHz/8/50Hz)
     // Initialize button pins with internal pull-up resistors
     pinMode(homeButton1Pin, INPUT_PULLUP);
     pinMode(homeButton2Pin, INPUT_PULLUP);
@@ -341,18 +345,7 @@ void setup() {
 
     Serial.println("Starting servo test...");
 
-    // Test servo movement
-    for(int i = 0; i < 3; i++) {
-        myservo.write(0);
-        Serial.println("Servo position: 0");
-        delay(1000);
-        myservo.write(90);
-        Serial.println("Servo position: 90");
-        delay(1000);
-        myservo.write(180);
-        Serial.println("Servo position: 180");
-        delay(1000);
-    }
+
 
     Serial.println("Servo test complete");
 
