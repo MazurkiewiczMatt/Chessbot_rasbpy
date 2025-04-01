@@ -6,43 +6,41 @@ LiquidCrystal_I2C_Hangul lcd(0x27, 16, 2);
 Servo myservo;
 
 const int angles[] = {30, 180, 35, 180, 40, 180, 45, 180, 50, 180, 55};
-int currentTarget = 0;
-int currentPos = 30;
-unsigned long lastMove = 0;
-const int moveInterval = 30; // Time between small steps (ms)
+const int emagPins[] = {14, 15};
+int currentAngle = 0;
 
 void setup() {
     lcd.init();
     lcd.backlight();
     myservo.attach(6);
-    myservo.write(currentPos);
-    updateDisplay();
+    for(int pin : emagPins) pinMode(pin, OUTPUT);
 }
 
 void loop() {
-    if(millis() - lastMove >= moveInterval) {
-        // Calculate movement step (3x slower by using smaller steps)
-        int target = angles[currentTarget];
-        int step = (target > currentPos) ? 1 : -1;
+    // Move down
+    smoothMove(angles[currentAngle], 30);
+    activateEmag(true);
+    delay(4000);
 
-        currentPos += step;
-        myservo.write(currentPos);
+    // Move up
+    smoothMove(180, 30);
+    activateEmag(false);
 
-        // Update display only when reaching target
-        if(currentPos == target) {
-            currentTarget = (currentTarget + 1) % (sizeof(angles)/sizeof(angles[0]));
-            updateDisplay();
-        }
+    currentAngle = (currentAngle + 1) % 5; // Only use first 5 down positions
+}
 
-        lastMove = millis();
+void smoothMove(int target, int speed) {
+    while(myservo.read() != target) {
+        myservo.write(myservo.read() < target ? myservo.read()+1 : myservo.read()-1);
+        lcd.clear();
+        lcd.print("Position: ");
+        lcd.print(myservo.read());
+        delay(speed);
     }
 }
 
-void updateDisplay() {
-    lcd.clear();
-    lcd.setCursor(0, 0);
-    lcd.print("Moving to:");
+void activateEmag(bool state) {
+    for(int pin : emagPins) digitalWrite(pin, state);
     lcd.setCursor(0, 1);
-    lcd.print(angles[currentTarget]);
-    lcd.print(" degrees");
+    lcd.print(state ? "EMAG ON " : "EMAG OFF");
 }
