@@ -302,8 +302,8 @@ void servo_em_r(target_h) {
   myservo.write(0);
   delay(1000);         // Wait 1 second
 
-  // Rotate to 180 degrees (90 degrees clockwise from center)
-  myservo.write(180);
+  // Rotate to 180->10 degrees (90 degrees clockwise from center)
+  myservo.write(10);
   delay(1000);         // Wait 1 secondSerial.println("height raise to" + target_h);
 
 }
