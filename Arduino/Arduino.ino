@@ -2,62 +2,79 @@
 #include <LiquidCrystal_I2C_Hangul.h>
 #include <Servo.h>
 
-LiquidCrystal_I2C_Hangul lcd(0x27, 16, 2); // Address 0x27, 16x2
+LiquidCrystal_I2C_Hangul lcd(0x27, 16, 2);
 Servo myservo;
-bool ConnectedBollean = 0;
+bool ConnectedBollean = false;
+
+// Sweep pattern: 30, 180, 35, 180, 40... etc.
+const int sweepAngles[] = {30, 180, 35, 180, 40, 180, 45, 180, 50, 180, 55};
+const int numSteps = sizeof(sweepAngles) / sizeof(sweepAngles[0]);
 
 void setup() {
     Serial.begin(9600);
     lcd.init();
     lcd.backlight();
-    myservo.attach(6);  // Servo on pin 6
+    myservo.attach(6);
 
-    lcd.clear();
-    lcd.print("System Ready");
-    lcd.setCursor(0, 1);
-    lcd.print("Send commands");
-    Serial.println("READY|Servo test system initialized");
+    displayLCD("System Ready", "Send commands");
+    Serial.println("STAT|System initialized");
 }
 
 void loop() {
-    if (ConnectedBollean == 0) {
+    if (!ConnectedBollean) {
         waitingDisplay();
     } else {
-        if (Serial.available() > 0) {
-            String message = Serial.readStringUntil('\n');
-            message.trim();
+        handleSerial();
+    }
+}
 
-            if (message.equalsIgnoreCase("PING")) {
-                Serial.println("PONG");
-                displayLCD("PONG Received", "System Ready");
-            }
-            else if (message.equalsIgnoreCase("SWEEP")) {
-                performServoSweep();
-            }
-            else if (message.startsWith("LCD")) {
-                handleLCDCommand(message.substring(3));
-            }
-            else {
-                Serial.println("ERR|Unknown command");
-            }
+void handleSerial() {
+    if (Serial.available() > 0) {
+        String message = Serial.readStringUntil('\n');
+        message.trim();
+
+        if (message.equalsIgnoreCase("PING")) {
+            Serial.println("PONG");
+            displayLCD("PING Received", "System Active");
+        }
+        else if (message.equalsIgnoreCase("SWEEP")) {
+            performServoSweep();
+        }
+        else if (message.startsWith("LCD")) {
+            handleLCDCommand(message.substring(3));
+        }
+        else {
+            Serial.println("ERR|Unknown command");
         }
     }
 }
 
 void performServoSweep() {
-    for(int i = 0; i < 5; i++) {
-        myservo.write(50);
-        displayLCD("Sweep " + String(i+1), "Position: 50°");
-        Serial.println("STAT|Moving to 50°");
-        delay(1000);
+    Serial.println("STAT|Starting sweep pattern");
+    displayLCD("Sweep Started", "Pattern running");
 
-        myservo.write(180);
-        displayLCD("Sweep " + String(i+1), "Position: 180°");
-        Serial.println("STAT|Moving to 180°");
-        delay(1000);
+    for (int i = 0; i < numSteps; i++) {
+        int target = sweepAngles[i];
+        myservo.write(target);
+
+        // LCD display
+        String stepInfo = "Step " + String(i+1) + "/" + String(numSteps);
+        String angleInfo = "Angle: " + String(target) + "°";
+        displayLCD(stepInfo, angleInfo);
+
+        // Serial feedback
+        Serial.print("STAT|Position ");
+        Serial.print(i+1);
+        Serial.print("/");
+        Serial.print(numSteps);
+        Serial.print(": ");
+        Serial.println(target);
+
+        delay(2000);
     }
-    displayLCD("Sweep Complete", "5 cycles done");
-    Serial.println("DONE|Sweep completed");
+
+    displayLCD("Sweep Complete", "Cycle finished");
+    Serial.println("DONE|Full pattern executed");
 }
 
 // Keep existing LCD functions
@@ -72,11 +89,10 @@ void displayLCD(String line1, String line2) {
 void handleLCDCommand(String lcdData) {
     int commaIndex = lcdData.indexOf(',');
     if (commaIndex != -1) {
-        String line1 = lcdData.substring(0, commaIndex);
-        line1.trim();
-        String line2 = lcdData.substring(commaIndex + 1);
-        line2.trim();
-        displayLCD(line1, line2);
+        displayLCD(
+            lcdData.substring(0, commaIndex).trim(),
+            lcdData.substring(commaIndex+1).trim()
+        );
         Serial.println("LCD|Update success");
     } else {
         Serial.println("ERR|LCD format: LCD line1,line2");
@@ -84,16 +100,16 @@ void handleLCDCommand(String lcdData) {
 }
 
 void waitingDisplay() {
-    static unsigned long lastUpdate = 0;
+    static unsigned long lastChange = 0;
     static int msgIndex = 0;
 
-    if(millis() - lastUpdate > 5000) {
-        msgIndex = random(numMessages);
+    if (millis() - lastChange > 5000) {
+        msgIndex = (msgIndex + 1) % numMessages;
         displayLCD(messages[msgIndex][0], messages[msgIndex][1]);
-        lastUpdate = millis();
+        lastChange = millis();
     }
 
-    if(Serial.available()) {
+    if (Serial.available()) {
         ConnectedBollean = true;
         displayLCD("Connected!", "Awaiting commands");
         delay(2000);
