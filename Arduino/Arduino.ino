@@ -3,9 +3,6 @@
 #include <LiquidCrystal_I2C_Hangul.h>
 
 #define motorInterfaceType AccelStepper::DRIVER
-#define SERVO_PIN 9       // Use a PWM-capable pin (9 or 10 for Timer1)
-#define PWM_MIN 102       // 1ms pulse (0°): 1ms / 20ms * 65535 = ~3276 but adjusted for 50Hz
-#define PWM_MAX 512       // 2ms pulse (180°): 2ms / 20ms * 65535 = ~6553 but adjusted for 50Hz
 // Initialize stepper motors with appropriate pins
 AccelStepper stepper1(motorInterfaceType, 3, 2); // Stepper1 (Step, Dir)
 AccelStepper stepper2(motorInterfaceType, 5, 4); // Stepper2 (Step, Dir)
@@ -282,44 +279,9 @@ void waitingDisplay() {
   }
 }
 
-void em_on() {
-//on
-Serial.println("EM on");
-
-}
-void em_off() {
-// off
-Serial.println("EM off");
-
-}
-void lights(int module) {
-    Serial.print("module ");
-    Serial.print(module);
-    Serial.println(" selected");
-}
-
-void servo_em_r(int angle) {
-    int pulseWidth = map(angle, 0, 180, PWM_MIN, PWM_MAX);
-    analogWrite(SERVO_PIN, pulseWidth);
-    Serial.print("Servo raised to: ");
-    Serial.println(angle);
-}
-
-void servo_em_d(int angle) {
-    int pulseWidth = map(angle, 0, 180, PWM_MIN, PWM_MAX);
-    analogWrite(SERVO_PIN, pulseWidth);
-    Serial.print("Servo lowered to: ");
-    Serial.println(angle);
-}
-
-
 
 
 void setup() {
-    pinMode(SERVO_PIN, OUTPUT);
-    TCCR1A = _BV(COM1A1) | _BV(WGM11);
-    TCCR1B = _BV(WGM13) | _BV(CS11);
-    ICR1 = 40000;  // 50Hz frequency (16MHz/8/50Hz)
     // Initialize button pins with internal pull-up resistors
     pinMode(homeButton1Pin, INPUT_PULLUP);
     pinMode(homeButton2Pin, INPUT_PULLUP);
@@ -368,19 +330,6 @@ void loop() {
                 handleMoveCommand(message.substring(4));
             } else if (message.equalsIgnoreCase("HOME")) {
                 homeAllSteppers();
-            } else if (message.startsWith("EM_on")) {
-                em_on();
-            } else if (message.startsWith("EM_off")) {
-                em_off();
-            } else if (message.startsWith("lights")) {
-                int module = message.substring(6).toInt();
-                lights(module);
-            } else if (message.startsWith("EM_R")) {
-                int angle = message.substring(4).toInt();
-                servo_em_r(angle);
-            } else if (message.startsWith("EM_D")) {
-                int angle = message.substring(4).toInt();
-                servo_em_d(angle);
             } else {
                 Serial.println("Unknown command");
             }
