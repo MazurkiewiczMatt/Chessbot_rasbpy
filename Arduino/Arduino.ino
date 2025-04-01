@@ -4,7 +4,9 @@
 
 // Define motor interface type
 #define motorInterfaceType AccelStepper::DRIVER
+#include <Servo.h>
 
+Servo myservo;  // Create servo object
 // Initialize stepper motors with appropriate pins
 AccelStepper stepper1(motorInterfaceType, 3, 2); // Stepper1 (Step, Dir)
 AccelStepper stepper2(motorInterfaceType, 5, 4); // Stepper2 (Step, Dir)
@@ -297,8 +299,12 @@ Serial.println("module" + module +  "selected");
 
 }
 void servo_em_r(target_h) {
-// raise servo
-Serial.println("height raise to" + target_h);
+  myservo.write(0);
+  delay(1000);         // Wait 1 second
+
+  // Rotate to 180 degrees (90 degrees clockwise from center)
+  myservo.write(180);
+  delay(1000);         // Wait 1 secondSerial.println("height raise to" + target_h);
 
 }
 void servo_em_d(target_h) {
@@ -313,6 +319,7 @@ Serial.println("height drop to" + target_h);
 
 
 void setup() {
+    myservo.attach(6);  // Attaches the servo on pin 9
     // Initialize button pins with internal pull-up resistors
     pinMode(homeButton1Pin, INPUT_PULLUP);
     pinMode(homeButton2Pin, INPUT_PULLUP);
@@ -341,6 +348,13 @@ void loop() {
     waitingDisplay();
   }
   else {
+
+    // ACTION TO MAKE;
+    servo_em_r(10);
+    sleep(1000);
+
+
+
     if (Serial.available() > 0) {
         String message = Serial.readStringUntil('\n');
         message.trim(); // Remove any leading/trailing whitespace or newline characters
