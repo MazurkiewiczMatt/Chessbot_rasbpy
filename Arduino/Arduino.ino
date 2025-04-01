@@ -293,10 +293,11 @@ Serial.println("EM off");
 
 }
 void lights(int module) {
-//module selection and affirmation
-Serial.println("module" + module +  "selected");
-
+    Serial.print("module ");
+    Serial.print(module);
+    Serial.println(" selected");
 }
+
 void servo_em_r(int target_h) {
     myservo.write(target_h);
     Serial.print("Servo raised to: ");
@@ -358,70 +359,38 @@ void setup() {
 
 }
 
-
 void loop() {
-  if (ConnectedBollean == 0) {
-    waitingDisplay();
-  }
-  else {
-    if (Serial.available() > 0) {
-        String message = Serial.readStringUntil('\n');
-        message.trim(); // Remove any leading/trailing whitespace or newline characters
+    if (ConnectedBollean == 0) {
+        waitingDisplay();
+    } else {
+        if (Serial.available() > 0) {
+            String message = Serial.readStringUntil('\n');
+            message.trim();
 
-        // Serial.print("Received message: ");
-        // Serial.println(message);
-
-        // Respond to PING
-        if (message.equalsIgnoreCase("PING")) {
-            Serial.println("PONG");
-
-        // Handle LCD message
-        } else if (message.startsWith("LCD")) {
-            String lcdData = message.substring(3); // Extract data after "LCD"
-            lcdData.trim(); // Trim whitespace
-            handleLCDCommand(lcdData);
-
-        // Handle MOVE command
-        } else if (message.startsWith("MOVE")) {
-            handleMoveCommand(message);
-
-        // Handle HOME command
-        } else if (message.equalsIgnoreCase("HOME")) {
-            homeAllSteppers();
-        } else {
-            Serial.println("Unknown command");
+            if (message.equalsIgnoreCase("PING")) {
+                Serial.println("PONG");
+            } else if (message.startsWith("LCD")) {
+                handleLCDCommand(message.substring(3));
+            } else if (message.startsWith("MOVE")) {
+                handleMoveCommand(message.substring(4));
+            } else if (message.equalsIgnoreCase("HOME")) {
+                homeAllSteppers();
+            } else if (message.startsWith("EM_on")) {
+                em_on();
+            } else if (message.startsWith("EM_off")) {
+                em_off();
+            } else if (message.startsWith("lights")) {
+                int module = message.substring(6).toInt();
+                lights(module);
+            } else if (message.startsWith("EM_R")) {
+                int angle = message.substring(4).toInt();
+                servo_em_r(angle);
+            } else if (message.startsWith("EM_D")) {
+                int angle = message.substring(4).toInt();
+                servo_em_d(angle);
+            } else {
+                Serial.println("Unknown command");
+            }
         }
-                // Handle EM ON command
-        } else if (message.startsWith("EM_on")) {
-            em_on();
-        } else {
-            Serial.println("Unknown command");
-        }
-        // Handle EM OFF command
-        } else if (message.startsWith("EM_off")) {
-            em_off();
-        } else {
-            Serial.println("Unknown command");
-        }
-        // Handle LIGHTS MODE command
-        } else if (message.startsWith("lights")) {
-            lights(message);
-        } else {
-            Serial.println("Unknown command");
-        }
-        // Handle electromagnet_raise command
-        } else if (message.startsWith("EM_R")) {
-            servo_em_r(message);
-        } else {
-            Serial.println("Unknown command");
-        }
-        // Handle electromagnet_drop command
-        } else if (message.startsWith("EM_D")) {
-            servo_em_d(message);
-        } else {
-            Serial.println("Unknown command");
-        }
-
     }
-}
 }
