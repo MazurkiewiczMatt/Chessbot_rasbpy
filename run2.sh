@@ -28,8 +28,6 @@ sudo ./arduino-cli core update-index || { echo "Core index update failed"; exit 
 sudo ./arduino-cli core install arduino:avr || { echo "Core AVR installation failed"; exit 1; }
 sudo ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR installation failed"; exit 1; }
 
-sudo rm -rf /root/Arduino/libraries/Servo
-sudo rm -rf /root/Arduino/libraries/AccelStepperWithDistances
 
 sudo ./arduino-cli lib install "LiquidCrystal_I2C_Hangul" || { echo "LCD library installation failed"; exit 1; }
 sudo ./arduino-cli lib install "AccelStepper" || { echo "AccelStepper library installation failed"; exit 1; }
