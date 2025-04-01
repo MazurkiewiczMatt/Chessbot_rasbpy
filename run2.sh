@@ -31,7 +31,7 @@ sudo ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR install
 sudo ./arduino-cli lib install "LiquidCrystal_I2C_Hangul" || { echo "LCD library installation failed"; exit 1; }
 sudo ./arduino-cli lib install "AccelStepper" || { echo "AccelStepper library installation failed"; exit 1; }
 sudo ./arduino-cli lib install "AccelStepperWithDistances" || { echo "AccelStepperWithDistances library installation failed"; exit 1; }
-
+sudo ./arduino-cli lib install "Servo" || { echo "Servo library installation failed"; exit 1; }
 
 # Compile and upload the sketch
 
