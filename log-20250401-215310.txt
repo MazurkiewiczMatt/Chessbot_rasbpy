@@ -1,0 +1,37 @@
+=== Run started: Tue Apr  1 09:53:12 PM BST 2025 ===
+The directory was updated with the latest changes.
+Installing dependencies from requirements.txt...
+WARNING: Skipping serial as it is not installed.
+Defaulting to user installation because normal site-packages is not writeable
+Looking in indexes: https://pypi.org/simple, https://www.piwheels.org/simple
+Requirement already satisfied: chess==1.10.0 in /home/spiesznikrysiek/.local/lib/python3.11/site-packages (from -r requirements.txt (line 1)) (1.10.0)
+Requirement already satisfied: colorzero==2.0 in /usr/lib/python3/dist-packages (from -r requirements.txt (line 2)) (2.0)
+Requirement already satisfied: gpiozero==2.0.1 in /usr/lib/python3/dist-packages (from -r requirements.txt (line 3)) (2.0.1)
+Requirement already satisfied: python-chess==1.999 in /home/spiesznikrysiek/.local/lib/python3.11/site-packages (from -r requirements.txt (line 4)) (1.999)
+Requirement already satisfied: tk in /home/spiesznikrysiek/.local/lib/python3.11/site-packages (from -r requirements.txt (line 5)) (0.1.0)
+Requirement already satisfied: pyserial in /usr/lib/python3/dist-packages (from -r requirements.txt (line 6)) (3.5)
+Requirement already satisfied: numpy in /usr/lib/python3/dist-packages (from -r requirements.txt (line 7)) (1.24.2)
+Config file written to: /root/.arduino15/arduino-cli.yaml
+Downloading index: package_index.tar.bz2 0 B / 79.06 KiB [-------------]   0.00%Downloading index: package_index.tar.bz2 downloaded                             
+Platform arduino:avr@1.8.6 already installed
+Platform arduino:megaavr@1.8.8 already installed
+Already installed LiquidCrystal_I2C_Hangul@2.0.0
+Already installed AccelStepper@1.64.0
+Already installed AccelStepperWithDistances@1.0.4
+Already installed AccelStepper@1.64.0
+WARNING: library LiquidCrystal_I2C_Hangul claims to run on avr architecture(s) and may be incompatible with your current board which runs on megaavr architecture(s).
+Sketch uses 7795 bytes (15%) of program storage space. Maximum is 49152 bytes.
+Global variables use 990 bytes (16%) of dynamic memory, leaving 5154 bytes for local variables. Maximum is 6144 bytes.
+
+[92mUsed library[0m             [92mVersion[0m [90mPath[0m
+[93mWire[0m                     1.0     [90m/root/.arduino15/packages/arduino/hardware/megaavr/1.8.8/libraries/Wire[0m
+[93mLiquidCrystal_I2C_Hangul[0m 2.0.0   [90m/root/Arduino/libraries/LiquidCrystal_I2C_Hangul[0m
+[93mServo[0m                    1.2.2   [90m/root/Arduino/libraries/Servo[0m
+
+[92mUsed platform[0m   [92mVersion[0m [90mPath[0m
+[93marduino:megaavr[0m 1.8.8   [90m/root/.arduino15/packages/arduino/hardware/megaavr/1.8.8[0m
+Waiting 20 seconds before attempting to upload the compiled sketch.
+avrdude: jtagmkII_initialize(): Cannot locate "flash" and "boot" memories in description
+New upload port: /dev/ttyACM0 (serial)
+Arduino setup complete.
+=== Run completed: Tue Apr  1 09:54:26 PM BST 2025 ===
