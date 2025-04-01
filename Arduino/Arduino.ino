@@ -54,7 +54,6 @@ void checkSerial() {
         if(msg.equalsIgnoreCase("PING")) {
             Serial.println("PONG");
             displayLCD("PING Received", "Active");
-            delay(1000); // Brief LCD confirmation
         }
         else if(msg.startsWith("LCD")) {
             handleLCDCommand(msg.substring(3));
