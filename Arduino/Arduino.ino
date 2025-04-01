@@ -277,7 +277,7 @@ void waitingDisplay() {
     message.trim();
     if (message.length() > 0) {
       ConnectedBollean = 1;
-      displayLCD("Connection", "Established!");
+      displayLCD("Connection", "Instituted!");
       delay(2000);
     }
   }
