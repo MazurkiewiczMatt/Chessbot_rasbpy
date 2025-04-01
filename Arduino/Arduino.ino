@@ -1,10 +1,9 @@
 #include <AccelStepper.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C_Hangul.h>
-
-// Define motor interface type
-#define motorInterfaceType AccelStepper::DRIVER
 #include <Servo.h>
+
+#define motorInterfaceType AccelStepper::DRIVER
 
 Servo myservo;  // Create servo object
 // Initialize stepper motors with appropriate pins
@@ -298,21 +297,17 @@ void lights(module) {
 Serial.println("module" + module +  "selected");
 
 }
-void servo_em_r(target_h) {
-  myservo.write(0);
-  delay(1000);         // Wait 1 second
-
-  // Rotate to 180->10 degrees (90 degrees clockwise from center)
-  myservo.write(10);
-  delay(1000);         // Wait 1 secondSerial.println("height raise to" + target_h);
-
-}
-void servo_em_d(target_h) {
-// raise servo
-Serial.println("height drop to" + target_h);
-
+void servo_em_r(int target_h) {
+    myservo.write(target_h);
+    Serial.print("Servo raised to: ");
+    Serial.println(target_h);
 }
 
+void servo_em_d(int target_h) {
+    myservo.write(target_h);
+    Serial.print("Servo lowered to: ");
+    Serial.println(target_h);
+}
 
 
 
@@ -340,6 +335,27 @@ void setup() {
     stepper1.setAcceleration(500); // Set max acceleration for Stepper1
     stepper2.setMaxSpeed(1000); // Set max speed for Stepper2
     stepper2.setAcceleration(500); // Set max acceleration for Stepper2
+
+
+
+    Serial.println("Starting servo test...");
+
+    // Test servo movement
+    for(int i = 0; i < 3; i++) {
+        myservo.write(0);
+        Serial.println("Servo position: 0");
+        delay(1000);
+        myservo.write(90);
+        Serial.println("Servo position: 90");
+        delay(1000);
+        myservo.write(180);
+        Serial.println("Servo position: 180");
+        delay(1000);
+    }
+
+    Serial.println("Servo test complete");
+
+
 }
 
 
@@ -348,13 +364,6 @@ void loop() {
     waitingDisplay();
   }
   else {
-
-    // ACTION TO MAKE;
-    servo_em_r(10);
-    sleep(1000);
-
-
-
     if (Serial.available() > 0) {
         String message = Serial.readStringUntil('\n');
         message.trim(); // Remove any leading/trailing whitespace or newline characters
