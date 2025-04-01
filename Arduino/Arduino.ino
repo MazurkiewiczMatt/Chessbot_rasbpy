@@ -292,7 +292,7 @@ void em_off() {
 Serial.println("EM off");
 
 }
-void lights(module) {
+void lights(int module) {
 //module selection and affirmation
 Serial.println("module" + module +  "selected");
 
