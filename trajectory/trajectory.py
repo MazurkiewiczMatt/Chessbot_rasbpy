@@ -68,4 +68,3 @@ def calculate_step_difference(start_angles, end_angles):
     steps2 = round((math.degrees(shoulder2_end) - math.degrees(shoulder2_start)) / degrees_per_step)
 
     return steps1, steps2
-im

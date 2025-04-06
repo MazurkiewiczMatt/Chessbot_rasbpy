@@ -10,7 +10,7 @@ from gameplay import Gameplay
 from robot_arms import RobotArmHandler
 import chess
 running = True
-
+test = True
 print("The ChessBot's Raspberry Pi software has been launched!")
 
 if DEBUG:
@@ -115,3 +115,5 @@ while running:
 
     # Reset lattice reading after processing
     lattice_sensor.sense()
+    if test==True:
+        serial_handler.send_motor_command(500,500)

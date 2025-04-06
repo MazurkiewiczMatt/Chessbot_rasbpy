@@ -21,6 +21,8 @@ class SerialHandler:
         if self.ser is not None:
             self.ser.write(message.encode('utf-8'))
             self.logs += datetime.now().strftime("%Y-%m-%d %H:%M:%S") + ">>> " + message + "\n"
+        else:
+            print(message)
 
     def receive_message(self):
         if self.ser is not None:
