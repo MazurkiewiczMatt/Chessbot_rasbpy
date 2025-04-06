@@ -1,3 +1,4 @@
+this is electromagnet and servo functionalities:
 #include <Wire.h>
 #include <LiquidCrystal_I2C_Hangul.h>
 #include <Servo.h>
