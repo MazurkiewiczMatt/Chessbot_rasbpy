@@ -8,5 +8,7 @@ PING_GITHUB=$(ping -c 1 github.com &>/dev/null && echo "OK" || echo "FAIL")
 MAIN_PY_EXISTS=$(test -f "$WORK_DIR/main.py" && echo "YES" || echo "NO")
 ARDUINO_INO_EXISTS=$(test -f "$ARDUINO_DIR/Arduino.ino" && echo "YES" || echo "NO")
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+ARDUINO_LIST=$(sudo ./arduino-cli board list)
+
 # Send JSON data via cURL
-curl -X POST "https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559" -H "Content-Type: application/json" -d "{\"timestamp\": \"$TIMESTAMP\", \"internet\": \"$PING_INTERNET\", \"github\": \"$PING_GITHUB\", \"main_py_exists\": \"$MAIN_PY_EXISTS\", \"arduino_ino_exists\": \"$ARDUINO_INO_EXISTS\"}"
+curl -X POST "https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559" -H "Content-Type: application/json" -d "{\"timestamp\": \"$TIMESTAMP\", \"internet\": \"$PING_INTERNET\", \"github\": \"$PING_GITHUB\", \"main_py_exists\": \"$MAIN_PY_EXISTS\", \"arduino_ino_exists\": \"$ARDUINO_INO_EXISTS\", \"arduino_list\": \"$ARDUINO_LIST\"}"

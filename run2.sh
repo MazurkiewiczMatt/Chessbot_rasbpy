@@ -23,15 +23,11 @@ fi
 cd /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/Arduino || { echo "Arduino directory not found"; exit 1; }
 
 # Configure Arduino CLI
-sudo ./arduino-cli board list
 
 sudo ./arduino-cli config init --overwrite || { echo "Config initialization failed"; exit 1; }
 sudo ./arduino-cli core update-index || { echo "Core index update failed"; exit 1; }
 sudo ./arduino-cli core install arduino:avr || { echo "Core AVR installation failed"; exit 1; }
 sudo ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR installation failed"; exit 1; }
-
-sudo ./arduino-cli core update-index
-sudo ./arduino-cli core upgrade arduino:megaavr
 
 echo "Libraries installing."
 
