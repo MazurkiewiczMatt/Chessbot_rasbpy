@@ -43,5 +43,5 @@ sleep 60
 sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || { echo "Upload failed"; exit 1; }
 
 echo "Arduino setup complete."
-
+# sleepy sleep
 # Launch the Python script

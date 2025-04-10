@@ -30,5 +30,6 @@ git add "$LOGFILE"
 git commit -m "Log from $(date +%Y%m%d-%H%M%S)"
 git push origin main
 
+sleep 500
 # Launch main application
 python3 /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/main.py
