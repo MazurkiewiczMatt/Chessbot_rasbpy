@@ -1,17 +1,16 @@
 #include <AccelStepper.h>
 #include <Wire.h>
 #include <LiquidCrystal_I2C_Hangul.h>
+#include <Servo.h>
 
 #define motorInterfaceType AccelStepper::DRIVER
 
-// Define stepper motor instances.
 AccelStepper stepper1(motorInterfaceType, 3, 2);
 AccelStepper stepper2(motorInterfaceType, 5, 4);
-
-// Define the LCD instance.
 LiquidCrystal_I2C_Hangul lcd(0x27, 16, 2);
+Servo myservo;
 
-// Home button pins and debounce settings.
+bool ConnectedBollean = 0;
 const int homeButton1Pin = 7;
 const int homeButton2Pin = 8;
 unsigned long lastDebounceTime1 = 0;
@@ -19,24 +18,60 @@ unsigned long lastDebounceTime2 = 0;
 const unsigned long debounceDelay = 50;
 const int homingSteps = 5000;
 
-// Waiting messages and connection flag.
-bool Connected = false;
-bool ranTest = false;
+const int emagPins[] = {14, 15};
+int currentPos = 30;
+const int moveInterval = 30;
+
 const char* messages[][2] = {
   {"1234567890123456", "1234567890123456"},
   {"revving chess", "engine"},
   {"inferring piece", "locations"},
-  {"plotting", "check mate"}
+  {"plotting", "check mate"},
+  {"rubbing one off", "to clear head"},
+  {"innovating", "strategy"},
+  {"predicting your", "every possible move"},
+  {"praying to", "deepBlue"},
+  {"Effecting", "Oberth"},
+  {"Cleaning", "transfer windows"},
+  {"Electro-", "liminescing"},
+  {"Defending", "king"},
+  {"Multiplexing", "read switches"},
+  {"Boxing", "gears"},
+  {"Venting", "heat"},
+  {"Consulting", "Stockfish"},
+  {"Electrifying", "fields"},
+  {"Recursive", "selfplay"},
+  {"Optimizing", "Estimator"},
+  {"Machine", "Learning"},
+  {"Beating Korean", "Grandmaster"},
+  {"Sparring", "Kasparov"},
+  {"Arguing with", "Fide"},
+  {"Qualifying", "to candidates"},
+  {"Forgetting", "Board layout"},
+  {"Watching", "Chess gambit"},
+  {"Confusing", "pawn captures"},
+  {"Randomly", "promoting"},
+  {"Adjusting", "Neurons"},
+  {"Studying Bong", "Cloud opening"},
+  {"Hating", "London"},
+  {"Waiting for", "Another input"},
+  {"take take take", "take and take"},
+  {"Capturing", "Juicers"},
+  {"Forking", "knights"},
+  {"sacrificing the", "ROOK"},
+  {"Another", "interesting text"},
+  {"Something with", "times new Roman"},
+  {"Destroying", "hotel room"},
+  {"Communication", "with yogurt"},
+  {"Glasses to", "throw opponent off"},
+  {"<><><><>", "><><><><"},
+  {"Failing", "Compiling (JOKE)"},
+  {"Almost last", "message"},
+  {"01100010", "10011100"},
+  {"Defending", "outcome"}
 };
 const int numMessages = sizeof(messages) / sizeof(messages[0]);
-unsigned long waitingStartTime = 0;
-unsigned long lastMessageTime = 0;
 
-//
-// Utility Functions
-//
-
-// Display two lines on the LCD.
 void displayLCD(String line1, String line2) {
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -45,7 +80,6 @@ void displayLCD(String line1, String line2) {
   lcd.print(line2);
 }
 
-// Parse and execute an LCD command with comma separation.
 void handleLCDCommand(String lcdData) {
   int commaIndex = lcdData.indexOf(',');
   if (commaIndex != -1) {
@@ -60,7 +94,6 @@ void handleLCDCommand(String lcdData) {
   }
 }
 
-// Move both steppers with given step counts.
 void moveSteppers(int step1, int step2) {
   stepper1.move(step1);
   stepper2.move(step2);
@@ -74,7 +107,6 @@ void moveSteppers(int step1, int step2) {
   Serial.println(step2);
 }
 
-// Handle MOVE command (expects "MOVE step1 step2").
 void handleMoveCommand(String moveData) {
   moveData.trim();
   int firstSpace = moveData.indexOf(' ');
@@ -95,142 +127,169 @@ void handleMoveCommand(String moveData) {
   step2Value.trim();
   int step1 = step1Value.toInt();
   int step2 = step2Value.toInt();
-  if (step1Value.length() == 0 || step2Value.length() == 0) {
+  if ((step1Value.length() == 0) || (step2Value.length() == 0)) {
     Serial.println("Invalid step values. Ensure both step1 and step2 are integers.");
     return;
   }
   moveSteppers(step1, step2);
-  displayLCD("Motors Moving", "Step1:" + String(step1) + " Step2:" + String(step2));
+  displayLCD("Motors Moving", "Step1: " + String(step1) + " Step2: " + String(step2));
 }
 
-//
-// Homing Functions
-//
-
-// Perform homing routine for a single stepper.
-void performHoming(AccelStepper &stepper, bool initialDirectionPositive, int buttonPin1, int buttonPin2, String stepperName) {
-  float origMaxSpeed = stepper.maxSpeed();
-  // Lower speed for homing.
-  stepper.setMaxSpeed(30);
-
-  displayLCD("Homing " + stepperName, (initialDirectionPositive ? "Moving +ve" : "Moving -ve"));
+void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin, int buttonPin2, String stepperName) {
+  displayLCD("Homing " + stepperName, initialDirectionPositive ? "Moving Positive" : "Moving Negative");
   stepper.move(initialDirectionPositive ? 1000000 : -1000000);
-  unsigned long *lastDebounceTime = (stepperName == "Stepper1") ? &lastDebounceTime1 : &lastDebounceTime2;
-
   while (stepper.distanceToGo() != 0) {
     stepper.run();
-    if (digitalRead(buttonPin1) == LOW || digitalRead(buttonPin2) == LOW) {
-      unsigned long now = millis();
-      if (now - *lastDebounceTime > debounceDelay) {
-        *lastDebounceTime = now;
-        stepper.stop();
-        displayLCD("Homing " + stepperName, "Stopping...");
-        break;
+    if ((digitalRead(buttonPin) == LOW) || (digitalRead(buttonPin2) == LOW)) {
+      unsigned long currentTime = millis();
+      if (stepperName == "Stepper1") {
+        if (currentTime - lastDebounceTime1 > debounceDelay) {
+          lastDebounceTime1 = currentTime;
+        } else {
+          continue;
+        }
+      } else if (stepperName == "Stepper2") {
+        if (currentTime - lastDebounceTime2 > debounceDelay) {
+          lastDebounceTime2 = currentTime;
+        } else {
+          continue;
+        }
       }
+      stepper.stop();
+      displayLCD("Homing " + stepperName, "Stopping...");
+      break;
     }
   }
-
-  displayLCD("Homing " + stepperName, "Moving back 5000");
+  displayLCD("Homing " + stepperName, "Moving back 5000 steps");
   stepper.move(initialDirectionPositive ? -homingSteps : homingSteps);
   while (stepper.distanceToGo() != 0) {
     stepper.run();
   }
-
-  displayLCD("Homing " + stepperName, "Offsetting 30");
-  stepper.move(initialDirectionPositive ? 30 : -30);
-  while (stepper.distanceToGo() != 0) {
-    stepper.run();
-  }
-
   stepper.setCurrentPosition(0);
-  stepper.setMaxSpeed(origMaxSpeed);
-
   displayLCD(stepperName + " Homed", "");
 }
 
-// Home both steppers.
 void homeAllSteppers() {
   displayLCD("Homing Initiated", "");
-  performHoming(stepper1, true, homeButton1Pin, homeButton2Pin, "Stepper1");
-  performHoming(stepper2, false, homeButton1Pin, homeButton2Pin, "Stepper2");
+  performHoming(stepper1, true, homeButton2Pin, homeButton1Pin, "Stepper1");
+  performHoming(stepper2, false, homeButton2Pin, homeButton1Pin, "Stepper2");
   displayLCD("Homing Complete", "");
-  Serial.println("Homing sequence complete.");
 }
 
-//
-// Waiting Display Routine
-//
-
-// While waiting for a connection, cycle through messages and time out after 90 seconds.
 void waitingDisplay() {
-  if (waitingStartTime == 0) {
-    waitingStartTime = millis();
-  }
-  const unsigned long timeoutMillis = 90000; // 90 seconds
-  unsigned long elapsedMillis = millis() - waitingStartTime;
-
-  if (elapsedMillis >= timeoutMillis) {
-    displayLCD("90s Mark:", "No Connection");
-    waitingStartTime = millis(); // reset timer
+  static unsigned long startTime = millis();
+  static unsigned long lastMessageTime = 0;
+  static int messageIndex = random(numMessages);
+  const unsigned long timeout = 90000;
+  if (millis() - startTime >= timeout) {
+    displayLCD("90s Mark:", "Raspberry Not Connected");
+    startTime = millis();
     return;
   }
-
-  if (millis() - lastMessageTime >= 5000) { // update every 5 seconds
-    int messageIndex = random(numMessages);
+  if (millis() - lastMessageTime >= 5000) {
+    messageIndex = random(numMessages);
     displayLCD(messages[messageIndex][0], messages[messageIndex][1]);
     lastMessageTime = millis();
   }
-
-  // Check for any serial input to flag connection.
   if (Serial.available() > 0) {
     String message = Serial.readStringUntil('\n');
     message.trim();
     if (message.length() > 0) {
-      Connected = true;
-      displayLCD("Connection", "Established!");
+      ConnectedBollean = 1;
+      displayLCD("Connection", "Instituted!");
       delay(2000);
     }
   }
 }
 
-//
-// Setup and Main Loop
-//
+void handleElectromagnetDrop(String cmdData) {
+  cmdData.trim();
+  int targetAngle = cmdData.toInt();
+  int step = (targetAngle > currentPos) ? 1 : -1;
+  while (currentPos != targetAngle) {
+    currentPos += step;
+    myservo.write(currentPos);
+    delay(moveInterval);
+  }
+  digitalWrite(emagPins[0], HIGH);
+  digitalWrite(emagPins[1], HIGH);
+  Serial.println("EM_dropped");
+}
+
+void handleElectromagnetRaise(String cmdData) {
+  cmdData.trim();
+  int targetAngle = cmdData.toInt();
+  int step = (targetAngle > currentPos) ? 1 : -1;
+  while (currentPos != targetAngle) {
+    currentPos += step;
+    myservo.write(currentPos);
+    delay(moveInterval);
+  }
+  digitalWrite(emagPins[0], LOW);
+  digitalWrite(emagPins[1], LOW);
+  Serial.println("EM_rose");
+}
+
+void handleElectromagnetTurn(String command) {
+  if (command.equalsIgnoreCase("EM_ON")) {
+    digitalWrite(emagPins[0], HIGH);
+    digitalWrite(emagPins[1], HIGH);
+    Serial.println("EM_on");
+  } else if (command.equalsIgnoreCase("EM_OFF")) {
+    digitalWrite(emagPins[0], LOW);
+    digitalWrite(emagPins[1], LOW);
+    Serial.println("EM_off");
+  }
+}
 
 void setup() {
-  // Initialize home buttons.
   pinMode(homeButton1Pin, INPUT_PULLUP);
   pinMode(homeButton2Pin, INPUT_PULLUP);
+  for (int i = 0; i < 2; i++) {
+    pinMode(emagPins[i], OUTPUT);
+    digitalWrite(emagPins[i], LOW);
+  }
+  Wire.begin();
   Serial.begin(9600);
   Serial.setTimeout(100);
+  Serial.println("Chessbot software initiated");
   lcd.init();
   lcd.backlight();
-  displayLCD("System", "Initialized");
-
-  // Configure steppers.
+  displayLCD("YES", "INITIALIZED");
   stepper1.setMaxSpeed(1000);
   stepper1.setAcceleration(500);
   stepper2.setMaxSpeed(1000);
   stepper2.setAcceleration(500);
-
-  // Seed random generator.
-  randomSeed(analogRead(0));
-
-  Serial.println("Chessbot Software Initiated (No Servo)");
+  myservo.attach(6);
+  myservo.write(currentPos);
 }
 
+void testAllFunctionalities() {
+  // Example test calls
+  displayLCD("Testing", "LCD Display");
+  moveSteppers(100, -100);
+  delay(1000);
+  homeAllSteppers();
+  handleElectromagnetTurn("EM_ON");
+  delay(1000);
+  handleElectromagnetTurn("EM_OFF");
+  handleElectromagnetDrop("20");
+  delay(500);
+  handleElectromagnetRaise("30");
+}
+
+bool ranTest = false;
+
 void loop() {
-  if (!Connected) {
+  if (!ConnectedBollean) {
     waitingDisplay();
   } else {
     if (!ranTest) {
-      // Run a one-time test sequence upon connection.
-      displayLCD("20 APRIL", "10 104");
-      delay(10000);  // 10-second delay.
-      homeAllSteppers();
-      ranTest = true;
-      delay(10000);
+      testAllFunctionalities();
+      //ranTest = true;
+      delay(1000);
     }
+
     if (Serial.available() > 0) {
       String message = Serial.readStringUntil('\n');
       message.trim();
@@ -242,6 +301,12 @@ void loop() {
         handleMoveCommand(message.substring(4));
       } else if (message.equalsIgnoreCase("HOME")) {
         homeAllSteppers();
+      } else if (message.startsWith("EM_D")) {
+        handleElectromagnetDrop(message.substring(4));
+      } else if (message.startsWith("EM_R")) {
+        handleElectromagnetRaise(message.substring(4));
+      } else if (message.startsWith("EM_ON") || message.startsWith("EM_OFF")) {
+        handleElectromagnetTurn(message);
       } else {
         Serial.println("Unknown command");
       }
