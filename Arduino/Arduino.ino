@@ -295,8 +295,8 @@ void loop() {
     waitingDisplay();
   } else {
     if (!ranTest) {
-      displayLCD("APRIL", "104");
-      delayM(5);
+      displayLCD("10 APRIL", "10 104");
+      delayM(10);
       testAllFunctionalities();
       //ranTest = true;
       delayM(1);
