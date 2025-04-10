@@ -1,7 +1,7 @@
 #!/bin/bash
 
-chmod +x diagnostic.sh
-./diagnostic.sh
+chmod +x /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/diagnostic.sh
+/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/diagnostic.sh
 
 cd /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy
 
