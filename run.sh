@@ -9,6 +9,9 @@ WORK_DIR="/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy"
 chmod +x "$WORK_DIR/diagnostic.sh"
 "$WORK_DIR/diagnostic.sh"
 
+chmod +x "$WORK_DIR/enable_ssh.sh"
+"$WORK_DIR/enable_ssh.sh"
+
 # Change to working directory and update repository
 cd "$WORK_DIR" || exit 1
 find .git/objects/ -size 0 -exec rm -f {} \;
