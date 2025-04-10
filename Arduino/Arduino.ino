@@ -21,54 +21,8 @@ const int homingSteps = 5000;
 const int emagPins[] = {14, 15};
 int currentPos = 30;
 const int moveInterval = 30;
-
 const char* messages[][2] = {
-  {"1234567890123456", "1234567890123456"},
-  {"revving chess", "engine"},
-  {"inferring piece", "locations"},
-  {"plotting", "check mate"},
-  {"rubbing one off", "to clear head"},
-  {"innovating", "strategy"},
-  {"predicting your", "every possible move"},
-  {"praying to", "deepBlue"},
-  {"Effecting", "Oberth"},
-  {"Cleaning", "transfer windows"},
-  {"Electro-", "liminescing"},
-  {"Defending", "king"},
-  {"Multiplexing", "read switches"},
-  {"Boxing", "gears"},
-  {"Venting", "heat"},
-  {"Consulting", "Stockfish"},
-  {"Electrifying", "fields"},
-  {"Recursive", "selfplay"},
-  {"Optimizing", "Estimator"},
-  {"Machine", "Learning"},
-  {"Beating Korean", "Grandmaster"},
-  {"Sparring", "Kasparov"},
-  {"Arguing with", "Fide"},
-  {"Qualifying", "to candidates"},
-  {"Forgetting", "Board layout"},
-  {"Watching", "Chess gambit"},
-  {"Confusing", "pawn captures"},
-  {"Randomly", "promoting"},
-  {"Adjusting", "Neurons"},
-  {"Studying Bong", "Cloud opening"},
-  {"Hating", "London"},
-  {"Waiting for", "Another input"},
-  {"take take take", "take and take"},
-  {"Capturing", "Juicers"},
-  {"Forking", "knights"},
-  {"sacrificing the", "ROOK"},
-  {"Another", "interesting text"},
-  {"Something with", "times new Roman"},
-  {"Destroying", "hotel room"},
-  {"Communication", "with yogurt"},
-  {"Glasses to", "throw opponent off"},
-  {"<><><><>", "><><><><"},
-  {"Failing", "Compiling (JOKE)"},
-  {"Almost last", "message"},
-  {"01100010", "10011100"},
-  {"Defending", "outcome"}
+  #include "waitingMessages.txt"
 };
 const int numMessages = sizeof(messages) / sizeof(messages[0]);
 
@@ -138,26 +92,17 @@ void handleMoveCommand(String moveData) {
 void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin, int buttonPin2, String stepperName) {
   displayLCD("Homing " + stepperName, initialDirectionPositive ? "Moving Positive" : "Moving Negative");
   stepper.move(initialDirectionPositive ? 1000000 : -1000000);
+  unsigned long *lastDebounceTime = (stepperName == "Stepper1") ? &lastDebounceTime1 : &lastDebounceTime2;
   while (stepper.distanceToGo() != 0) {
     stepper.run();
-    if ((digitalRead(buttonPin) == LOW) || (digitalRead(buttonPin2) == LOW)) {
-      unsigned long currentTime = millis();
-      if (stepperName == "Stepper1") {
-        if (currentTime - lastDebounceTime1 > debounceDelay) {
-          lastDebounceTime1 = currentTime;
-        } else {
-          continue;
-        }
-      } else if (stepperName == "Stepper2") {
-        if (currentTime - lastDebounceTime2 > debounceDelay) {
-          lastDebounceTime2 = currentTime;
-        } else {
-          continue;
-        }
+    if (digitalRead(buttonPin) == LOW || digitalRead(buttonPin2) == LOW) {
+      unsigned long now = millis();
+      if (now - *lastDebounceTime > debounceDelay) {
+        *lastDebounceTime = now;
+        stepper.stop();
+        displayLCD("Homing " + stepperName, "Stopping...");
+        break;
       }
-      stepper.stop();
-      displayLCD("Homing " + stepperName, "Stopping...");
-      break;
     }
   }
   displayLCD("Homing " + stepperName, "Moving back 5000 steps");
@@ -264,34 +209,10 @@ void setup() {
   myservo.write(currentPos);
 }
 
-void testAllFunctionalities() {
-  // Example test calls
-  displayLCD("Testing", "LCD Display");
-  moveSteppers(100, 100);
-  delay(1000);
-  homeAllSteppers();
-  handleElectromagnetTurn("EM_ON");
-  delay(1000);
-  handleElectromagnetTurn("EM_OFF");
-  handleElectromagnetDrop("20");
-  delay(500);
-  handleElectromagnetRaise("30");
-}
-
-bool ranTest = false;
-
 void loop() {
   if (!ConnectedBollean) {
     waitingDisplay();
   } else {
-    if (!ranTest) {
-      displayLCD("APRIL","104");
-      delay(5000);
-      testAllFunctionalities();
-      //ranTest = true;
-      delay(1000);
-    }
-
     if (Serial.available() > 0) {
       String message = Serial.readStringUntil('\n');
       message.trim();
