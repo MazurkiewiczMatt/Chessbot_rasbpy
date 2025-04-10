@@ -1,4 +1,6 @@
 #!/bin/bash
+# diagnostic.sh
+
 WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
 WORK_DIR="/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy"
 ARDUINO_DIR="$WORK_DIR/Arduino"
