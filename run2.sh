@@ -23,10 +23,15 @@ fi
 cd /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy/Arduino || { echo "Arduino directory not found"; exit 1; }
 
 # Configure Arduino CLI
+sudo ./arduino-cli board list
+
 sudo ./arduino-cli config init --overwrite || { echo "Config initialization failed"; exit 1; }
 sudo ./arduino-cli core update-index || { echo "Core index update failed"; exit 1; }
 sudo ./arduino-cli core install arduino:avr || { echo "Core AVR installation failed"; exit 1; }
 sudo ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR installation failed"; exit 1; }
+
+sudo ./arduino-cli core update-index
+sudo ./arduino-cli core upgrade arduino:megaavr
 
 echo "Libraries installing."
 
@@ -40,7 +45,7 @@ echo "Libraries installed."
 sudo ./arduino-cli compile --fqbn arduino:megaavr:nona4809 Arduino.ino || { echo "Compilation failed"; exit 1; }
 echo "Waiting 20 seconds before attempting to upload the compiled sketch."
 sleep 60
-sudo ./arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || { echo "Upload failed"; exit 1; }
+sudo ./arduino-cli upload -v -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || { echo "Upload failed"; exit 1; }
 
 echo "Arduino setup complete."
 # sleepy sleep

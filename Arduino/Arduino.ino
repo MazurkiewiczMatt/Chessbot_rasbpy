@@ -296,7 +296,7 @@ void loop() {
     waitingDisplay();
   } else {
     if (!ranTest) {
-      displayLCD("10 APRIL", "10 104");
+      displayLCD("20 APRIL", "10 104");
       delayM(10);
       homeAllSteppers();
       //ranTest = true;
