@@ -263,6 +263,7 @@ void setup() {
   myservo.attach(6);
   myservo.write(currentPos);
 }
+test=1;
 
 void testAllFunctionalities() {
   // Example test calls
@@ -287,7 +288,6 @@ void loop() {
     if (!ranTest) {
       testAllFunctionalities();
       //ranTest = true;
-      delay(1000);
     }
 
     if (Serial.available() > 0) {
