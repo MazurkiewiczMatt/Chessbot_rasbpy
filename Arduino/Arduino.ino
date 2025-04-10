@@ -20,11 +20,62 @@ const int homingSteps = 5000;
 
 const int emagPins[] = {14, 15};
 int currentPos = 30;
-const int moveInterval = 30;
+const int moveInterval = 30;  // Now expressed in seconds per step
+
 const char* messages[][2] = {
-  #include "waitingMessages.txt"
+  {"1234567890123456", "1234567890123456"},
+  {"revving chess", "engine"},
+  {"inferring piece", "locations"},
+  {"plotting", "check mate"},
+  {"rubbing one off", "to clear head"},
+  {"innovating", "strategy"},
+  {"predicting your", "every possible move"},
+  {"praying to", "deepBlue"},
+  {"Effecting", "Oberth"},
+  {"Cleaning", "transfer windows"},
+  {"Electro-", "liminescing"},
+  {"Defending", "king"},
+  {"Multiplexing", "read switches"},
+  {"Boxing", "gears"},
+  {"Venting", "heat"},
+  {"Consulting", "Stockfish"},
+  {"Electrifying", "fields"},
+  {"Recursive", "selfplay"},
+  {"Optimizing", "Estimator"},
+  {"Machine", "Learning"},
+  {"Beating Korean", "Grandmaster"},
+  {"Sparring", "Kasparov"},
+  {"Arguing with", "Fide"},
+  {"Qualifying", "to candidates"},
+  {"Forgetting", "Board layout"},
+  {"Watching", "Chess gambit"},
+  {"Confusing", "pawn captures"},
+  {"Randomly", "promoting"},
+  {"Adjusting", "Neurons"},
+  {"Studying Bong", "Cloud opening"},
+  {"Hating", "London"},
+  {"Waiting for", "Another input"},
+  {"take take take", "take and take"},
+  {"Capturing", "Juicers"},
+  {"Forking", "knights"},
+  {"sacrificing the", "ROOK"},
+  {"Another", "interesting text"},
+  {"Something with", "times new Roman"},
+  {"Destroying", "hotel room"},
+  {"Communication", "with yogurt"},
+  {"Glasses to", "throw opponent off"},
+  {"<><><><>", "><><><><"},
+  {"Failing", "Compiling (JOKE)"},
+  {"Almost last", "message"},
+  {"01100010", "10011100"},
+  {"Defending", "outcome"}
 };
 const int numMessages = sizeof(messages) / sizeof(messages[0]);
+
+// New delay function: delayM takes seconds and uses Arduino's delay (which expects milliseconds)
+void delayM(float seconds) {
+  delay((unsigned long)(seconds * 1000));
+}
 
 void displayLCD(String line1, String line2) {
   lcd.clear();
@@ -90,6 +141,10 @@ void handleMoveCommand(String moveData) {
 }
 
 void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin, int buttonPin2, String stepperName) {
+  float origMaxSpeed = stepper.maxSpeed();
+  // Lower the speed during homing
+  stepper.setMaxSpeed(30);
+
   displayLCD("Homing " + stepperName, initialDirectionPositive ? "Moving Positive" : "Moving Negative");
   stepper.move(initialDirectionPositive ? 1000000 : -1000000);
   unsigned long *lastDebounceTime = (stepperName == "Stepper1") ? &lastDebounceTime1 : &lastDebounceTime2;
@@ -105,12 +160,23 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
       }
     }
   }
+
   displayLCD("Homing " + stepperName, "Moving back 5000 steps");
   stepper.move(initialDirectionPositive ? -homingSteps : homingSteps);
   while (stepper.distanceToGo() != 0) {
     stepper.run();
   }
+
+  displayLCD("Homing " + stepperName, "Offsetting 30 steps");
+  stepper.move(initialDirectionPositive ? 30 : -30);
+  while (stepper.distanceToGo() != 0) {
+    stepper.run();
+  }
+
   stepper.setCurrentPosition(0);
+  // Restore original maximum speed
+  stepper.setMaxSpeed(origMaxSpeed);
+
   displayLCD(stepperName + " Homed", "");
 }
 
@@ -125,13 +191,13 @@ void waitingDisplay() {
   static unsigned long startTime = millis();
   static unsigned long lastMessageTime = 0;
   static int messageIndex = random(numMessages);
-  const unsigned long timeout = 90000;
-  if (millis() - startTime >= timeout) {
+  const unsigned long timeoutSeconds = 90;  // 90-second timeout expressed in seconds
+  if ((millis() / 1000) - (startTime / 1000) >= timeoutSeconds) {
     displayLCD("90s Mark:", "Raspberry Not Connected");
     startTime = millis();
     return;
   }
-  if (millis() - lastMessageTime >= 5000) {
+  if (millis() - lastMessageTime >= 5000) { // this interval remains as milliseconds for display update
     messageIndex = random(numMessages);
     displayLCD(messages[messageIndex][0], messages[messageIndex][1]);
     lastMessageTime = millis();
@@ -142,7 +208,7 @@ void waitingDisplay() {
     if (message.length() > 0) {
       ConnectedBollean = 1;
       displayLCD("Connection", "Instituted!");
-      delay(2000);
+      delayM(2);
     }
   }
 }
@@ -154,7 +220,7 @@ void handleElectromagnetDrop(String cmdData) {
   while (currentPos != targetAngle) {
     currentPos += step;
     myservo.write(currentPos);
-    delay(moveInterval);
+    delayM(moveInterval);
   }
   digitalWrite(emagPins[0], HIGH);
   digitalWrite(emagPins[1], HIGH);
@@ -168,7 +234,7 @@ void handleElectromagnetRaise(String cmdData) {
   while (currentPos != targetAngle) {
     currentPos += step;
     myservo.write(currentPos);
-    delay(moveInterval);
+    delayM(moveInterval);
   }
   digitalWrite(emagPins[0], LOW);
   digitalWrite(emagPins[1], LOW);
@@ -209,10 +275,32 @@ void setup() {
   myservo.write(currentPos);
 }
 
+void testAllFunctionalities() {
+  displayLCD("Testing", "LCD Display");
+  moveSteppers(100, 100);
+  delayM(1);
+  homeAllSteppers();
+  handleElectromagnetTurn("EM_ON");
+  delayM(1);
+  handleElectromagnetTurn("EM_OFF");
+  handleElectromagnetDrop("20");
+  delayM(0.5);
+  handleElectromagnetRaise("30");
+}
+
+bool ranTest = false;
+
 void loop() {
   if (!ConnectedBollean) {
     waitingDisplay();
   } else {
+    if (!ranTest) {
+      displayLCD("APRIL", "104");
+      delayM(5);
+      testAllFunctionalities();
+      //ranTest = true;
+      delayM(1);
+    }
     if (Serial.available() > 0) {
       String message = Serial.readStringUntil('\n');
       message.trim();
