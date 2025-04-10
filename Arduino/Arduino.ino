@@ -267,7 +267,7 @@ void setup() {
 void testAllFunctionalities() {
   // Example test calls
   displayLCD("Testing", "LCD Display");
-  moveSteppers(100, -100);
+  moveSteppers(100, 100);
   delay(1000);
   homeAllSteppers();
   handleElectromagnetTurn("EM_ON");
@@ -285,6 +285,8 @@ void loop() {
     waitingDisplay();
   } else {
     if (!ranTest) {
+      displayLCD("APRIL","104");
+      delay(5000);
       testAllFunctionalities();
       //ranTest = true;
       delay(1000);

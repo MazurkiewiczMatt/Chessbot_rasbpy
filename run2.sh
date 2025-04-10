@@ -28,12 +28,14 @@ sudo ./arduino-cli core update-index || { echo "Core index update failed"; exit 
 sudo ./arduino-cli core install arduino:avr || { echo "Core AVR installation failed"; exit 1; }
 sudo ./arduino-cli core install arduino:megaavr || { echo "Core mega AVR installation failed"; exit 1; }
 
+echo "Libraries installing."
 
 sudo ./arduino-cli lib install "LiquidCrystal_I2C_Hangul" || { echo "LCD library installation failed"; exit 1; }
 sudo ./arduino-cli lib install "AccelStepper" || { echo "AccelStepper library installation failed"; exit 1; }
 sudo ./arduino-cli lib install "AccelStepperWithDistances" || { echo "AccelStepperWithDistances library installation failed"; exit 1; }
-
+sudo ./arduino-cli lib install "Servo" || { echo "Servo library installation failed"; exit 1; }
 # Compile and upload the sketch
+echo "Libraries installed."
 
 sudo ./arduino-cli compile --fqbn arduino:megaavr:nona4809 Arduino.ino || { echo "Compilation failed"; exit 1; }
 echo "Waiting 20 seconds before attempting to upload the compiled sketch."

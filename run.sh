@@ -7,9 +7,9 @@ find .git/objects/ -size 0 -exec rm -f {} \;
 git fetch origin
 git pull
 git reset --hard origin/main
-
+sleep 5
 # Create log file with basic timestamp
-LOGFILE="log-$(date +%Y%m%d-%H%M%S).txt"
+LOGFILE="104log-$(date +%Y%m%d-%H%M%S).txt"
 touch "$LOGFILE"
 
 # Initial commit with empty log
