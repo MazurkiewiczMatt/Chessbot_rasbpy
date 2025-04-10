@@ -1,5 +1,8 @@
 #!/bin/bash
 
+chmod +x diagnostic.sh
+./diagnostic.sh
+
 cd /home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy
 
 # Pull latest changes and reset
