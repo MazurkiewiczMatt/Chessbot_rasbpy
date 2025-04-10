@@ -20,8 +20,8 @@ const int homingSteps = 5000;
 
 const int emagPins[] = {14, 15};
 int currentPos = 30;
-const int moveInterval = 30;  //
- Now expressed in seconds per step
+const int moveInterval = 30;  //Now expressed in seconds per step
+
 const char* messages[][2] = {
   {"1234567890123456", "1234567890123456"},
   {"revving chess", "engine"},
