@@ -9,7 +9,7 @@ PING_GITHUB=$(ping -c 1 github.com &>/dev/null && echo "OK" || echo "FAIL")
 MAIN_PY_EXISTS=$(test -f "$WORK_DIR/main.py" && echo "YES" || echo "NO")
 ARDUINO_INO_EXISTS=$(test -f "$ARDUINO_DIR/Arduino.ino" && echo "YES" || echo "NO")
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-ARDUINO_LIST=$(sudo "$WORK_DIR"/arduino-cli board list)
+ARDUINO_LIST=$(sudo "$WORK_DIR"/Arduino/arduino-cli board list)
 
 # Prepare JSON payload
 JSON_PAYLOAD=$(cat <<EOF
