@@ -286,6 +286,7 @@ void testAllFunctionalities() {
   handleElectromagnetDrop("20");
   delayM(0.5);
   handleElectromagnetRaise("30");
+
 }
 
 bool ranTest = false;
@@ -297,9 +298,9 @@ void loop() {
     if (!ranTest) {
       displayLCD("10 APRIL", "10 104");
       delayM(10);
-      testAllFunctionalities();
+      homeAllSteppers();
       //ranTest = true;
-      delayM(1);
+      delayM(10);
     }
     if (Serial.available() > 0) {
       String message = Serial.readStringUntil('\n');
