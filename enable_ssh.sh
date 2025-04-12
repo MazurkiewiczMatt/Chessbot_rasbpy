@@ -74,6 +74,7 @@ echo "Logging diagnostic information:"
 echo "$JSON_PAYLOAD"
 
 # --- Send the Diagnostic Information via cURL ---
+sleep 3
 curl -X POST "$WEBHOOK_URL" -H "Content-Type: application/json" -d "$JSON_PAYLOAD"
 
 # --- Final User Message ---

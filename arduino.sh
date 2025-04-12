@@ -31,5 +31,6 @@ EOF
 )
 
 # Send the run log via webhook
+sleep 3
 curl -X POST "$WEBHOOK_URL" -H "Content-Type: application/json" -d "$JSON_PAYLOAD"
 
