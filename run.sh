@@ -39,8 +39,5 @@ EOF
 # Send the run log via webhook
 curl -X POST "$WEBHOOK_URL" -H "Content-Type: application/json" -d "$JSON_PAYLOAD"
 
-# Wait before launching the main application
-sleep 500
-
 # Launch the main application
 python3 "$WORK_DIR/main.py"
