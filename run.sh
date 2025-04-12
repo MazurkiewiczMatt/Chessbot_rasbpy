@@ -1,6 +1,21 @@
 #!/bin/bash
 # run.sh
 
+LOCKFILE="/tmp/run_sh.lock"
+
+# Try to create a lock file
+if [ -e "${LOCKFILE}" ]; then
+    echo "Script is already running. DUPLICATE"
+
+    exit 1
+fi
+
+# Remove the lock file on exit
+trap "rm -f ${LOCKFILE}" EXIT
+touch ${LOCKFILE}
+
+ps aux | grep run.sh
+
 # Generate a unique session identifier (requires uuidgen to be installed)
 echo "Generating session ID..."
 SESSION_ID=$(uuidgen)
