@@ -12,6 +12,10 @@
 #   chmod +x enable_ssh_log.sh
 #   sudo ./enable_ssh_log.sh
 
+# Get the session identifier from the first argument, defaulting to "unknown" if missing
+SESSION_ID=${1:-"unknown"}
+
+
 # --- Configuration ---
 WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
 
@@ -56,6 +60,7 @@ echo "SSH service status: $SSH_STATUS"
 # --- Prepare JSON Payload for Logging ---
 JSON_PAYLOAD=$(cat <<EOF
 {
+  "session_id": "$SESSION_ID",
   "timestamp": "$TIMESTAMP",
   "wifi_status": "$WIFI_STATUS",
   "wlan_ip": "$WIFI_IP",

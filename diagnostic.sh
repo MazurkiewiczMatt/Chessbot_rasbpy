@@ -1,6 +1,9 @@
 #!/bin/bash
 # diagnostic.sh
 
+# Get the session identifier from the first argument, defaulting to "unknown" if missing
+SESSION_ID=${1:-"unknown"}
+
 WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
 WORK_DIR="/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy"
 ARDUINO_DIR="$WORK_DIR/Arduino"
@@ -13,9 +16,10 @@ ARDUINO_INO_EXISTS=$(test -f "$ARDUINO_DIR/Arduino.ino" && echo "YES" || echo "N
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 ARDUINO_LIST=$(sudo "$WORK_DIR"/Arduino/arduino-cli board list)
 
-# Prepare JSON payload
+# Prepare JSON payload including the session identifier for logging
 JSON_PAYLOAD=$(cat <<EOF
 {
+  "session_id": "$SESSION_ID",
   "timestamp": "$TIMESTAMP",
   "internet": "$PING_INTERNET",
   "github": "$PING_GITHUB",

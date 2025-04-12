@@ -1,6 +1,9 @@
 #!/bin/bash
 # update.sh
 
+# Get the session identifier from the first argument, defaulting to "unknown" if missing
+SESSION_ID=${1:-"unknown"}
+
 WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
 WORK_DIR="/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy"
 
@@ -38,6 +41,7 @@ TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
 # Prepare JSON payload with all Git outputs and dependency status
 JSON_PAYLOAD=$(cat <<EOF
 {
+  "session_id": "$SESSION_ID",
   "timestamp": "$TIMESTAMP",
   "update_status": "$UPDATE_STATUS",
   "git": {
