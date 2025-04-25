@@ -1,51 +1,50 @@
 #!/bin/bash
 # run.sh
 
+LOCKFILE="/tmp/run_sh.lock"
+
+# Try to create a lock file
+if [ -e "${LOCKFILE}" ]; then
+    echo "Script is already running. DUPLICATE"
+
+    exit 1
+fi
+
+# Remove the lock file on exit
+trap "rm -f ${LOCKFILE}" EXIT
+touch ${LOCKFILE}
+
+ps aux | grep run.sh
+
+# Generate a unique session identifier (requires uuidgen to be installed)
+echo "Generating session ID..."
+SESSION_ID=$(uuidgen)
+echo "Session ID: $SESSION_ID"
+
 # Define environment variables
 WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
 WORK_DIR="/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy"
 
 # Run diagnostics first
+echo "Preparing to run diagnostic.sh..."
 chmod +x "$WORK_DIR/diagnostic.sh"
-"$WORK_DIR/diagnostic.sh"
+echo "Running diagnostic.sh with session ID: $SESSION_ID"
+"$WORK_DIR/diagnostic.sh" "$SESSION_ID"
 
+echo "Preparing to run enable_ssh.sh..."
 chmod +x "$WORK_DIR/enable_ssh.sh"
-"$WORK_DIR/enable_ssh.sh"
+echo "Running enable_ssh.sh with session ID: $SESSION_ID"
+"$WORK_DIR/enable_ssh.sh" "$SESSION_ID"
 
-# Change to working directory and update repository
-cd "$WORK_DIR" || exit 1
-find .git/objects/ -size 0 -exec rm -f {} \;
-git fetch origin
-git pull
-git reset --hard origin/main
-sleep 5
+echo "Preparing to run update.sh..."
+chmod +x "$WORK_DIR/update.sh"
+echo "Running update.sh with session ID: $SESSION_ID"
+"$WORK_DIR/update.sh" "$SESSION_ID"
 
-# Execute run2.sh and capture output
-RUN_OUTPUT=$(
-  {
-    echo "=== Run started: $(date) ==="
-    bash "$WORK_DIR/run2.sh"
-    echo "=== Run completed: $(date) ==="
-  } 2>&1
-)
+echo "Preparing to run arduino.sh..."
+chmod +x "$WORK_DIR/arduino.sh"
+echo "Running arduino.sh with session ID: $SESSION_ID"
+"$WORK_DIR/arduino.sh" "$SESSION_ID"
 
-# Build JSON payload for run log
-TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
-# Escape newlines and quotes in the output for a valid JSON string.
-ESCAPED_RUN_OUTPUT=$(echo "$RUN_OUTPUT" | sed ':a;N;$!ba;s/\n/\\n/g' | sed 's/"/\\"/g')
-JSON_PAYLOAD=$(cat <<EOF
-{
-  "timestamp": "$TIMESTAMP",
-  "run_log": "$ESCAPED_RUN_OUTPUT"
-}
-EOF
-)
-
-# Send the run log via webhook
-curl -X POST "$WEBHOOK_URL" -H "Content-Type: application/json" -d "$JSON_PAYLOAD"
-
-# Wait before launching the main application
-sleep 500
-
-# Launch the main application
+echo "Launching main.py with Python3..."
 python3 "$WORK_DIR/main.py"
