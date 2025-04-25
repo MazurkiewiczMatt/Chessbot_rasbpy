@@ -17,21 +17,18 @@ class ChessGameSimulator:
         self.hotm.append(deepcopy(lattice_reading))
 
     def is_state_correct(self):
-        """Check if current HOTM state matches any legal move"""
         try:
-            detected = detect_move(self.holm[-1], self.hotm[-1])
+            detected = detect_move(self.holm[-1], self.hotm)  # ← pass HOTM
             return bool(find_legal_move(self.board, detected))
-        except:
+        except Exception:
             return False
 
     def push_move(self):
-        """Push detected move if legal"""
         if not self.game_started:
             return False
 
-        detected = detect_move(self.holm[-1], self.hotm[-1])
-        legal_move = find_legal_move(self.board, detected)
-
+        detected    = detect_move(self.holm[-1], self.hotm)   # ← pass HOTM
+        legal_move  = find_legal_move(self.board, detected)
         if legal_move:
             if legal_move.promotion:
                 self.promotion_pending = True
@@ -78,44 +75,108 @@ class ChessGameSimulator:
                     missing.append(f"{chess_file}{chess_rank}")
         return missing
 
+def _leave_index(hotm, rank, file):
+    """Index of the first frame where (rank,file) becomes empty."""
+    for idx, mat in enumerate(hotm[1:], 1):           # skip frame 0 (legal pos.)
+        if mat[rank][file] == 0:
+            return idx
+    return None
 
-def detect_move(initial_matrix, final_matrix):
-    moved_from = []
-    moved_to = []
 
+def _infer_captured_square(initial_matrix, hotm, mover_sq):
+    """
+    Return the square index of a captured piece, or None.
+    Uses the same logic as in the previous patch: anything that emptied *before*
+    the mover left counts as the capture square.
+    """
+    mr, mf = 7 - chess.square_rank(mover_sq), chess.square_file(mover_sq)
+    mover_leave = _leave_index(hotm, mr, mf)
+    if mover_leave is None:
+        return None
+
+    earliest_cap, earliest_idx = None, mover_leave
     for rank in range(8):
         for file in range(8):
-            if initial_matrix[rank][file] == 1 and final_matrix[rank][file] == 0:
-                moved_from.append((rank, file))
-            elif initial_matrix[rank][file] == 0 and final_matrix[rank][file] == 1:
-                moved_to.append((rank, file))
+            if (rank, file) == (mr, mf):
+                continue
+            if initial_matrix[rank][file] == 0:
+                continue
+            idx = _leave_index(hotm, rank, file)
+            if idx is not None and 0 < idx < earliest_idx:
+                earliest_idx, earliest_cap = idx, chess.square(file, 7 - rank)
+    return earliest_cap
 
-    # Convert to chess squares
-    from_squares = [chess.square(f, 7 - r) for r, f in moved_from]
-    to_squares = [chess.square(f, 7 - r) for r, f in moved_to]
 
-    if len(from_squares) == 1 and len(to_squares) == 1:
-        return Move(from_squares[0], to_squares[0])
-    elif len(from_squares) == 2 and len(to_squares) == 1:
-        # Capture move (detect captured square)
-        capture_square = [sq for sq in from_squares if sq != to_squares[0]][0]
-        move = Move(from_squares[0], to_squares[0])
-        move.captured = capture_square
+def _detect_castling(from_squares, to_squares):
+    """
+    If {from_squares,to_squares} correspond to castling, return king Move.
+    Otherwise return None.
+    """
+    for f in from_squares:
+        for t in to_squares:
+            same_rank = chess.square_rank(f) == chess.square_rank(t)
+            if same_rank and abs(chess.square_file(f) - chess.square_file(t)) == 2:
+                # king moves two files horizontally – that’s castling
+                return Move(f, t)
+    return None
+
+
+# ---------------------------------------------------------------------------
+# main detector
+# ---------------------------------------------------------------------------
+
+def detect_move(initial_matrix, hotm):
+    """
+    Determine the move that occurred given a legal position (initial_matrix)
+    and a list of raw-sensor frames since that position (hotm).
+
+    Returns
+    -------
+    chess.Move | None
+        A move with .captured optionally set; .promotion left to 0 (unset).
+    """
+    final_matrix = hotm[-1]
+
+    moved_from, moved_to = [], []
+    for rank in range(8):
+        for file in range(8):
+            was_piece = initial_matrix[rank][file] == 1
+            is_piece  = final_matrix[rank][file] == 1
+            if was_piece and not is_piece:
+                moved_from.append(chess.square(file, 7 - rank))
+            elif not was_piece and is_piece:
+                moved_to.append(chess.square(file, 7 - rank))
+
+    # ------------------------------------------------------------------ castling
+    if len(moved_from) == 2 and len(moved_to) == 2:
+        castle_move = _detect_castling(moved_from, moved_to)
+        if castle_move:
+            return castle_move            # board.push() will move the rook too
+
+    # -------------------------------------------------------- normal / captures
+    if len(moved_from) == 1 and len(moved_to) == 1:
+        from_sq, to_sq = moved_from[0], moved_to[0]
+        move           = Move(from_sq, to_sq)
+        move.captured  = _infer_captured_square(initial_matrix, hotm, from_sq)
         return move
+
+    # ---------------------------------------------------------- en-passant etc.
+    if len(moved_from) == 2 and len(moved_to) == 1:
+        # Two squares emptied, one filled → capture where the *earlier* empty
+        # square is the captured pawn (en-passant or normal capture confusion).
+        # Identify the mover: the square that was lifted *later*.
+        idx_a = _leave_index(hotm, 7 - chess.square_rank(moved_from[0]),
+                                   chess.square_file(moved_from[0]))
+        idx_b = _leave_index(hotm, 7 - chess.square_rank(moved_from[1]),
+                                   chess.square_file(moved_from[1]))
+        from_sq = moved_from[0] if idx_a > idx_b else moved_from[1]
+        to_sq   = moved_to[0]
+        move          = Move(from_sq, to_sq)
+        move.captured = _infer_captured_square(initial_matrix, hotm, from_sq)
+        return move
+
+    # Anything else is either noise or an illegal sensor combination
     return None
-
-
-def find_legal_move(board, move):
-    if not move:
-        return None
-    for legal_move in board.generate_legal_moves():
-        if (legal_move.from_square == move.from_square and
-                legal_move.to_square == move.to_square):
-            actual_cap = get_captured_square(board, legal_move)
-            if actual_cap == move.captured:
-                return legal_move
-    return None
-
 
 def get_captured_square(board, move):
     if board.is_en_passant(move):
