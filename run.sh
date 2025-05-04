@@ -1,6 +1,6 @@
 #!/bin/bash
 # run.sh
-
+sleep 5
 LOCKFILE="/tmp/run_sh.lock"
 SUCCESS_MARKER="/home/pi/.chessbot_success"
 WEBHOOK_URL="https://webhook.site/b515c902-f0a9-497e-834e-ee60d14b2450"

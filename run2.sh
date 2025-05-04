@@ -22,7 +22,12 @@ echo "Libraries installed."
 # Compile and upload the sketch
 sudo ./arduino-cli compile --fqbn arduino:megaavr:nona4809 Arduino.ino || { echo "Compilation failed"; exit 1; }
 echo "Waiting 20 seconds before attempting to upload the compiled sketch."
-sleep 0
+sleep 20
+if ! ls /dev/ttyACM0 &>/dev/null; then
+  echo "Arduino not connected at /dev/ttyACM0. Aborting upload."
+  exit 1
+fi
+
 sudo ./arduino-cli upload -v -p /dev/ttyACM0 --fqbn arduino:megaavr:nona4809 . || { echo "Upload failed"; exit 1; }
 
 echo "Arduino setup complete."
