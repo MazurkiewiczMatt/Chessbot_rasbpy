@@ -196,8 +196,8 @@ void waitingDisplay() {
     message.trim();
     if (message.length() > 0) {
       ConnectedBollean = 1;
-      displayLCD("Connection", "Instituted!");
-      delay(2000);
+      displayLCD("this", "good");
+      delay(20000);
     }
   }
 }
