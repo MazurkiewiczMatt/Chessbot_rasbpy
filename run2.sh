@@ -1,8 +1,8 @@
 #!/bin/bash
 # run2.sh
 
-WORK_DIR="/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy"
-WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
+WORK_DIR="/home/pi/chessbot/Chessbot_rasbpy"
+WEBHOOK_URL="https://webhook.site/b515c902-f0a9-497e-834e-ee60d14b2450"
 
 cd "$WORK_DIR/Arduino" || { echo "Arduino directory not found"; exit 1; }
 

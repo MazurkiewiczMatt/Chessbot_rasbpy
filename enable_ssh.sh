@@ -17,7 +17,7 @@ SESSION_ID=${1:-"unknown"}
 
 
 # --- Configuration ---
-WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
+WEBHOOK_URL="https://webhook.site/b515c902-f0a9-497e-834e-ee60d14b2450"
 
 # --- Gather Timestamp ---
 TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')

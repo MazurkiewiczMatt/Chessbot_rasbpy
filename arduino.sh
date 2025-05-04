@@ -5,8 +5,8 @@
 SESSION_ID=${1:-"unknown"}
 
 # Define environment variables
-WEBHOOK_URL="https://webhook.site/d3cb0112-da92-4eb2-8d12-0303bd957559"
-WORK_DIR="/home/spiesznikrysiek/Desktop/Chessbot/Chessbot_rasbpy"
+WEBHOOK_URL="https://webhook.site/b515c902-f0a9-497e-834e-ee60d14b2450"
+WORK_DIR="/home/pi/chessbot/Chessbot_rasbpy"
 
 # Execute run2.sh and capture output
 RUN_OUTPUT=$(
