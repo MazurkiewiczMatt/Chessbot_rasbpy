@@ -115,7 +115,7 @@ while running:
     # Reset lattice reading after processing
     lattice_sensor.sense()
 import time
-if 1==1:
+if True:
     serial_handler.display_text("STARTED", "TEST START")
     time.sleep(3)
 
