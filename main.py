@@ -116,14 +116,20 @@ while running:
     lattice_sensor.sense()
 import time
 if 1==1:
+    serial_handler.display_text("STARTED", "TEST START")
+    time.sleep(3)
+
     # Move steppers by 500 steps each
     serial_handler.send_motor_command(500, 500)
+    time.sleep(3)
 
     # Move servo to drop EM to 90 degrees
     serial_handler.electromagnet_drop(90)
+    time.sleep(3)
 
     # Turn electromagnet ON
     serial_handler.electromagnet_turn(1)
+    time.sleep(3)
 
     # Move servo to 180 degrees
     serial_handler.electromagnet_raise(180)
@@ -133,12 +139,16 @@ if 1==1:
 
     # Move servo back to 90 degrees
     serial_handler.electromagnet_drop(90)
+    time.sleep(3)
 
     # Turn electromagnet OFF
     serial_handler.electromagnet_turn(0)
+    time.sleep(3)
 
     # Move steppers back by -500 steps each to original position
     serial_handler.send_motor_command(-500, -500)
+    time.sleep(3)
 
     # Display "finished" on the LCD
     serial_handler.display_text("FINISHED", "TEST COMPLETE")
+    time.sleep(3)

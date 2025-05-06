@@ -2,25 +2,29 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C_Hangul.h>
 #include <Servo.h>
-
+//good
 #define motorInterfaceType AccelStepper::DRIVER
-
+//good
 AccelStepper stepper1(motorInterfaceType, 3, 2);
 AccelStepper stepper2(motorInterfaceType, 5, 4);
 LiquidCrystal_I2C_Hangul lcd(0x27, 16, 2);
 Servo myservo;
-
+//good
 bool ConnectedBollean = 0;
 const int homeButton1Pin = 7;
 const int homeButton2Pin = 8;
+//good
 unsigned long lastDebounceTime1 = 0;
 unsigned long lastDebounceTime2 = 0;
 const unsigned long debounceDelay = 50;
 const int homingSteps = 5000;
+//^^ to review homing
 
 const int emagPins[] = {14, 15};
+//good
 int currentPos = 30;
 const int moveInterval = 30;
+//^^to review homing
 
 const char* messages[][2] = {
   {"1234567890123456", "1234567890123456"},
@@ -71,7 +75,7 @@ const char* messages[][2] = {
   {"Defending", "outcome"}
 };
 const int numMessages = sizeof(messages) / sizeof(messages[0]);
-
+//good
 void displayLCD(String line1, String line2) {
   lcd.clear();
   lcd.setCursor(0, 0);
@@ -79,6 +83,7 @@ void displayLCD(String line1, String line2) {
   lcd.setCursor(0, 1);
   lcd.print(line2);
 }
+//good
 
 void handleLCDCommand(String lcdData) {
   int commaIndex = lcdData.indexOf(',');
@@ -93,7 +98,7 @@ void handleLCDCommand(String lcdData) {
     Serial.println("LCD command format error. Use: LCD first line, second line");
   }
 }
-
+//good
 void moveSteppers(int step1, int step2) {
   stepper1.move(step1);
   stepper2.move(step2);
@@ -106,7 +111,7 @@ void moveSteppers(int step1, int step2) {
   Serial.print(", ");
   Serial.println(step2);
 }
-
+//good
 void handleMoveCommand(String moveData) {
   moveData.trim();
   int firstSpace = moveData.indexOf(' ');
@@ -134,7 +139,7 @@ void handleMoveCommand(String moveData) {
   moveSteppers(step1, step2);
   displayLCD("Motors Moving", "Step1: " + String(step1) + " Step2: " + String(step2));
 }
-
+//good
 void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin, int buttonPin2, String stepperName) {
   displayLCD("Homing " + stepperName, initialDirectionPositive ? "Moving Positive" : "Moving Negative");
   stepper.move(initialDirectionPositive ? 1000000 : -1000000);
@@ -168,13 +173,14 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
   stepper.setCurrentPosition(0);
   displayLCD(stepperName + " Homed", "");
 }
-
+//^^to review homing
 void homeAllSteppers() {
   displayLCD("Homing Initiated", "");
   performHoming(stepper1, true, homeButton2Pin, homeButton1Pin, "Stepper1");
   performHoming(stepper2, false, homeButton2Pin, homeButton1Pin, "Stepper2");
   displayLCD("Homing Complete", "");
 }
+//^^to review homing
 
 void waitingDisplay() {
   static unsigned long startTime = millis();
@@ -201,7 +207,7 @@ void waitingDisplay() {
     }
   }
 }
-
+//good
 void handleElectromagnetDrop(String cmdData) {
   cmdData.trim();
   int targetAngle = cmdData.toInt();
@@ -215,7 +221,7 @@ void handleElectromagnetDrop(String cmdData) {
   digitalWrite(emagPins[1], HIGH);
   Serial.println("EM_dropped");
 }
-
+//good
 void handleElectromagnetRaise(String cmdData) {
   cmdData.trim();
   int targetAngle = cmdData.toInt();
@@ -229,7 +235,7 @@ void handleElectromagnetRaise(String cmdData) {
   digitalWrite(emagPins[1], LOW);
   Serial.println("EM_rose");
 }
-
+//good
 void handleElectromagnetTurn(String command) {
   if (command.equalsIgnoreCase("EM_ON")) {
     digitalWrite(emagPins[0], HIGH);
@@ -241,7 +247,7 @@ void handleElectromagnetTurn(String command) {
     Serial.println("EM_off");
   }
 }
-
+//good
 void setup() {
   pinMode(homeButton1Pin, INPUT_PULLUP);
   pinMode(homeButton2Pin, INPUT_PULLUP);
@@ -263,7 +269,7 @@ void setup() {
   myservo.attach(6);
   myservo.write(currentPos);
 }
-
+//good
 void testAllFunctionalities() {
   // Example test calls
   displayLCD("Testing", "LCD Display");
@@ -278,15 +284,15 @@ void testAllFunctionalities() {
   handleElectromagnetRaise("30");
 }
 
-bool ranTest = false;
+bool Test = false;
 
 void loop() {
   if (!ConnectedBollean) {
     waitingDisplay();
   } else {
-    if (!ranTest) {
+    if (Test) {
       testAllFunctionalities();
-      //ranTest = true;
+      ranTest = false;
       delay(1000);
     }
 
