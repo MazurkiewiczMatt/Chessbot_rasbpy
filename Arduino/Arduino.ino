@@ -202,8 +202,6 @@ void waitingDisplay() {
     message.trim();
     if (message.length() > 0) {
       ConnectedBollean = 1;
-      displayLCD("this", "good");
-      delay(20000);
     }
   }
 }
@@ -261,8 +259,6 @@ void setup() {
   Serial.println("Chessbot software initiated");
   lcd.init();
   lcd.backlight();
-  displayLCD("IIIIIIIIIIII", "IIIIIIIIIIII");
-  delay(5000);
   stepper1.setMaxSpeed(1000);
   stepper1.setAcceleration(500);
   stepper2.setMaxSpeed(1000);
