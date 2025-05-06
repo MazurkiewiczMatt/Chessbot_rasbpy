@@ -140,12 +140,23 @@ void handleMoveCommand(String moveData) {
   displayLCD("Motors Moving", "Step1: " + String(step1) + " Step2: " + String(step2));
 }
 //good
-void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin, int buttonPin2, String stepperName) {
-  displayLCD("Homing " + stepperName, initialDirectionPositive ? "Moving Positive" : "Moving Negative");
-  stepper.move(initialDirectionPositive ? 1000000 : -1000000);
+void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int activeButtonPin, String stepperName) {
+  long originalMaxSpeed = stepper.maxSpeed();
+  long originalAcceleration = stepper.acceleration();
+
+  // Reduce speed and acceleration
+  stepper.setMaxSpeed(originalMaxSpeed / 3);
+  stepper.setAcceleration(originalAcceleration / 3);
+
+  int reducedHomingSteps = homingSteps / 3;
+  bool reverseDirection = !initialDirectionPositive;
+
+  displayLCD("Homing " + stepperName, reverseDirection ? "Moving Negative" : "Moving Positive");
+  stepper.move(reverseDirection ? -1000000 : 1000000);
+
   while (stepper.distanceToGo() != 0) {
     stepper.run();
-    if ((digitalRead(buttonPin) == LOW) || (digitalRead(buttonPin2) == LOW)) {
+    if (digitalRead(activeButtonPin) == LOW) {
       unsigned long currentTime = millis();
       if (stepperName == "Stepper1") {
         if (currentTime - lastDebounceTime1 > debounceDelay) {
@@ -165,19 +176,28 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
       break;
     }
   }
-  displayLCD("Homing " + stepperName, "Moving back 5000 steps");
-  stepper.move(initialDirectionPositive ? -homingSteps : homingSteps);
+
+  displayLCD("Homing " + stepperName, "Moving back...");
+  stepper.move(reverseDirection ? reducedHomingSteps : -reducedHomingSteps);
   while (stepper.distanceToGo() != 0) {
     stepper.run();
   }
+
   stepper.setCurrentPosition(0);
+
+  // Restore original speed and acceleration
+  stepper.setMaxSpeed(originalMaxSpeed);
+  stepper.setAcceleration(originalAcceleration);
+
   displayLCD(stepperName + " Homed", "");
 }
 //^^to review homing
 void homeAllSteppers() {
   displayLCD("Homing Initiated", "");
-  performHoming(stepper1, true, homeButton2Pin, homeButton1Pin, "Stepper1");
-  performHoming(stepper2, false, homeButton2Pin, homeButton1Pin, "Stepper2");
+  // Stepper1 moves negative using homeButton2Pin
+  performHoming(stepper1, false, homeButton2Pin, "Stepper1");
+  // Stepper2 moves positive using homeButton1Pin
+  performHoming(stepper2, true, homeButton1Pin, "Stepper2");
   displayLCD("Homing Complete", "");
 }
 //^^to review homing
