@@ -33,6 +33,7 @@ robot_arm = RobotArmHandler()
 #serial_handler.display_text("INITIATED", "NOTHING")
 
 
+bool = True
 
 while running:
 
@@ -116,7 +117,7 @@ while running:
 
     # Reset lattice reading after processing
     lattice_sensor.sense()
-    if True:
+    if bool:
         serial_handler.display_text("STARTED", "TEST START")
         time.sleep(3)
 
@@ -153,3 +154,4 @@ while running:
         # Display "finished" on the LCD
         serial_handler.display_text("FINISHED", "TEST COMPLETE")
         time.sleep(3)
+        bool=False
