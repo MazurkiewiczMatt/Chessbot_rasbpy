@@ -48,6 +48,14 @@ class SerialHandler:
         else:
             return False
 
+    def Home(self):
+        if self.ser is not None:
+            self.send_message(f"HOME")
+            response = self.receive_message()
+            return response == "HOMED"
+        else:
+            return False
+
     def send_motor_command(self, steps1, steps2):
         if self.ser is not None:
             self.ser.write((f"MOVE {steps1} {steps2}"))
