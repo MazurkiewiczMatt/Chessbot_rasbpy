@@ -269,33 +269,12 @@ void setup() {
   myservo.attach(6);
   myservo.write(currentPos);
 }
-//good
-void testAllFunctionalities() {
-  // Example test calls
-  displayLCD("Testing", "LCD Display");
-  moveSteppers(100, -100);
-  delay(1000);
-  homeAllSteppers();
-  handleElectromagnetTurn("EM_ON");
-  delay(1000);
-  handleElectromagnetTurn("EM_OFF");
-  handleElectromagnetDrop("20");
-  delay(500);
-  handleElectromagnetRaise("30");
-}
 
-bool Test = false;
 
 void loop() {
   if (!ConnectedBollean) {
     waitingDisplay();
   } else {
-    if (Test) {
-      testAllFunctionalities();
-      ranTest = false;
-      delay(1000);
-    }
-
     if (Serial.available() > 0) {
       String message = Serial.readStringUntil('\n');
       message.trim();
