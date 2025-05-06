@@ -261,7 +261,8 @@ void setup() {
   Serial.println("Chessbot software initiated");
   lcd.init();
   lcd.backlight();
-  displayLCD("YES", "INITIALIZED");
+  displayLCD("IIIIIIIIIIII", "IIIIIIIIIIII");
+  delay(5000);
   stepper1.setMaxSpeed(1000);
   stepper1.setAcceleration(500);
   stepper2.setMaxSpeed(1000);
