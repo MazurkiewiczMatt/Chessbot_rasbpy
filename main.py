@@ -1,3 +1,5 @@
+from time import sleep
+
 from settings import *
 from lattice import LatticeSensor
 from debugger_app import DebuggerApp
@@ -113,4 +115,9 @@ while running:
     last_buttons_reading = list(buttons_reading)
 
     # Reset lattice reading after processing
+
     lattice_sensor.sense()
+
+    serial_handler.Home()
+
+    sleep(1000000)
