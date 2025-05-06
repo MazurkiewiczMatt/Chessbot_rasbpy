@@ -30,7 +30,7 @@ chessboard_state_correct = None
 chess_game = ChessGameSimulator()
 gameplay = Gameplay(chess_game,serial_handler)
 robot_arm = RobotArmHandler()
-#serial_handler.display_text("INITIATED", "NOTHING")
+serial_handler.display_text("TALKING NOW:", "RASPBERRY")
 
 while running:
 
