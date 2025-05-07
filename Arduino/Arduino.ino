@@ -199,12 +199,12 @@ void homeAllSteppers() {
 void Manuver() {
 
 
-  stepper1.setMaxSpeed(MaxSpeed*3);
-  stepper1.setAcceleration(MaxAcc*5);
-  stepper2.setMaxSpeed(MaxSpeed*3);
-  stepper2.setAcceleration(MaxAcc*5);
-  moveSteppers(250,-250);
-  moveSteppers(-100,100);
+  stepper1.setMaxSpeed(MaxSpeed*4);
+  stepper1.setAcceleration(MaxAcc*7);
+  stepper2.setMaxSpeed(MaxSpeed*4);
+  stepper2.setAcceleration(MaxAcc*7);
+  moveSteppers(800,-800);
+  moveSteppers(-200,200);
   stepper1.setMaxSpeed(MaxSpeed);
   stepper1.setAcceleration(MaxAcc);
   stepper2.setMaxSpeed(MaxSpeed);

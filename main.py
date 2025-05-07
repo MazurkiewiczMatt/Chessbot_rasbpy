@@ -118,7 +118,6 @@ while running:
 
     lattice_sensor.sense()
 
-    serial_handler.Home()
     time.sleep(5)
     serial_handler.Manuver()
     time.sleep(50)
