@@ -17,7 +17,7 @@ const int homeButton2Pin = 8;
 unsigned long lastDebounceTime1 = 0;
 unsigned long lastDebounceTime2 = 0;
 const unsigned long debounceDelay = 50;
-const int homingSteps = 1500;
+const int homingSteps = 1250;
 //^^ to review homing
 int MaxSpeed = 200;
 int MaxAcc = 120;
@@ -150,7 +150,7 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
   stepper.setAcceleration(originalAcc / 2);
 
   // Determine homing direction
-  int initialMoveDir = initialDirectionPositive ? 1000 : -1000;
+  int initialMoveDir = initialDirectionPositive ? 2000 : -2000;
   int retreatMoveDir = initialDirectionPositive ? -homingSteps : homingSteps;
 
   displayLCD("Homing " + stepperName, initialMoveDir < 0 ? "Moving Negative" : "Moving Positive");
