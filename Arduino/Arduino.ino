@@ -17,8 +17,10 @@ const int homeButton2Pin = 8;
 unsigned long lastDebounceTime1 = 0;
 unsigned long lastDebounceTime2 = 0;
 const unsigned long debounceDelay = 50;
-const int homingSteps = 1000;
+const int homingSteps = 500;
 //^^ to review homing
+int MaxSpeed = 250;
+int MaxAcc = 100;
 
 const int emagPins[] = {14, 15};
 //good
@@ -140,57 +142,50 @@ void handleMoveCommand(String moveData) {
   displayLCD("Motors Moving", "Step1: " + String(step1) + " Step2: " + String(step2));
 }
 //good
-void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int activeButtonPin, String stepperName) {
-  long originalMaxSpeed = stepper.maxSpeed();
-  long originalAcceleration = stepper.acceleration();
+void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int buttonPin, String stepperName) {
+  // Configure reduced speed and acceleration
+  int originalSpeed = MaxSpeed;
+  int originalAcc = MaxAcc;
+  stepper.setMaxSpeed(originalSpeed / 2);
+  stepper.setAcceleration(originalAcc / 2);
 
-  // Reduce speed and acceleration
-  stepper.setMaxSpeed(originalMaxSpeed / 3);
-  stepper.setAcceleration(originalAcceleration / 3);
+  // Determine homing direction
+  int initialMoveDir = initialDirectionPositive ? 1000 : -1000;
+  int retreatMoveDir = initialDirectionPositive ? -homingSteps : homingSteps;
 
-  int reducedHomingSteps = homingSteps;
-  bool reverseDirection = !initialDirectionPositive;
+  displayLCD("Homing " + stepperName, initialMoveDir < 0 ? "Moving Negative" : "Moving Positive");
+  stepper.move(initialMoveDir);
 
-  displayLCD("Homing " + stepperName, reverseDirection ? "Moving Negative" : "Moving Positive");
-  stepper.move(reverseDirection ? -1000000 : 1000000);
+  unsigned long* lastDebounce = (stepperName == "Stepper1") ? &lastDebounceTime1 : &lastDebounceTime2;
 
   while (stepper.distanceToGo() != 0) {
     stepper.run();
-    if (digitalRead(activeButtonPin) == LOW) {
+    if (digitalRead(buttonPin) == LOW) {
       unsigned long currentTime = millis();
-      if (stepperName == "Stepper1") {
-        if (currentTime - lastDebounceTime1 > debounceDelay) {
-          lastDebounceTime1 = currentTime;
-        } else {
-          continue;
-        }
-      } else if (stepperName == "Stepper2") {
-        if (currentTime - lastDebounceTime2 > debounceDelay) {
-          lastDebounceTime2 = currentTime;
-        } else {
-          continue;
-        }
+      if (currentTime - *lastDebounce > debounceDelay) {
+        *lastDebounce = currentTime;
+        stepper.stop();
+        displayLCD("Homing " + stepperName, "Stopping...");
+        break;
       }
-      stepper.stop();
-      displayLCD("Homing " + stepperName, "Stopping...");
-      break;
     }
   }
 
   displayLCD("Homing " + stepperName, "Moving back...");
-  stepper.move(reverseDirection ? reducedHomingSteps : -reducedHomingSteps);
+  stepper.move(retreatMoveDir);
   while (stepper.distanceToGo() != 0) {
     stepper.run();
   }
 
   stepper.setCurrentPosition(0);
 
-  // Restore original speed and acceleration
-  stepper.setMaxSpeed(originalMaxSpeed);
-  stepper.setAcceleration(originalAcceleration);
+  // Restore full speed and acceleration
+  stepper.setMaxSpeed(originalSpeed);
+  stepper.setAcceleration(originalAcc);
 
   displayLCD(stepperName + " Homed", "");
 }
+
 //^^to review homing
 void homeAllSteppers() {
   displayLCD("Homing Initiated", "");
@@ -279,10 +274,10 @@ void setup() {
   Serial.println("Chessbot software initiated");
   lcd.init();
   lcd.backlight();
-  stepper1.setMaxSpeed(1000);
-  stepper1.setAcceleration(500);
-  stepper2.setMaxSpeed(1000);
-  stepper2.setAcceleration(500);
+  stepper1.setMaxSpeed(MaxSpeed);
+  stepper1.setAcceleration(MaxAcc);
+  stepper2.setMaxSpeed(MaxSpeed);
+  stepper2.setAcceleration(MaxAcc);
   myservo.attach(6);
   myservo.write(currentPos);
 }
