@@ -56,6 +56,14 @@ class SerialHandler:
         else:
             return False
 
+    def Manuver(self):
+        if self.ser is not None:
+            self.send_message(f"MANUVER")
+            response = self.receive_message()
+            return response == "MANUVER DONE"
+        else:
+            return False
+
     def send_motor_command(self, steps1, steps2):
         if self.ser is not None:
             self.ser.write((f"MOVE {steps1} {steps2}"))

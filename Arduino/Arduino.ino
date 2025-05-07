@@ -17,7 +17,7 @@ const int homeButton2Pin = 8;
 unsigned long lastDebounceTime1 = 0;
 unsigned long lastDebounceTime2 = 0;
 const unsigned long debounceDelay = 50;
-const int homingSteps = 1250;
+const int homingSteps = 1230;
 //^^ to review homing
 int MaxSpeed = 200;
 int MaxAcc = 120;
@@ -150,7 +150,7 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
   stepper.setAcceleration(originalAcc / 2);
 
   // Determine homing direction
-  int initialMoveDir = initialDirectionPositive ? 2000 : -2000;
+  int initialMoveDir = initialDirectionPositive ? 2200 : -2200;
   int retreatMoveDir = initialDirectionPositive ? -homingSteps : homingSteps;
 
   displayLCD("Homing " + stepperName, initialMoveDir < 0 ? "Moving Negative" : "Moving Positive");
@@ -196,7 +196,24 @@ void homeAllSteppers() {
   displayLCD("Homing Complete", "");
 }
 //^^to review homing
+void Manuver() {
 
+
+  stepper1.setMaxSpeed(MaxSpeed*3);
+  stepper1.setAcceleration(MaxAcc*5);
+  stepper2.setMaxSpeed(MaxSpeed*3);
+  stepper2.setAcceleration(MaxAcc*5);
+  moveSteppers(250,-250);
+  moveSteppers(-100,100);
+  stepper1.setMaxSpeed(MaxSpeed);
+  stepper1.setAcceleration(MaxAcc);
+  stepper2.setMaxSpeed(MaxSpeed);
+  stepper2.setAcceleration(MaxAcc);
+
+
+    Serial.println("MANUVER DONE");
+
+}
 void waitingDisplay() {
   static unsigned long startTime = millis();
   static unsigned long lastMessageTime = 0;
@@ -298,6 +315,8 @@ void loop() {
         handleMoveCommand(message.substring(4));
       } else if (message.equalsIgnoreCase("HOME")) {
         homeAllSteppers();
+      } else if (message.equalsIgnoreCase("MANUVER")) {
+        Manuver();
       } else if (message.startsWith("EM_D")) {
         handleElectromagnetDrop(message.substring(4));
       } else if (message.startsWith("EM_R")) {
