@@ -198,13 +198,11 @@ void homeAllSteppers() {
 //^^to review homing
 void Manuver() {
 
-
+  moveSteppers(-200,200);
   stepper1.setMaxSpeed(MaxSpeed*4);
   stepper1.setAcceleration(MaxAcc*7);
   stepper2.setMaxSpeed(MaxSpeed*4);
   stepper2.setAcceleration(MaxAcc*7);
-    moveSteppers(-200,200);
-
   moveSteppers(950,-950);
   moveSteppers(-200,200);
   stepper1.setMaxSpeed(MaxSpeed);
