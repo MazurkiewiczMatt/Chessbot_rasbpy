@@ -150,7 +150,7 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
   stepper.setAcceleration(originalAcc / 2);
 
   // Determine homing direction
-  int initialMoveDir = initialDirectionPositive ? 2200 : -2200;
+  int initialMoveDir = initialDirectionPositive ? 2600 : -2600;
   int retreatMoveDir = initialDirectionPositive ? -homingSteps : homingSteps;
 
   displayLCD("Homing " + stepperName, initialMoveDir < 0 ? "Moving Negative" : "Moving Positive");
@@ -196,22 +196,36 @@ void homeAllSteppers() {
   displayLCD("Homing Complete", "");
 }
 //^^to review homing
-void Manuver() {
+void soM(){
+homeAllSteppers();
 
-  moveSteppers(-200,200);
+Manuver(150,900,150);
+moveSteppers(300,-300);
+homeAllSteppers();
+
+Manuver(200,950,200);
+moveSteppers(300,-300);
+homeAllSteppers();
+
+Manuver(250,1000,250);
+moveSteppers(300,-300);
+homeAllSteppers();
+
+Serial.println("MANUVER DONE");
+
+}
+void Manuver(int s1,int s2,int s3) {
+  moveSteppers(-s1,s1);
   stepper1.setMaxSpeed(MaxSpeed*4);
   stepper1.setAcceleration(MaxAcc*7);
   stepper2.setMaxSpeed(MaxSpeed*4);
   stepper2.setAcceleration(MaxAcc*7);
-  moveSteppers(950,-950);
-  moveSteppers(-200,200);
+  moveSteppers(s2,-s2);
+  moveSteppers(-s3,s3);
   stepper1.setMaxSpeed(MaxSpeed);
   stepper1.setAcceleration(MaxAcc);
   stepper2.setMaxSpeed(MaxSpeed);
   stepper2.setAcceleration(MaxAcc);
-
-
-    Serial.println("MANUVER DONE");
 
 }
 void waitingDisplay() {
@@ -316,7 +330,7 @@ void loop() {
       } else if (message.equalsIgnoreCase("HOME")) {
         homeAllSteppers();
       } else if (message.equalsIgnoreCase("MANUVER")) {
-        Manuver();
+        soM();
       } else if (message.startsWith("EM_D")) {
         handleElectromagnetDrop(message.substring(4));
       } else if (message.startsWith("EM_R")) {
