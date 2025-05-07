@@ -17,10 +17,10 @@ const int homeButton2Pin = 8;
 unsigned long lastDebounceTime1 = 0;
 unsigned long lastDebounceTime2 = 0;
 const unsigned long debounceDelay = 50;
-const int homingSteps = 500;
+const int homingSteps = 1500;
 //^^ to review homing
-int MaxSpeed = 250;
-int MaxAcc = 100;
+int MaxSpeed = 200;
+int MaxAcc = 120;
 
 const int emagPins[] = {14, 15};
 //good
