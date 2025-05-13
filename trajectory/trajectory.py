@@ -6,7 +6,7 @@ l0 = 13  # Length between origin and the two motors
 l1 = 22 # Length from motor to passive joints
 l2 = 27 # Length from passive joints to end effector
 steps_per_revolution = 200
-gear_ratio = 10.73
+gear_ratio = 17.52 # according to lukasz
 degrees_per_step = 360 / (steps_per_revolution * gear_ratio)
 
 def calc_angles(x, y):
@@ -68,4 +68,3 @@ def calculate_step_difference(start_angles, end_angles):
     steps2 = round((math.degrees(shoulder2_end) - math.degrees(shoulder2_start)) / degrees_per_step)
 
     return steps1, steps2
-im

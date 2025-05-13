@@ -196,25 +196,19 @@ void homeAllSteppers() {
   displayLCD("Homing Complete", "");
 }
 //^^to review homing
-void soM(){
-homeAllSteppers();
-
-Manuver(150,900,150);
-moveSteppers(300,-300);
-homeAllSteppers();
-
-Manuver(200,950,200);
-moveSteppers(300,-300);
-homeAllSteppers();
-
-Manuver(250,1000,250);
-moveSteppers(300,-300);
-homeAllSteppers();
-
-Serial.println("MANUVER DONE");
-
+void soM(){//TEMPORARY
+    Manuver(150,850,150);
+    moveSteppers(300,-300);
+    homeAllSteppers();
+    Manuver(200,950,200);
+    moveSteppers(300,-300);
+    homeAllSteppers();
+    Manuver(250,1000,250);
+    moveSteppers(300,-300);
+    homeAllSteppers();
+    Serial.println("MANUVER DONE");
 }
-void Manuver(int s1,int s2,int s3) {
+void Manuver(int s1,int s2,int s3) { //TEMPORARY
   moveSteppers(-s1,s1);
   stepper1.setMaxSpeed(MaxSpeed*4);
   stepper1.setAcceleration(MaxAcc*7);
