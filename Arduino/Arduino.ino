@@ -146,8 +146,8 @@ void performHoming(AccelStepper& stepper, bool initialDirectionPositive, int but
   // Configure reduced speed and acceleration
   int originalSpeed = MaxSpeed;
   int originalAcc = MaxAcc;
-  stepper.setMaxSpeed(originalSpeed / 2);
-  stepper.setAcceleration(originalAcc / 2);
+  stepper.setMaxSpeed(originalSpeed / 3);
+  stepper.setAcceleration(originalAcc / 3);
 
   // Determine homing direction
   int initialMoveDir = initialDirectionPositive ? 2600 : -2600;
@@ -255,8 +255,6 @@ void handleElectromagnetDrop(String cmdData) {
     myservo.write(currentPos);
     delay(moveInterval);
   }
-  digitalWrite(emagPins[0], HIGH);
-  digitalWrite(emagPins[1], HIGH);
   Serial.println("EM_dropped");
 }
 //good
@@ -269,8 +267,6 @@ void handleElectromagnetRaise(String cmdData) {
     myservo.write(currentPos);
     delay(moveInterval);
   }
-  digitalWrite(emagPins[0], LOW);
-  digitalWrite(emagPins[1], LOW);
   Serial.println("EM_rose");
 }
 //good
