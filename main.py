@@ -118,23 +118,3 @@ while running:
 
     lattice_sensor.sense()
 
-    # arbitrary sequence
-    time.sleep(5)
-    serial_handler.Home()
-    time.sleep(1)
-    serial_handler.send_motor_command(-400,-100)
-    time.sleep(1)
-    serial_handler.electromagnet_drop(5)#?
-    time.sleep(1)
-    serial_handler.electromagnet_turn(1)
-    time.sleep(1)
-    serial_handler.electromagnet_raise(5)#?
-    time.sleep(1)
-    serial_handler.send_motor_command(500,300)
-    time.sleep(1)
-    serial_handler.electromagnet_drop(5)#?
-    time.sleep(1)
-    serial_handler.electromagnet_turn(0)
-    time.sleep(1)
-    serial_handler.electromagnet_raise(5)#?
-    time.sleep(1)
