@@ -272,12 +272,12 @@ void handleElectromagnetRaise(String cmdData) {
 //good
 void handleElectromagnetTurn(String command) {
   if (command.equalsIgnoreCase("EM_ON")) {
-    digitalWrite(emagPins[0], HIGH);
-    digitalWrite(emagPins[1], HIGH);
-    Serial.println("EM_on");
-  } else if (command.equalsIgnoreCase("EM_OFF")) {
     digitalWrite(emagPins[0], LOW);
     digitalWrite(emagPins[1], LOW);
+    Serial.println("EM_on");
+  } else if (command.equalsIgnoreCase("EM_OFF")) {
+    digitalWrite(emagPins[0], HIGH);
+    digitalWrite(emagPins[1], HIGH);
     Serial.println("EM_off");
   }
 }
